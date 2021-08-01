@@ -1,68 +1,42 @@
-// (Full example with detailed comments in examples/01d_quick_example.rs)
-//
-// This example demonstrates clap's full 'custom derive' style of creating arguments which is the
-// simplest method of use, but sacrifices some flexibility.
-use clap::{AppSettings, Clap};
-
-/// This doc string acts as a help message when the user runs '--help'
-/// as do all doc strings on fields
-#[derive(Clap)]
-#[clap(version = "1.0", author = "Daniel Saxton")]
-#[clap(setting = AppSettings::ColoredHelp)]
-struct Opts {
-    /// Sets a custom config file. Could have been an Option<T> with no default too
-    #[clap(short, long, default_value = "default.conf")]
-    config: String,
-    /// Some input. Because this isn't an Option<T> it's required to be used
-    input: String,
-    /// A level of verbosity, and can be used multiple times
-    #[clap(short, long, parse(from_occurrences))]
-    verbose: i32,
-    #[clap(subcommand)]
-    subcmd: SubCommand,
-}
-
-#[derive(Clap)]
-enum SubCommand {
-    #[clap(version = "1.3", author = "Daniel Saxton")]
-    Test(Test),
-}
-
-/// A subcommand for controlling testing
-#[derive(Clap)]
-struct Test {
-    /// Print debug info
-    #[clap(short)]
-    debug: bool
-}
+use clap::{App, Arg};
 
 fn main() {
-    let opts: Opts = Opts::parse();
+    let matches = App::new("rd")
+        .version("0.1")
+        .author("Daniel Saxton")
+        .about("Generates random strings")
+        .subcommand(
+            // TODO: remove versions for subcommands
+            App::new("float")
+                .about("Generates random floats")
+                .arg(Arg::new("min").short('m').long("min").about("Minimum value"))
+                .arg(Arg::new("max").short('M').long("max").about("Maximum value")),
+        )
+        .subcommand(
+            App::new("int")
+                .about("Generates random ints")
+                .arg(Arg::new("min").short('m').long("min").about("Minimum value"))
+                .arg(Arg::new("max").short('M').long("max").about("Maximum value")),
+        )
+        .get_matches();
 
-    // Gets a value for config if supplied by user, or defaults to "default.conf"
-    println!("Value for config: {}", opts.config);
-    println!("Using input file: {}", opts.input);
-
-    // Vary the output based on how many times the user used the "verbose" flag
-    // (i.e. 'myprog -v -v -v' or 'myprog -vvv' vs 'myprog -v'
-    match opts.verbose {
-        0 => println!("No verbose info"),
-        1 => println!("Some verbose info"),
-        2 => println!("Tons of verbose info"),
-        _ => println!("Don't be ridiculous"),
-    }
-
-    // You can handle information about subcommands by requesting their matches by name
-    // (as below), requesting just the name used, or both at the same time
-    match opts.subcmd {
-        SubCommand::Test(t) => {
-            if t.debug {
-                println!("Printing debug info...");
-            } else {
-                println!("Printing normally...");
-            }
+    if let Some(ref matches) = matches.subcommand_matches("int") {
+        println!("int subcommand");
+        if matches.is_present("min") {
+            println!("min was provided");
+        }
+        if matches.is_present("max") {
+            println!("max was provided");
         }
     }
 
-    // more program logic goes here...
+    if let Some(ref matches) = matches.subcommand_matches("float") {
+        println!("float subcommand");
+        if matches.is_present("min") {
+            println!("min was provided");
+        }
+        if matches.is_present("max") {
+            println!("max was provided");
+        }
+    }
 }
