@@ -1,42 +1,67 @@
 use clap::{App, Arg};
+use rand::Rng;
 
 fn main() {
+    let mut rng = rand::thread_rng();
+
     let matches = App::new("rd")
         .version("0.1")
         .author("Daniel Saxton")
-        .about("Generates random strings")
+        .about("Generate random strings")
         .subcommand(
             // TODO: remove versions for subcommands
-            App::new("float")
-                .about("Generates random floats")
-                .arg(Arg::new("min").short('m').long("min").about("Minimum value"))
-                .arg(Arg::new("max").short('M').long("max").about("Maximum value")),
-        )
-        .subcommand(
             App::new("int")
                 .about("Generates random ints")
-                .arg(Arg::new("min").short('m').long("min").about("Minimum value"))
-                .arg(Arg::new("max").short('M').long("max").about("Maximum value")),
+                // TODO: how to enforce data types?
+                .arg(
+                    Arg::new("lower")
+                        .short('l')
+                        .long("lower")
+                        .about("Lower bound (inclusive), default 0")
+                        .takes_value(true),
+                )
+                .arg(
+                    Arg::new("upper")
+                        .short('u')
+                        .long("upper")
+                        .about("Upper bound (exclusive), default 10")
+                        .takes_value(true),
+                ),
+        )
+        .subcommand(
+            App::new("float")
+                .about("Generates random floats")
+                .arg(
+                    Arg::new("lower")
+                        .short('l')
+                        .long("lower")
+                        .about("Lower bound (inclusive), default 0"),
+                )
+                .arg(
+                    Arg::new("upper")
+                        .short('u')
+                        .long("upper")
+                        .about("Upper bound (exclusive), default 1"),
+                ),
         )
         .get_matches();
 
     if let Some(ref matches) = matches.subcommand_matches("int") {
-        println!("int subcommand");
-        if matches.is_present("min") {
-            println!("min was provided");
-        }
-        if matches.is_present("max") {
-            println!("max was provided");
-        }
-    }
+        let lower = if let Some(l) = matches.value_of("lower") {
+            l
+        } else {
+            "0"
+        };
+        let lower = lower.parse::<u8>().unwrap();
 
-    if let Some(ref matches) = matches.subcommand_matches("float") {
-        println!("float subcommand");
-        if matches.is_present("min") {
-            println!("min was provided");
-        }
-        if matches.is_present("max") {
-            println!("max was provided");
-        }
+        let upper = if let Some(u) = matches.value_of("upper") {
+            u
+        } else {
+            "10"
+        };
+        let upper = upper.parse::<u8>().unwrap();
+
+        let result: u8 = rng.gen_range(lower..upper);
+        println!("{}", result);
     }
 }
