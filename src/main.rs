@@ -8,11 +8,16 @@ fn main() {
         .version("0.1")
         .author("Daniel Saxton")
         .about("Generate random strings")
+        .arg(
+            Arg::new("lines")
+                .short('n')
+                .long("lines")
+                .about("Number of lines of output, default 1")
+                .takes_value(true),
+        )
         .subcommand(
-            // TODO: remove versions for subcommands
             App::new("int")
                 .about("Generate random ints")
-                // TODO: how to enforce data types?
                 .arg(
                     Arg::new("lower")
                         .short('l')
@@ -46,26 +51,42 @@ fn main() {
         )
         .get_matches();
 
-    if let Some(matches) = matches.subcommand_matches("int") {
-        let lower = if let Some(l) = matches.value_of("lower") {
+    let lines = if let Some(lines_matches) = matches.value_of("lines") {
+        lines_matches
+    } else {
+        "1"
+    };
+    let lines = lines
+        .parse::<u32>()
+        .expect("lines must be a non-negative integer");
+
+    if let Some(int_matches) = matches.subcommand_matches("int") {
+        let lower = if let Some(l) = int_matches.value_of("lower") {
             l
         } else {
             "0"
         };
-        // TODO: deal with panic when cannot parse
-        let lower = lower.parse::<u8>().unwrap();
+        let lower = lower
+            .parse::<u32>()
+            .expect("lower must be a non-negative integer");
 
-        let upper = if let Some(u) = matches.value_of("upper") {
+        let upper = if let Some(u) = int_matches.value_of("upper") {
             u
         } else {
             "10"
         };
-        // TODO: deal with panic when cannot parse
-        let upper = upper.parse::<u8>().unwrap();
+        let upper = upper
+            .parse::<u32>()
+            .expect("upper must be a non-negative integer");
 
-        // TODO: validate that lower < upper
+        if lower > upper {
+            panic!("lower cannot be greater than upper");
+        }
 
-        let result: u8 = rng.gen_range(lower..upper);
-        println!("{}", result);
+        let mut result: u32;
+        for _ in 0..lines {
+            result = rng.gen_range(lower..upper);
+            println!("{}", result);
+        }
     }
 }
