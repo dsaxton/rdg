@@ -52,6 +52,7 @@ fn main() {
         } else {
             "0"
         };
+        // TODO: deal with panic when cannot parse
         let lower = lower.parse::<u8>().unwrap();
 
         let upper = if let Some(u) = matches.value_of("upper") {
@@ -59,7 +60,10 @@ fn main() {
         } else {
             "10"
         };
+        // TODO: deal with panic when cannot parse
         let upper = upper.parse::<u8>().unwrap();
+
+        // TODO: validate that lower < upper
 
         let result: u8 = rng.gen_range(lower..upper);
         println!("{}", result);
