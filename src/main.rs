@@ -11,7 +11,7 @@ fn main() {
         .subcommand(
             // TODO: remove versions for subcommands
             App::new("int")
-                .about("Generates random ints")
+                .about("Generate random ints")
                 // TODO: how to enforce data types?
                 .arg(
                     Arg::new("lower")
@@ -30,7 +30,7 @@ fn main() {
         )
         .subcommand(
             App::new("float")
-                .about("Generates random floats")
+                .about("Generate random floats")
                 .arg(
                     Arg::new("lower")
                         .short('l')
