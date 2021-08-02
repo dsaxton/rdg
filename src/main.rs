@@ -46,7 +46,7 @@ fn main() {
         )
         .get_matches();
 
-    if let Some(ref matches) = matches.subcommand_matches("int") {
+    if let Some(matches) = matches.subcommand_matches("int") {
         let lower = if let Some(l) = matches.value_of("lower") {
             l
         } else {
