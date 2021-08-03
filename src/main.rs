@@ -1,10 +1,7 @@
 use clap::{App, Arg};
-use rand::Rng;
+use rand::prelude::*;
 
 fn main() {
-    // TODO: generate a uniform(0, 1) and then apply probability transform depending on subcommand
-    let mut rng = rand::thread_rng();
-
     let matches = App::new("rd")
         .version("0.1")
         .author("Daniel Saxton")
@@ -53,42 +50,44 @@ fn main() {
         )
         .get_matches();
 
-    let lines = if let Some(lines_matches) = matches.value_of("lines") {
-        lines_matches
+    let lines = if let Some(l) = matches.value_of("lines") {
+        l.parse::<u64>()
+            .expect("lines must be a non-negative integer")
     } else {
-        "1"
+        1
     };
-    let lines = lines
-        .parse::<u64>()
-        .expect("lines must be a non-negative integer");
+    let mut rng = thread_rng();
+    let mut seed: f64;
+    let subcommand_name = matches
+        .subcommand_name()
+        .expect("please enter a subcommand such as help");
 
-    if let Some(int_matches) = matches.subcommand_matches("int") {
-        let lower = if let Some(l) = int_matches.value_of("lower") {
-            l
-        } else {
-            "0"
-        };
-        let lower = lower
-            .parse::<u32>()
-            .expect("lower must be a non-negative integer");
-
-        let upper = if let Some(u) = int_matches.value_of("upper") {
-            u
-        } else {
-            "10"
-        };
-        let upper = upper
-            .parse::<u32>()
-            .expect("upper must be a non-negative integer");
-
-        if lower > upper {
-            panic!("lower cannot be greater than upper");
+    match subcommand_name {
+        "int" => {
+            let lower = matches
+                .subcommand_matches(subcommand_name)
+                .expect("invalid subcommand")
+                .value_of("lower")
+                .unwrap_or("0")
+                .parse::<u64>()
+                .expect("lower must be a non-negative integer");
+            let upper = matches
+                .subcommand_matches(subcommand_name)
+                .expect("invalid subcommand")
+                .value_of("upper")
+                .unwrap_or("1")
+                .parse::<u64>()
+                .expect("upper must be a non-negative integer");
+            if lower >= upper {
+                panic!("lower must be strictly less than upper")
+            }
+            let mut delta: u64;
+            for _ in 0..lines {
+                seed = rng.gen();
+                delta = (seed * ((upper - lower + 1) as f64)).floor() as u64;
+                println!("{}", lower + delta);
+            }
         }
-
-        let mut result: u32;
-        for _ in 0..lines {
-            result = rng.gen_range(lower..upper);
-            println!("{}", result);
-        }
+        _ => panic!("invalid subcommand"),
     }
 }
