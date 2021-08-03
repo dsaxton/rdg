@@ -2,6 +2,7 @@ use clap::{App, Arg};
 use rand::prelude::*;
 
 fn main() {
+    // TODO: add tests
     let app = App::new("rd")
         .version("0.1")
         .author("Daniel Saxton")
@@ -13,7 +14,6 @@ fn main() {
                 .about("Number of lines of output, default 1")
                 .takes_value(true),
         )
-        // TODO: add help for each subcommand
         .subcommand(
             App::new("int")
                 .about("Generate random ints")
@@ -28,7 +28,7 @@ fn main() {
                     Arg::new("upper")
                         .short('u')
                         .long("upper")
-                        .about("Upper bound (exclusive), default 10")
+                        .about("Upper bound (exclusive), default 2")
                         .takes_value(true),
                 ),
         )
@@ -75,7 +75,7 @@ fn main() {
                 .subcommand_matches("int")
                 .expect("invalid subcommand")
                 .value_of("upper")
-                .unwrap_or("1")
+                .unwrap_or("2")
                 .parse::<u64>()
                 .expect("upper must be a non-negative integer");
             if lower >= upper {
@@ -84,7 +84,7 @@ fn main() {
             let mut delta: u64;
             for _ in 0..lines {
                 seed = rng.gen();
-                delta = (seed * ((upper - lower + 1) as f64)).floor() as u64;
+                delta = (seed * ((upper - lower) as f64)).floor() as u64;
                 println!("{}", lower + delta);
             }
         }
