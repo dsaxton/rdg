@@ -3,7 +3,7 @@ use rand::prelude::*;
 
 fn main() {
     // TODO: add tests
-    let app = App::new("rd")
+    let app_matches = App::new("rd")
         .version("0.1")
         .author("Daniel Saxton")
         .about("Generate random strings")
@@ -50,7 +50,7 @@ fn main() {
         )
         .get_matches();
 
-    let lines = match app.value_of("lines") {
+    let lines = match app_matches.value_of("lines") {
         Some(l) => l
             .parse::<u64>()
             .expect("lines must be a non-negative integer"),
@@ -58,21 +58,21 @@ fn main() {
     };
     let mut rng = thread_rng();
     let mut seed: f64;
-    let subcommand_name = app
+    let subcommand_name = app_matches
         .subcommand_name()
         .expect("please enter a subcommand such as help");
 
     match subcommand_name {
         // TODO: match better here to avoid the redundant expect below
         "int" => {
-            let lower = app
+            let lower = app_matches
                 .subcommand_matches("int")
                 .expect("invalid subcommand")
                 .value_of("lower")
                 .unwrap_or("0")
                 .parse::<u64>()
                 .expect("lower must be a non-negative integer");
-            let upper = app
+            let upper = app_matches
                 .subcommand_matches("int")
                 .expect("invalid subcommand")
                 .value_of("upper")
