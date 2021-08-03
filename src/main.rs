@@ -65,14 +65,14 @@ fn main() {
     match subcommand_name {
         "int" => {
             let lower = matches
-                .subcommand_matches(subcommand_name)
+                .subcommand_matches("int")
                 .expect("invalid subcommand")
                 .value_of("lower")
                 .unwrap_or("0")
                 .parse::<u64>()
                 .expect("lower must be a non-negative integer");
             let upper = matches
-                .subcommand_matches(subcommand_name)
+                .subcommand_matches("int")
                 .expect("invalid subcommand")
                 .value_of("upper")
                 .unwrap_or("1")
