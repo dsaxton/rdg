@@ -2,6 +2,7 @@ use clap::{App, Arg};
 use rand::Rng;
 
 fn main() {
+    // TODO: generate a uniform(0, 1) and then apply probability transform depending on subcommand
     let mut rng = rand::thread_rng();
 
     let matches = App::new("rd")
@@ -15,6 +16,7 @@ fn main() {
                 .about("Number of lines of output, default 1")
                 .takes_value(true),
         )
+        // TODO: add help for each subcommand
         .subcommand(
             App::new("int")
                 .about("Generate random ints")
@@ -57,7 +59,7 @@ fn main() {
         "1"
     };
     let lines = lines
-        .parse::<u32>()
+        .parse::<u64>()
         .expect("lines must be a non-negative integer");
 
     if let Some(int_matches) = matches.subcommand_matches("int") {
