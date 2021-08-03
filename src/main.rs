@@ -2,7 +2,7 @@ use clap::{App, Arg};
 use rand::prelude::*;
 
 fn main() {
-    let matches = App::new("rd")
+    let app = App::new("rd")
         .version("0.1")
         .author("Daniel Saxton")
         .about("Generate random strings")
@@ -50,28 +50,28 @@ fn main() {
         )
         .get_matches();
 
-    let lines = if let Some(l) = matches.value_of("lines") {
-        l.parse::<u64>()
-            .expect("lines must be a non-negative integer")
-    } else {
-        1
+    let lines = match app.value_of("lines") {
+        Some(l) => l
+            .parse::<u64>()
+            .expect("lines must be a non-negative integer"),
+        None => 1,
     };
     let mut rng = thread_rng();
     let mut seed: f64;
-    let subcommand_name = matches
+    let subcommand_name = app
         .subcommand_name()
         .expect("please enter a subcommand such as help");
 
     match subcommand_name {
         "int" => {
-            let lower = matches
+            let lower = app
                 .subcommand_matches("int")
                 .expect("invalid subcommand")
                 .value_of("lower")
                 .unwrap_or("0")
                 .parse::<u64>()
                 .expect("lower must be a non-negative integer");
-            let upper = matches
+            let upper = app
                 .subcommand_matches("int")
                 .expect("invalid subcommand")
                 .value_of("upper")
