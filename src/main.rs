@@ -39,13 +39,15 @@ fn main() {
                     Arg::new("lower")
                         .short('l')
                         .long("lower")
-                        .about("Lower bound (inclusive), default 0"),
+                        .about("Lower bound (inclusive), default 0")
+                        .takes_value(true),
                 )
                 .arg(
                     Arg::new("upper")
                         .short('u')
                         .long("upper")
-                        .about("Upper bound (exclusive), default 1"),
+                        .about("Upper bound (exclusive), default 1")
+                        .takes_value(true),
                 ),
         )
         .get_matches();
@@ -87,6 +89,29 @@ fn main() {
                 seed = rng.gen();
                 delta = (seed * ((upper - lower) as f64)).floor() as u64;
                 println!("{}", lower + delta);
+            }
+        }
+        "float" => {
+            let lower = app_matches
+                .subcommand_matches("float")
+                .unwrap()
+                .value_of("lower")
+                .unwrap_or("0")
+                .parse::<f64>()
+                .expect("lower must be a non-negative integer");
+            let upper = app_matches
+                .subcommand_matches("float")
+                .unwrap()
+                .value_of("upper")
+                .unwrap_or("1")
+                .parse::<f64>()
+                .expect("upper must be a non-negative integer");
+            if lower >= upper {
+                panic!("lower must be strictly less than upper")
+            }
+            for _ in 0..lines {
+                seed = rng.gen();
+                println!("{}", seed * (upper - lower));
             }
         }
         _ => panic!("invalid subcommand"),
