@@ -63,18 +63,18 @@ fn main() {
         .expect("please enter a subcommand such as help");
 
     match subcommand_name {
-        // TODO: match better here to avoid the redundant expect below
+        // TODO: possible to match on the subcommand itself?
         "int" => {
             let lower = app_matches
                 .subcommand_matches("int")
-                .expect("invalid subcommand")
+                .unwrap()
                 .value_of("lower")
                 .unwrap_or("0")
                 .parse::<u64>()
                 .expect("lower must be a non-negative integer");
             let upper = app_matches
                 .subcommand_matches("int")
-                .expect("invalid subcommand")
+                .unwrap()
                 .value_of("upper")
                 .unwrap_or("2")
                 .parse::<u64>()
