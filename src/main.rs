@@ -63,6 +63,7 @@ fn main() {
         .expect("please enter a subcommand such as help");
 
     match subcommand_name {
+        // TODO: match better here to avoid the redundant expect below
         "int" => {
             let lower = app
                 .subcommand_matches("int")
