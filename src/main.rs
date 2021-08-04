@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-use clap::{App, Arg};
+use clap::{App, AppSettings, Arg};
 use rand::prelude::*;
 
 fn main() {
@@ -10,23 +10,26 @@ fn main() {
         .version("0.1")
         .author("Daniel Saxton")
         .about("Generate random strings")
+        .setting(AppSettings::ColoredHelp)
+        .setting(AppSettings::ArgRequiredElseHelp)
         .arg(
-            Arg::new("lines")
+            Arg::new("count")
                 .short('n')
-                .long("lines")
-                .about("Number of lines of output, default 1")
+                .long("count")
+                .about("Number of values in output, default 1")
                 .takes_value(true),
         )
         .arg(
             Arg::new("delim")
                 .short('d')
                 .long("delim")
-                .about("Delimeter to use between values, default \\n")
+                .about("Delimiter to use between values, default \\n")
                 .takes_value(true),
         )
         .subcommand(
             App::new("int")
                 .about("Random integers")
+                .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("lower")
                         .short('l')
@@ -45,6 +48,7 @@ fn main() {
         .subcommand(
             App::new("float")
                 .about("Random floating point numbers")
+                .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("lower")
                         .short('l')
@@ -61,19 +65,22 @@ fn main() {
                 ),
         )
         .subcommand(
-            App::new("word").about("Random words").arg(
-                Arg::new("wordlist")
-                    .short('w')
-                    .long("wordlist")
-                    .about("Wordlist used for sampling")
-                    .takes_value(true)
-                    .required(true),
-            ),
+            App::new("word")
+                .about("Random words")
+                .setting(AppSettings::ColoredHelp)
+                .arg(
+                    Arg::new("wordlist")
+                        .short('w')
+                        .long("wordlist")
+                        .about("Wordlist used for sampling")
+                        .takes_value(true)
+                        .required(true),
+                ),
         )
         .get_matches();
 
     let lines = app_matches
-        .value_of("lines")
+        .value_of("count")
         .unwrap_or("1")
         .parse::<u64>()
         .expect("lines must be a non-negative integer");
