@@ -1,3 +1,6 @@
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
 use clap::{App, Arg};
 use rand::prelude::*;
 
@@ -23,7 +26,7 @@ fn main() {
         )
         .subcommand(
             App::new("int")
-                .about("Generate random ints")
+                .about("Random integers")
                 .arg(
                     Arg::new("lower")
                         .short('l')
@@ -41,7 +44,7 @@ fn main() {
         )
         .subcommand(
             App::new("float")
-                .about("Generate random floats")
+                .about("Random floating point numbers")
                 .arg(
                     Arg::new("lower")
                         .short('l')
@@ -56,6 +59,16 @@ fn main() {
                         .about("Upper bound (exclusive), default 1")
                         .takes_value(true),
                 ),
+        )
+        .subcommand(
+            App::new("word").about("Random words").arg(
+                Arg::new("wordlist")
+                    .short('w')
+                    .long("wordlist")
+                    .about("Wordlist used for sampling")
+                    .takes_value(true)
+                    .required(true),
+            ),
         )
         .get_matches();
 
@@ -121,6 +134,25 @@ fn main() {
                 seed = rng.gen();
                 print!("{}", seed * (upper - lower));
                 print!("{}", delim);
+            }
+        }
+        "word" => {
+            let wordlist = app_matches
+                .subcommand_matches("word")
+                .unwrap()
+                .value_of("wordlist")
+                .unwrap();
+            for _ in 0..lines {
+                let file = File::open(wordlist).expect("file does not exist");
+                let reader = BufReader::new(file);
+
+                for (idx, line) in reader.lines().enumerate() {
+                    seed = rng.gen();
+                    if seed < 1.0 / ((idx + 1) as f64) {
+                        print!("{}", line.unwrap());
+                        print!("{}", delim);
+                    }
+                }
             }
         }
         _ => panic!("invalid subcommand"),
