@@ -59,9 +59,12 @@ fn main() {
         )
         .get_matches();
 
-    let lines = app_matches.value_of("lines").unwrap_or("1").parse::<u64>().expect("lines must be a non-negative integer");
+    let lines = app_matches
+        .value_of("lines")
+        .unwrap_or("1")
+        .parse::<u64>()
+        .expect("lines must be a non-negative integer");
     let delim = app_matches.value_of("delim").unwrap_or("\n");
-
     let mut rng = thread_rng();
     let mut seed: f64;
     let subcommand_name = app_matches
