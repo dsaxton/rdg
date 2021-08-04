@@ -14,6 +14,13 @@ fn main() {
                 .about("Number of lines of output, default 1")
                 .takes_value(true),
         )
+        .arg(
+            Arg::new("delim")
+                .short('d')
+                .long("delim")
+                .about("Delimeter to use between values, default \\n")
+                .takes_value(true),
+        )
         .subcommand(
             App::new("int")
                 .about("Generate random ints")
@@ -52,12 +59,9 @@ fn main() {
         )
         .get_matches();
 
-    let lines = match app_matches.value_of("lines") {
-        Some(l) => l
-            .parse::<u64>()
-            .expect("lines must be a non-negative integer"),
-        None => 1,
-    };
+    let lines = app_matches.value_of("lines").unwrap_or("1").parse::<u64>().expect("lines must be a non-negative integer");
+    let delim = app_matches.value_of("delim").unwrap_or("\n");
+
     let mut rng = thread_rng();
     let mut seed: f64;
     let subcommand_name = app_matches
@@ -88,7 +92,8 @@ fn main() {
             for _ in 0..lines {
                 seed = rng.gen();
                 delta = (seed * ((upper - lower) as f64)).floor() as u64;
-                println!("{}", lower + delta);
+                print!("{}", lower + delta);
+                print!("{}", delim);
             }
         }
         "float" => {
@@ -111,7 +116,8 @@ fn main() {
             }
             for _ in 0..lines {
                 seed = rng.gen();
-                println!("{}", seed * (upper - lower));
+                print!("{}", seed * (upper - lower));
+                print!("{}", delim);
             }
         }
         _ => panic!("invalid subcommand"),
