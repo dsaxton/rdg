@@ -76,6 +76,18 @@ fn main() {
                         .required(true),
                 ),
         )
+        .subcommand(
+            App::new("string")
+                .about("Random strings, default length 8")
+                .setting(AppSettings::ColoredHelp)
+                .arg(
+                    Arg::new("length")
+                        .short('l')
+                        .long("length")
+                        .about("Length of string, default 8")
+                        .takes_value(true),
+                ),
+        )
         .get_matches();
 
     let lines = app_matches
@@ -86,9 +98,7 @@ fn main() {
     let delim = app_matches.value_of("delim").unwrap_or("\n");
     let mut rng = thread_rng();
     let mut seed: f64;
-    let subcommand_name = app_matches
-        .subcommand_name()
-        .unwrap();
+    let subcommand_name = app_matches.subcommand_name().unwrap();
 
     match subcommand_name {
         // TODO: possible to match on the subcommand itself?
