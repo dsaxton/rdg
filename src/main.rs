@@ -126,14 +126,14 @@ fn main() {
                 .value_of("lower")
                 .unwrap_or("0")
                 .parse::<f64>()
-                .expect("lower must be a non-negative integer");
+                .expect("lower must be a non-negative float");
             let upper = app_matches
                 .subcommand_matches("float")
                 .unwrap()
                 .value_of("upper")
                 .unwrap_or("1")
                 .parse::<f64>()
-                .expect("upper must be a non-negative integer");
+                .expect("upper must be a non-negative float");
             if lower >= upper {
                 panic!("lower must be strictly less than upper")
             }
