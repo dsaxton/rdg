@@ -1,7 +1,3 @@
-# rd
-
----
-
 ```
 rd 0.1
 Generate random strings at the command line
