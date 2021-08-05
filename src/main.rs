@@ -88,7 +88,7 @@ fn main() {
     let mut seed: f64;
     let subcommand_name = app_matches
         .subcommand_name()
-        .expect("please enter a subcommand such as help");
+        .unwrap();
 
     match subcommand_name {
         // TODO: possible to match on the subcommand itself?
