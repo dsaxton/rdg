@@ -90,7 +90,7 @@ fn main() {
         )
         .get_matches();
 
-    let lines = app_matches
+    let count = app_matches
         .value_of("count")
         .unwrap_or("1")
         .parse::<u64>()
@@ -121,7 +121,7 @@ fn main() {
                 panic!("lower must be strictly less than upper")
             }
             let mut delta: u64;
-            for _ in 0..lines {
+            for _ in 0..count {
                 seed = rng.gen();
                 delta = (seed * ((upper - lower) as f64)).floor() as u64;
                 print!("{}", lower + delta);
@@ -146,7 +146,7 @@ fn main() {
             if lower >= upper {
                 panic!("lower must be strictly less than upper")
             }
-            for _ in 0..lines {
+            for _ in 0..count {
                 seed = rng.gen();
                 print!("{}", seed * (upper - lower));
                 print!("{}", delim);
@@ -158,7 +158,7 @@ fn main() {
                 .unwrap()
                 .value_of("wordlist")
                 .unwrap();
-            for _ in 0..lines {
+            for _ in 0..count {
                 let file = File::open(wordlist).expect("file does not exist");
                 let reader = BufReader::new(file);
 
