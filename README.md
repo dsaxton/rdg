@@ -1,6 +1,6 @@
 ```
 rd 0.1
-Generate random strings at the command line
+Generate random data at the command line
 
 USAGE:
     rd [OPTIONS] [SUBCOMMAND]
