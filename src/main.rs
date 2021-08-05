@@ -11,6 +11,7 @@ fn main() {
         .about("Generate random strings at the command line")
         .setting(AppSettings::ColoredHelp)
         .setting(AppSettings::ArgRequiredElseHelp)
+        .setting(AppSettings::DisableHelpSubcommand)
         .arg(
             Arg::new("count")
                 .short('n')

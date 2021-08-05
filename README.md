@@ -14,8 +14,8 @@ OPTIONS:
     -d, --delim <delim>    Delimiter to use between values, default \n
 
 SUBCOMMANDS:
-    float    Random floats, default support [0, 1)
-    help     Prints this message or the help of the given subcommand(s)
-    int      Random integers, default support {0, 1}
-    word     Random words, requires a wordlist
+    float     Random floats, default support [0, 1)
+    int       Random integers, default support {0, 1}
+    string    Random strings, default length 8
+    word      Random words, requires a wordlist
 ```
