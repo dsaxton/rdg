@@ -28,7 +28,7 @@ fn main() {
         )
         .subcommand(
             App::new("int")
-                .about("Random integers")
+                .about("Random integers, default support {0, 1}")
                 .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("lower")
@@ -47,7 +47,7 @@ fn main() {
         )
         .subcommand(
             App::new("float")
-                .about("Random floating point numbers")
+                .about("Random floats, default support [0, 1)")
                 .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("lower")
@@ -66,7 +66,7 @@ fn main() {
         )
         .subcommand(
             App::new("word")
-                .about("Random words")
+                .about("Random words, requires a wordlist")
                 .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("wordlist")
