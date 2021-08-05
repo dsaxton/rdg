@@ -8,8 +8,7 @@ fn main() {
     // TODO: add tests
     let app_matches = App::new("rd")
         .version("0.1")
-        .author("Daniel Saxton")
-        .about("Generate random strings")
+        .about("Generate random strings at the command line")
         .setting(AppSettings::ColoredHelp)
         .setting(AppSettings::ArgRequiredElseHelp)
         .arg(
