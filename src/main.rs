@@ -8,7 +8,7 @@ fn main() {
     // TODO: add tests
     let app_matches = App::new("rd")
         .version("0.1")
-        .about("Generate random data at the command line")
+        .about("Generate random strings at the command line")
         .setting(AppSettings::ColoredHelp)
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::DisableHelpSubcommand)
@@ -17,7 +17,6 @@ fn main() {
                 .short('n')
                 .long("count")
                 .about("Number of values in output, default 1")
-                .default_value("1")
                 .takes_value(true),
         )
         .arg(
@@ -25,7 +24,6 @@ fn main() {
                 .short('d')
                 .long("delim")
                 .about("Delimiter to use between values, default \\n")
-                .default_value("\n")
                 .takes_value(true),
         )
         .subcommand(
@@ -37,7 +35,6 @@ fn main() {
                         .short('l')
                         .long("lower")
                         .about("Lower bound (inclusive), default 0")
-                        .default_value("0")
                         .takes_value(true),
                 )
                 .arg(
@@ -45,7 +42,6 @@ fn main() {
                         .short('u')
                         .long("upper")
                         .about("Upper bound (exclusive), default 2")
-                        .default_value("2")
                         .takes_value(true),
                 ),
         )
@@ -58,7 +54,6 @@ fn main() {
                         .short('l')
                         .long("lower")
                         .about("Lower bound (inclusive), default 0")
-                        .default_value("0")
                         .takes_value(true),
                 )
                 .arg(
@@ -66,7 +61,6 @@ fn main() {
                         .short('u')
                         .long("upper")
                         .about("Upper bound (exclusive), default 1")
-                        .default_value("1")
                         .takes_value(true),
                 ),
         )
@@ -92,7 +86,6 @@ fn main() {
                         .short('l')
                         .long("length")
                         .about("Length of string, default 8")
-                        .default_value("8")
                         .takes_value(true),
                 ),
         )
@@ -100,10 +93,10 @@ fn main() {
 
     let count = app_matches
         .value_of("count")
-        .unwrap()
+        .unwrap_or("1")
         .parse::<u64>()
         .expect("lines must be a non-negative integer");
-    let delim = app_matches.value_of("delim").unwrap();
+    let delim = app_matches.value_of("delim").unwrap_or("\n");
     let mut rng = thread_rng();
     let mut seed: f64;
     let subcommand_name = app_matches.subcommand_name().unwrap();
@@ -115,14 +108,14 @@ fn main() {
                 .subcommand_matches("int")
                 .unwrap()
                 .value_of("lower")
-                .unwrap()
+                .unwrap_or("0")
                 .parse::<u64>()
                 .expect("lower must be a non-negative integer");
             let upper = app_matches
                 .subcommand_matches("int")
                 .unwrap()
                 .value_of("upper")
-                .unwrap()
+                .unwrap_or("2")
                 .parse::<u64>()
                 .expect("upper must be a non-negative integer");
             if lower >= upper {
@@ -141,14 +134,14 @@ fn main() {
                 .subcommand_matches("float")
                 .unwrap()
                 .value_of("lower")
-                .unwrap()
+                .unwrap_or("0")
                 .parse::<f64>()
                 .expect("lower must be a non-negative float");
             let upper = app_matches
                 .subcommand_matches("float")
                 .unwrap()
                 .value_of("upper")
-                .unwrap()
+                .unwrap_or("1")
                 .parse::<f64>()
                 .expect("upper must be a non-negative float");
             if lower >= upper {
