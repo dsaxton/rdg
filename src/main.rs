@@ -8,7 +8,7 @@ fn main() {
     // TODO: add tests
     let app_matches = App::new("rd")
         .version("0.1")
-        .about("Generate random strings at the command line")
+        .about("Generate random data at the command line")
         .setting(AppSettings::ColoredHelp)
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::DisableHelpSubcommand)
