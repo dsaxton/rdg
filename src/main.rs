@@ -173,7 +173,8 @@ fn main() {
                         words.push(line.unwrap())
                     }
                 }
-                println!("{}", words[0]); // TODO: fix trailing newline
+                print!("{}", words[0]);
+                print!("{}", delim);
             }
         }
         _ => (),
