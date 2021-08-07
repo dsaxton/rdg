@@ -159,19 +159,21 @@ fn main() {
                 .unwrap()
                 .value_of("wordlist")
                 .unwrap();
+            // TODO: add dedupe flag
             for _ in 0..count {
                 let file = File::open(wordlist).expect("file does not exist");
                 let reader = BufReader::new(file);
-                let mut word: String;
+                let mut words = vec![String::from("")]; // FIXME: this feels like a hack
 
+                // TODO: consider using for_byte_line as in pattern.rs from ripgrep
                 for (idx, line) in reader.lines().enumerate() {
                     seed = rng.gen();
                     if seed < 1.0 / ((idx + 1) as f64) {
-                        word = line.unwrap();
-                        print!("{}", word);
-                        print!("{}", delim);
+                        words.pop();
+                        words.push(line.unwrap())
                     }
                 }
+                println!("{}", words[0]); // TODO: fix trailing newline
             }
         }
         _ => (),
