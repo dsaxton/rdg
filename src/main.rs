@@ -162,16 +162,18 @@ fn main() {
             for _ in 0..count {
                 let file = File::open(wordlist).expect("file does not exist");
                 let reader = BufReader::new(file);
+                let mut word: String;
 
                 for (idx, line) in reader.lines().enumerate() {
                     seed = rng.gen();
                     if seed < 1.0 / ((idx + 1) as f64) {
-                        print!("{}", line.unwrap());
+                        word = line.unwrap();
+                        print!("{}", word);
                         print!("{}", delim);
                     }
                 }
             }
         }
-        _ => panic!("invalid subcommand"),
+        _ => (),
     }
 }
