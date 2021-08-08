@@ -1,4 +1,4 @@
-name: Rust Example
+name: Linting and tests
 
 on: [push]
 
