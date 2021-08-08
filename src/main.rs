@@ -26,6 +26,14 @@ fn main() {
                 .about("Delimiter to use between values, default \\n")
                 .takes_value(true),
         )
+        // TODO: implement this
+        .arg(
+            Arg::new("concurrency")
+                .short('c')
+                .long("concurrency")
+                .about("Concurrency level, default 1")
+                .takes_value(true),
+        )
         .subcommand(
             App::new("int")
                 .about("Random integers, default support {0, 1}")
