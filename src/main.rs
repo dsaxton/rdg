@@ -105,8 +105,6 @@ fn main() {
         .parse::<u64>()
         .expect("lines must be a non-negative integer");
     let delim = app_matches.value_of("delim").unwrap_or("\n");
-    let mut rng = thread_rng();
-    let mut seed: f64;
     let subcommand_name = app_matches.subcommand_name().unwrap();
 
     match subcommand_name {
@@ -129,11 +127,8 @@ fn main() {
             if lower >= upper {
                 panic!("lower must be strictly less than upper")
             }
-            let mut delta: u64;
             for _ in 0..count {
-                seed = rng.gen();
-                delta = (seed * ((upper - lower) as f64)).floor() as u64;
-                print!("{}", lower + delta);
+                print!("{}", sample_integer_given_bounds(lower, upper));
                 print!("{}", delim);
             }
         }
@@ -156,8 +151,7 @@ fn main() {
                 panic!("lower must be strictly less than upper")
             }
             for _ in 0..count {
-                seed = rng.gen();
-                print!("{}", seed * (upper - lower));
+                print!("{}", sample_float_given_bounds(lower, upper));
                 print!("{}", delim);
             }
         }
@@ -167,24 +161,36 @@ fn main() {
                 .unwrap()
                 .value_of("wordlist")
                 .unwrap();
-            // TODO: add dedupe flag
+            // TODO: consider allowing sampling without replacement
             for _ in 0..count {
-                let file = File::open(wordlist).expect("file does not exist");
-                let reader = BufReader::new(file);
-                let mut words = vec![String::from("")]; // FIXME: this feels like a hack
-
-                // TODO: consider using for_byte_line as in pattern.rs from ripgrep
-                for (idx, line) in reader.lines().enumerate() {
-                    seed = rng.gen();
-                    if seed < 1.0 / ((idx + 1) as f64) {
-                        words.pop();
-                        words.push(line.unwrap())
-                    }
-                }
-                print!("{}", words[0]);
+                print!("{}", sample_from_wordlist(wordlist));
                 print!("{}", delim);
             }
         }
         _ => (),
     }
+}
+
+fn sample_integer_given_bounds(lower: u64, upper: u64) -> u64 {
+    let delta = (thread_rng().gen::<f64>() * ((upper - lower) as f64)).floor() as u64;
+    lower + delta
+}
+
+fn sample_float_given_bounds(lower: f64, upper: f64) -> f64 {
+    thread_rng().gen::<f64>() * (upper - lower)
+}
+
+fn sample_from_wordlist(wordlist: &str) -> String {
+    let file = File::open(wordlist).expect("file does not exist");
+    let reader = BufReader::new(file);
+    let mut selected_word = vec![String::from("")]; // FIXME: this feels like a hack
+
+    // TODO: consider using for_byte_line as in pattern.rs from ripgrep
+    for (idx, line) in reader.lines().enumerate() {
+        if thread_rng().gen::<f64>() < 1.0 / ((idx + 1) as f64) {
+            selected_word.pop();
+            selected_word.push(line.unwrap())
+        }
+    }
+    selected_word[0].clone()
 }
