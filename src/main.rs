@@ -16,6 +16,7 @@ fn main() {
             Arg::new("count")
                 .short('n')
                 .long("count")
+                .value_name("integer")
                 .about("Number of values in output, default 1")
                 .takes_value(true),
         )
@@ -23,6 +24,7 @@ fn main() {
             Arg::new("delim")
                 .short('d')
                 .long("delim")
+                .value_name("string")
                 .about("Delimiter to use between values, default \\n")
                 .takes_value(true),
         )
@@ -31,6 +33,7 @@ fn main() {
             Arg::new("concurrency")
                 .short('c')
                 .long("concurrency")
+                .value_name("integer")
                 .about("Concurrency level, default 1")
                 .takes_value(true),
         )
@@ -55,7 +58,7 @@ fn main() {
         )
         .subcommand(
             App::new("float")
-                .about("Random floats, default support [0, 1)")
+                .about("Random floating point numbers, default support [0, 1)")
                 .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("lower")

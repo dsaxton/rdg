@@ -10,12 +10,12 @@ FLAGS:
     -V, --version    Prints version information
 
 OPTIONS:
-    -c, --concurrency <concurrency>    Concurrency level, default 1
-    -n, --count <count>                Number of values in output, default 1
-    -d, --delim <delim>                Delimiter to use between values, default \n
+    -c, --concurrency <integer>    Concurrency level, default 1
+    -n, --count <integer>          Number of values in output, default 1
+    -d, --delim <string>           Delimiter to use between values, default \n
 
 SUBCOMMANDS:
-    float     Random floats, default support [0, 1)
+    float     Random floating point numbers, default support [0, 1)
     int       Random integers, default support {0, 1}
     string    Random strings, default length 8
     word      Random words, requires a wordlist
