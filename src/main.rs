@@ -2,7 +2,8 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 use clap::{App, AppSettings, Arg};
-use rand::prelude::*;
+use rand::distributions::Alphanumeric;
+use rand::{thread_rng, Rng};
 
 fn main() {
     // TODO: add tests
@@ -14,27 +15,27 @@ fn main() {
         .setting(AppSettings::DisableHelpSubcommand)
         .arg(
             Arg::new("count")
-                .short('n')
+                .short('c')
                 .long("count")
                 .value_name("integer")
-                .about("Number of values in output, default 1")
+                .about("Number of values to generate, default 1")
                 .takes_value(true),
         )
         .arg(
-            Arg::new("delim")
+            Arg::new("delimiter")
                 .short('d')
-                .long("delim")
+                .long("delimiter")
                 .value_name("string")
                 .about("Delimiter to use between values, default \\n")
                 .takes_value(true),
         )
         // TODO: implement this
         .arg(
-            Arg::new("concurrency")
-                .short('c')
-                .long("concurrency")
+            Arg::new("threads")
+                .short('t')
+                .long("threads")
                 .value_name("integer")
-                .about("Concurrency level, default 1")
+                .about("Number of threads, default 1")
                 .takes_value(true),
         )
         .subcommand(
@@ -95,14 +96,14 @@ fn main() {
         )
         .subcommand(
             App::new("string")
-                .about("Random strings, default length 8")
+                .about("Random strings, default length 10")
                 .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("length")
                         .short('l')
                         .long("length")
                         .value_name("integer")
-                        .about("Length of string, default 8")
+                        .about("Length of string, default 10")
                         .takes_value(true),
                 ),
         )
@@ -113,7 +114,7 @@ fn main() {
         .unwrap_or("1")
         .parse::<u64>()
         .expect("lines must be a non-negative integer");
-    let delimiter = app_matches.value_of("delim").unwrap_or("\n");
+    let delimiter = app_matches.value_of("delimiter").unwrap_or("\n");
     let subcommand_name = app_matches.subcommand_name().unwrap();
 
     match subcommand_name {
@@ -175,6 +176,19 @@ fn main() {
                 print!("{}", delimiter);
             }
         }
+        "string" => {
+            let length = app_matches
+                .subcommand_matches("string")
+                .unwrap()
+                .value_of("length")
+                .unwrap_or("10")
+                .parse::<usize>()
+                .expect("length must be a non-negative integer");
+            for _ in 0..count {
+                print!("{}", sample_string_from_alphanumeric(length));
+                print!("{}", delimiter);
+            }
+        }
         _ => (),
     }
 }
@@ -202,4 +216,13 @@ fn sample_from_wordlist(wordlist: &str) -> String {
         }
     }
     selected_word[0].clone()
+}
+
+fn sample_string_from_alphanumeric(length: usize) -> String {
+    let rand_string: String = thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(length)
+        .map(char::from)
+        .collect();
+    rand_string
 }
