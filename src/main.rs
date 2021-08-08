@@ -186,7 +186,8 @@ fn sample_integer_given_bounds(lower: u64, upper: u64) -> u64 {
 }
 
 fn sample_float_given_bounds(lower: f64, upper: f64) -> f64 {
-    thread_rng().gen::<f64>() * (upper - lower)
+    let delta = thread_rng().gen::<f64>() * (upper - lower);
+    lower + delta
 }
 
 fn sample_from_wordlist(wordlist: &str) -> String {
