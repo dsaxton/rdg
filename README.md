@@ -10,8 +10,9 @@ FLAGS:
     -V, --version    Prints version information
 
 OPTIONS:
-    -n, --count <count>    Number of values in output, default 1
-    -d, --delim <delim>    Delimiter to use between values, default \n
+    -c, --concurrency <concurrency>    Concurrency level, default 1
+    -n, --count <count>                Number of values in output, default 1
+    -d, --delim <delim>                Delimiter to use between values, default \n
 
 SUBCOMMANDS:
     float     Random floats, default support [0, 1)
