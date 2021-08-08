@@ -205,7 +205,7 @@ fn sample_string_from_alphanumeric(length: usize) -> String {
 }
 
 #[test]
-fn sample_integer_respects_bounds() {
+fn integer_sampling_respects_bounds() {
     let lower: u64 = 10;
     let upper: u64 = 20;
     let mut result: u64;
@@ -217,7 +217,7 @@ fn sample_integer_respects_bounds() {
 }
 
 #[test]
-fn sample_float_respects_bounds() {
+fn float_sampling_respects_bounds() {
     let lower: f64 = 10.0;
     let upper: f64 = 20.0;
     let mut result: f64;
@@ -229,7 +229,7 @@ fn sample_float_respects_bounds() {
 }
 
 #[test]
-fn sample_string_respects_length() {
+fn string_sampling_respects_length() {
     let length: usize = 20;
     let mut result: String;
     for _ in 0..100 {
