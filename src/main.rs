@@ -114,21 +114,15 @@ fn main() {
         .parse::<u64>()
         .expect("lines must be a non-negative integer");
     let delimiter = app_matches.value_of("delimiter").unwrap_or("\n");
-    let subcommand_name = app_matches.subcommand_name().unwrap();
 
-    match subcommand_name {
-        // TODO: possible to match on the subcommand itself?
-        "int" => {
-            let lower = app_matches
-                .subcommand_matches("int")
-                .unwrap()
+    match app_matches.subcommand() {
+        Some(("int", int_matches)) => {
+            let lower = int_matches
                 .value_of("lower")
                 .unwrap_or("0")
                 .parse::<u64>()
                 .expect("lower must be a non-negative integer");
-            let upper = app_matches
-                .subcommand_matches("int")
-                .unwrap()
+            let upper = int_matches
                 .value_of("upper")
                 .unwrap_or("2")
                 .parse::<u64>()
@@ -140,17 +134,13 @@ fn main() {
                 print!("{}{}", sample_integer_given_bounds(lower, upper), delimiter);
             }
         }
-        "float" => {
-            let lower = app_matches
-                .subcommand_matches("float")
-                .unwrap()
+        Some(("float", float_matches)) => {
+            let lower = float_matches
                 .value_of("lower")
                 .unwrap_or("0")
                 .parse::<f64>()
                 .expect("lower must be a non-negative float");
-            let upper = app_matches
-                .subcommand_matches("float")
-                .unwrap()
+            let upper = float_matches
                 .value_of("upper")
                 .unwrap_or("1")
                 .parse::<f64>()
@@ -162,20 +152,14 @@ fn main() {
                 print!("{}{}", sample_float_given_bounds(lower, upper), delimiter);
             }
         }
-        "word" => {
-            let wordlist = app_matches
-                .subcommand_matches("word")
-                .unwrap()
-                .value_of("wordlist")
-                .unwrap();
+        Some(("word", word_matches)) => {
+            let wordlist = word_matches.value_of("wordlist").unwrap();
             for _ in 0..count {
                 print!("{}{}", sample_from_wordlist(wordlist), delimiter);
             }
         }
-        "string" => {
-            let length = app_matches
-                .subcommand_matches("string")
-                .unwrap()
+        Some(("string", string_matches)) => {
+            let length = string_matches
                 .value_of("length")
                 .unwrap_or("10")
                 .parse::<usize>()
