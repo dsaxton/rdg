@@ -214,12 +214,11 @@ fn sample_from_wordlist(wordlist: &str) -> String {
 }
 
 fn sample_string_from_alphanumeric(length: usize) -> String {
-    let rand_string: String = thread_rng()
+    thread_rng()
         .sample_iter(&Alphanumeric)
         .take(length)
         .map(char::from)
-        .collect();
-    rand_string
+        .collect()
 }
 
 #[test]
