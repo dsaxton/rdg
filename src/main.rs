@@ -6,7 +6,6 @@ use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 
 fn main() {
-    // TODO: add tests
     let app_matches = App::new("rd")
         .version("0.1")
         .about("Generate random data at the command line")
