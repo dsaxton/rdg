@@ -104,7 +104,7 @@ fn main() {
         .unwrap_or("1")
         .parse::<u64>()
         .expect("lines must be a non-negative integer");
-    let delim = app_matches.value_of("delim").unwrap_or("\n");
+    let delimiter = app_matches.value_of("delim").unwrap_or("\n");
     let subcommand_name = app_matches.subcommand_name().unwrap();
 
     match subcommand_name {
@@ -129,7 +129,7 @@ fn main() {
             }
             for _ in 0..count {
                 print!("{}", sample_integer_given_bounds(lower, upper));
-                print!("{}", delim);
+                print!("{}", delimiter);
             }
         }
         "float" => {
@@ -152,7 +152,7 @@ fn main() {
             }
             for _ in 0..count {
                 print!("{}", sample_float_given_bounds(lower, upper));
-                print!("{}", delim);
+                print!("{}", delimiter);
             }
         }
         "word" => {
@@ -164,7 +164,7 @@ fn main() {
             // TODO: consider allowing sampling without replacement
             for _ in 0..count {
                 print!("{}", sample_from_wordlist(wordlist));
-                print!("{}", delim);
+                print!("{}", delimiter);
             }
         }
         _ => (),
