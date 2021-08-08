@@ -138,8 +138,7 @@ fn main() {
                 panic!("lower must be strictly less than upper")
             }
             for _ in 0..count {
-                print!("{}", sample_integer_given_bounds(lower, upper));
-                print!("{}", delimiter);
+                print!("{}{}", sample_integer_given_bounds(lower, upper), delimiter);
             }
         }
         "float" => {
@@ -161,8 +160,7 @@ fn main() {
                 panic!("lower must be strictly less than upper")
             }
             for _ in 0..count {
-                print!("{}", sample_float_given_bounds(lower, upper));
-                print!("{}", delimiter);
+                print!("{}{}", sample_float_given_bounds(lower, upper), delimiter);
             }
         }
         "word" => {
@@ -172,8 +170,7 @@ fn main() {
                 .value_of("wordlist")
                 .unwrap();
             for _ in 0..count {
-                print!("{}", sample_from_wordlist(wordlist));
-                print!("{}", delimiter);
+                print!("{}{}", sample_from_wordlist(wordlist), delimiter);
             }
         }
         "string" => {
@@ -185,8 +182,7 @@ fn main() {
                 .parse::<usize>()
                 .expect("length must be a non-negative integer");
             for _ in 0..count {
-                print!("{}", sample_string_from_alphanumeric(length));
-                print!("{}", delimiter);
+                print!("{}{}", sample_string_from_alphanumeric(length), delimiter);
             }
         }
         _ => (),
