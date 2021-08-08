@@ -170,7 +170,6 @@ fn main() {
                 .unwrap()
                 .value_of("wordlist")
                 .unwrap();
-            // TODO: consider allowing sampling without replacement
             for _ in 0..count {
                 print!("{}", sample_from_wordlist(wordlist));
                 print!("{}", delimiter);
