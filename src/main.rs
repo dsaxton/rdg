@@ -45,6 +45,7 @@ fn main() {
                     Arg::new("lower")
                         .short('l')
                         .long("lower")
+                        .value_name("integer")
                         .about("Lower bound (inclusive), default 0")
                         .takes_value(true),
                 )
@@ -52,6 +53,7 @@ fn main() {
                     Arg::new("upper")
                         .short('u')
                         .long("upper")
+                        .value_name("integer")
                         .about("Upper bound (exclusive), default 2")
                         .takes_value(true),
                 ),
@@ -64,6 +66,7 @@ fn main() {
                     Arg::new("lower")
                         .short('l')
                         .long("lower")
+                        .value_name("integer")
                         .about("Lower bound (inclusive), default 0")
                         .takes_value(true),
                 )
@@ -71,6 +74,7 @@ fn main() {
                     Arg::new("upper")
                         .short('u')
                         .long("upper")
+                        .value_name("integer")
                         .about("Upper bound (exclusive), default 1")
                         .takes_value(true),
                 ),
@@ -83,6 +87,7 @@ fn main() {
                     Arg::new("wordlist")
                         .short('w')
                         .long("wordlist")
+                        .value_name("path")
                         .about("Wordlist used for sampling")
                         .takes_value(true)
                         .required(true),
@@ -96,6 +101,7 @@ fn main() {
                     Arg::new("length")
                         .short('l')
                         .long("length")
+                        .value_name("integer")
                         .about("Length of string, default 8")
                         .takes_value(true),
                 ),
