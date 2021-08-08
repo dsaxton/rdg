@@ -203,7 +203,6 @@ fn sample_from_wordlist(wordlist: &str) -> String {
     let reader = BufReader::new(file);
     let mut selected_word = vec![String::from("")]; // FIXME: this feels like a hack
 
-    // TODO: consider using for_byte_line as in pattern.rs from ripgrep
     for (idx, line) in reader.lines().enumerate() {
         if thread_rng().gen::<f64>() < 1.0 / ((idx + 1) as f64) {
             selected_word.pop();
