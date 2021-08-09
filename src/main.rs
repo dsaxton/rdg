@@ -1,9 +1,6 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+mod sample;
 
 use clap::{App, AppSettings, Arg};
-use rand::distributions::Alphanumeric;
-use rand::{thread_rng, Rng};
 
 fn main() {
     let app_matches = App::new("rd")
@@ -131,7 +128,11 @@ fn main() {
                 panic!("lower must be strictly less than upper")
             }
             for _ in 0..count {
-                print!("{}{}", sample_integer_given_bounds(lower, upper), delimiter);
+                print!(
+                    "{}{}",
+                    sample::integer_given_bounds(lower, upper),
+                    delimiter
+                );
             }
         }
         Some(("float", float_matches)) => {
@@ -149,13 +150,13 @@ fn main() {
                 panic!("lower must be strictly less than upper")
             }
             for _ in 0..count {
-                print!("{}{}", sample_float_given_bounds(lower, upper), delimiter);
+                print!("{}{}", sample::float_given_bounds(lower, upper), delimiter);
             }
         }
         Some(("word", word_matches)) => {
             let wordlist = word_matches.value_of("wordlist").unwrap();
             for _ in 0..count {
-                print!("{}{}", sample_from_wordlist(wordlist), delimiter);
+                print!("{}{}", sample::from_wordlist(wordlist), delimiter);
             }
         }
         Some(("string", string_matches)) => {
@@ -165,75 +166,9 @@ fn main() {
                 .parse::<usize>()
                 .expect("length must be a non-negative integer");
             for _ in 0..count {
-                print!("{}{}", sample_string_from_alphanumeric(length), delimiter);
+                print!("{}{}", sample::string_from_alphanumeric(length), delimiter);
             }
         }
         _ => (),
-    }
-}
-
-fn sample_integer_given_bounds(lower: u64, upper: u64) -> u64 {
-    let delta = (thread_rng().gen::<f64>() * ((upper - lower) as f64)).floor() as u64;
-    lower + delta
-}
-
-fn sample_float_given_bounds(lower: f64, upper: f64) -> f64 {
-    let delta = thread_rng().gen::<f64>() * (upper - lower);
-    lower + delta
-}
-
-fn sample_from_wordlist(wordlist: &str) -> String {
-    let file = File::open(wordlist).expect("file does not exist");
-    let reader = BufReader::new(file);
-    let mut selected_word = vec![String::from("")]; // FIXME: this feels like a hack
-
-    for (idx, line) in reader.lines().enumerate() {
-        if thread_rng().gen::<f64>() < 1.0 / ((idx + 1) as f64) {
-            selected_word.pop();
-            selected_word.push(line.unwrap())
-        }
-    }
-    selected_word[0].clone()
-}
-
-fn sample_string_from_alphanumeric(length: usize) -> String {
-    thread_rng()
-        .sample_iter(&Alphanumeric)
-        .take(length)
-        .map(char::from)
-        .collect()
-}
-
-#[test]
-fn integer_sampling_respects_bounds() {
-    let lower: u64 = 10;
-    let upper: u64 = 20;
-    let mut result: u64;
-    for _ in 0..100 {
-        result = sample_integer_given_bounds(lower, upper);
-        assert!(result >= lower);
-        assert!(result < upper);
-    }
-}
-
-#[test]
-fn float_sampling_respects_bounds() {
-    let lower: f64 = 10.0;
-    let upper: f64 = 20.0;
-    let mut result: f64;
-    for _ in 0..100 {
-        result = sample_float_given_bounds(lower, upper);
-        assert!(result >= lower);
-        assert!(result < upper);
-    }
-}
-
-#[test]
-fn string_sampling_respects_length() {
-    let length: usize = 20;
-    let mut result: String;
-    for _ in 0..100 {
-        result = sample_string_from_alphanumeric(length);
-        assert_eq!(result.len(), length);
     }
 }
