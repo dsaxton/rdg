@@ -110,29 +110,35 @@ fn main() {
         )
         .get_matches();
 
-    // TODO: use pattern matching for error handling
-    let count = app_matches
-        .value_of("count")
-        .unwrap_or("1")
-        .parse::<u64>()
-        .expect("lines must be a non-negative integer");
+    let count = if let Ok(c) = app_matches.value_of("count").unwrap_or("1").parse::<u64>() {
+        c
+    } else {
+        println!("{}", "invalid count argument");
+        process::exit(EXIT_ERROR);
+    };
     let delimiter = app_matches.value_of("delimiter").unwrap_or("\n");
 
     match app_matches.subcommand() {
         Some(("int", int_matches)) => {
-            let lower = int_matches
-                .value_of("lower")
-                .unwrap_or("0")
-                .parse::<u64>()
-                .expect("lower must be a non-negative integer");
-            let upper = int_matches
-                .value_of("upper")
-                .unwrap_or("2")
-                .parse::<u64>()
-                .expect("upper must be a non-negative integer");
+            let lower = if let Ok(l) = int_matches.value_of("lower").unwrap_or("0").parse::<u64>() {
+                l
+            } else {
+                // TODO: exit in a better way
+                println!("{}", "invalid lower argument");
+                process::exit(EXIT_ERROR);
+            };
+            let upper = if let Ok(u) = int_matches.value_of("upper").unwrap_or("2").parse::<u64>() {
+                u
+            } else {
+                println!("{}", "invalid upper argument");
+                process::exit(EXIT_ERROR);
+            };
+
             if lower >= upper {
-                panic!("lower must be strictly less than upper")
+                println!("{}", "lower must be strictly less than upper");
+                process::exit(EXIT_ERROR);
             }
+
             for _ in 0..count {
                 print!(
                     "{}{}",
@@ -143,19 +149,33 @@ fn main() {
             process::exit(EXIT_SUCCESS);
         }
         Some(("float", float_matches)) => {
-            let lower = float_matches
+            let lower = if let Ok(l) = float_matches
                 .value_of("lower")
                 .unwrap_or("0")
                 .parse::<f64>()
-                .expect("lower must be a non-negative float");
-            let upper = float_matches
+            {
+                l
+            } else {
+                // TODO: exit in a better way
+                println!("{}", "invalid lower argument");
+                process::exit(EXIT_ERROR);
+            };
+            let upper = if let Ok(u) = float_matches
                 .value_of("upper")
-                .unwrap_or("1")
+                .unwrap_or("2")
                 .parse::<f64>()
-                .expect("upper must be a non-negative float");
+            {
+                u
+            } else {
+                println!("{}", "invalid upper argument");
+                process::exit(EXIT_ERROR);
+            };
+
             if lower >= upper {
-                panic!("lower must be strictly less than upper")
+                println!("{}", "lower must be strictly less than upper");
+                process::exit(EXIT_ERROR);
             }
+
             for _ in 0..count {
                 print!("{}{}", sample::float_given_bounds(lower, upper), delimiter);
             }
