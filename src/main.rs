@@ -1,6 +1,11 @@
+use std::process;
+
 use clap::{App, AppSettings, Arg};
 
 mod sample;
+
+const EXIT_SUCCESS: i32 = 0;
+const EXIT_ERROR: i32 = 1;
 
 fn main() {
     let app_matches = App::new("rd")
@@ -135,6 +140,7 @@ fn main() {
                     delimiter
                 );
             }
+            process::exit(EXIT_SUCCESS);
         }
         Some(("float", float_matches)) => {
             let lower = float_matches
@@ -153,12 +159,14 @@ fn main() {
             for _ in 0..count {
                 print!("{}{}", sample::float_given_bounds(lower, upper), delimiter);
             }
+            process::exit(EXIT_SUCCESS);
         }
         Some(("word", word_matches)) => {
             let wordlist = word_matches.value_of("wordlist").unwrap();
             for _ in 0..count {
                 print!("{}{}", sample::from_wordlist(wordlist), delimiter);
             }
+            process::exit(EXIT_SUCCESS);
         }
         Some(("string", string_matches)) => {
             let length = string_matches
@@ -169,7 +177,10 @@ fn main() {
             for _ in 0..count {
                 print!("{}{}", sample::string_from_alphanumeric(length), delimiter);
             }
+            process::exit(EXIT_SUCCESS);
         }
-        _ => (),
+        _ => {
+            process::exit(EXIT_ERROR);
+        }
     }
 }
