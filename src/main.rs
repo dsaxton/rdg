@@ -113,7 +113,7 @@ fn main() {
     let count = if let Ok(c) = app_matches.value_of("count").unwrap_or("1").parse::<u64>() {
         c
     } else {
-        println!("{}", "invalid count argument");
+        println!("invalid count argument");
         process::exit(EXIT_ERROR);
     };
     let delimiter = app_matches.value_of("delimiter").unwrap_or("\n");
@@ -124,18 +124,18 @@ fn main() {
                 l
             } else {
                 // TODO: exit in a better way
-                println!("{}", "invalid lower argument");
+                println!("invalid lower argument");
                 process::exit(EXIT_ERROR);
             };
             let upper = if let Ok(u) = int_matches.value_of("upper").unwrap_or("2").parse::<u64>() {
                 u
             } else {
-                println!("{}", "invalid upper argument");
+                println!("invalid upper argument");
                 process::exit(EXIT_ERROR);
             };
 
             if lower >= upper {
-                println!("{}", "lower must be strictly less than upper");
+                println!("lower must be strictly less than upper");
                 process::exit(EXIT_ERROR);
             }
 
@@ -157,7 +157,7 @@ fn main() {
                 l
             } else {
                 // TODO: exit in a better way
-                println!("{}", "invalid lower argument");
+                println!("invalid lower argument");
                 process::exit(EXIT_ERROR);
             };
             let upper = if let Ok(u) = float_matches
@@ -167,12 +167,12 @@ fn main() {
             {
                 u
             } else {
-                println!("{}", "invalid upper argument");
+                println!("invalid upper argument");
                 process::exit(EXIT_ERROR);
             };
 
             if lower >= upper {
-                println!("{}", "lower must be strictly less than upper");
+                println!("lower must be strictly less than upper");
                 process::exit(EXIT_ERROR);
             }
 
