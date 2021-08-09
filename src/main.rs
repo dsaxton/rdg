@@ -105,6 +105,7 @@ fn main() {
         )
         .get_matches();
 
+    // TODO: use pattern matching for error handling
     let count = app_matches
         .value_of("count")
         .unwrap_or("1")
