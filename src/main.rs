@@ -1,6 +1,6 @@
-mod sample;
-
 use clap::{App, AppSettings, Arg};
+
+mod sample;
 
 fn main() {
     let app_matches = App::new("rd")
