@@ -121,11 +121,11 @@ fn main() {
 
     match app_matches.subcommand() {
         Some(("int", int_matches)) => {
-            let default_lower = 0;
-            let default_upper = 2;
+            let default_lower = "0";
+            let default_upper = "2";
             let lower = if let Ok(l) = int_matches
                 .value_of("lower")
-                .unwrap_or(&default_lower.to_string())
+                .unwrap_or(default_lower)
                 .parse::<u64>()
             {
                 l
@@ -135,7 +135,7 @@ fn main() {
             };
             let upper = if let Ok(u) = int_matches
                 .value_of("upper")
-                .unwrap_or(&default_upper.to_string())
+                .unwrap_or(default_upper)
                 .parse::<u64>()
             {
                 u
@@ -158,11 +158,11 @@ fn main() {
             }
         }
         Some(("float", float_matches)) => {
-            let default_lower = 0;
-            let default_upper = 1;
+            let default_lower = "0";
+            let default_upper = "1";
             let lower = if let Ok(l) = float_matches
                 .value_of("lower")
-                .unwrap_or(&default_lower.to_string())
+                .unwrap_or(default_lower)
                 .parse::<f64>()
             {
                 l
@@ -173,7 +173,7 @@ fn main() {
             };
             let upper = if let Ok(u) = float_matches
                 .value_of("upper")
-                .unwrap_or(&default_upper.to_string())
+                .unwrap_or(default_upper)
                 .parse::<f64>()
             {
                 u
