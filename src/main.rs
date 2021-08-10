@@ -6,6 +6,10 @@ mod sample;
 
 const EXIT_SUCCESS: i32 = 0;
 const EXIT_ERROR: i32 = 1;
+const INT_DEFAULT_LOWER: u64 = 0;
+const INT_DEFAULT_UPPER: u64 = 2;
+const FLOAT_DEFAULT_LOWER: u64 = 0;
+const FLOAT_DEFAULT_UPPER: u64 = 1;
 
 fn main() {
     let app_matches = App::new("rd")
@@ -121,13 +125,21 @@ fn main() {
 
     match app_matches.subcommand() {
         Some(("int", int_matches)) => {
-            let lower = if let Ok(l) = int_matches.value_of("lower").unwrap_or("0").parse::<u64>() {
+            let lower = if let Ok(l) = int_matches
+                .value_of("lower")
+                .unwrap_or(&INT_DEFAULT_LOWER.to_string())
+                .parse::<u64>()
+            {
                 l
             } else {
                 println!("invalid lower argument");
                 process::exit(EXIT_ERROR);
             };
-            let upper = if let Ok(u) = int_matches.value_of("upper").unwrap_or("2").parse::<u64>() {
+            let upper = if let Ok(u) = int_matches
+                .value_of("upper")
+                .unwrap_or(&INT_DEFAULT_UPPER.to_string())
+                .parse::<u64>()
+            {
                 u
             } else {
                 println!("invalid upper argument");
@@ -150,7 +162,7 @@ fn main() {
         Some(("float", float_matches)) => {
             let lower = if let Ok(l) = float_matches
                 .value_of("lower")
-                .unwrap_or("0")
+                .unwrap_or(&FLOAT_DEFAULT_LOWER.to_string())
                 .parse::<f64>()
             {
                 l
@@ -161,7 +173,7 @@ fn main() {
             };
             let upper = if let Ok(u) = float_matches
                 .value_of("upper")
-                .unwrap_or("2")
+                .unwrap_or(&FLOAT_DEFAULT_UPPER.to_string())
                 .parse::<f64>()
             {
                 u
