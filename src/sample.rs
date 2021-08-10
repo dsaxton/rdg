@@ -5,13 +5,11 @@ use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 
 pub fn integer_given_bounds(lower: u64, upper: u64) -> u64 {
-    let delta = (thread_rng().gen::<f64>() * ((upper - lower) as f64)).floor() as u64;
-    lower + delta
+    lower + (thread_rng().gen::<f64>() * ((upper - lower) as f64)).floor() as u64
 }
 
 pub fn float_given_bounds(lower: f64, upper: f64) -> f64 {
-    let delta = thread_rng().gen::<f64>() * (upper - lower);
-    lower + delta
+    lower + thread_rng().gen::<f64>() * (upper - lower)
 }
 
 pub fn from_wordlist(wordlist: &str) -> String {
