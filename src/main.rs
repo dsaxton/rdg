@@ -110,14 +110,22 @@ fn main() {
         )
         .get_matches();
 
-    let count = if let Ok(c) = app_matches.value_of("count").unwrap_or("1").parse::<u64>() {
+    let default_count = "1";
+    let default_delimiter = "\n";
+    let count = if let Ok(c) = app_matches
+        .value_of("count")
+        .unwrap_or(default_count)
+        .parse::<u64>()
+    {
         c
     } else {
         // TODO: exit in a better way
         println!("invalid count argument");
         process::exit(EXIT_ERROR);
     };
-    let delimiter = app_matches.value_of("delimiter").unwrap_or("\n");
+    let delimiter = app_matches
+        .value_of("delimiter")
+        .unwrap_or(default_delimiter);
 
     match app_matches.subcommand() {
         Some(("int", int_matches)) => {
@@ -198,9 +206,10 @@ fn main() {
             }
         }
         Some(("string", string_matches)) => {
+            let default_length = "10";
             let length = string_matches
                 .value_of("length")
-                .unwrap_or("10")
+                .unwrap_or(default_length)
                 .parse::<usize>()
                 .expect("length must be a non-negative integer");
             for _ in 0..count {
