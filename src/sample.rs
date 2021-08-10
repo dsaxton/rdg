@@ -36,14 +36,18 @@ pub fn string_from_alphanumeric(length: usize) -> String {
 
 #[cfg(test)]
 mod tests {
+    use rand::{thread_rng, Rng};
+
     use crate::sample;
 
     #[test]
     fn integer_sampling_respects_bounds() {
-        let lower: u64 = 10;
-        let upper: u64 = 20;
+        let mut lower: u64;
+        let mut upper: u64;
         let mut result: u64;
         for _ in 0..100 {
+            lower = thread_rng().gen_range(0..100);
+            upper = lower + thread_rng().gen_range(1..100);
             result = sample::integer_given_bounds(lower, upper);
             assert!(result >= lower);
             assert!(result < upper);
@@ -52,10 +56,12 @@ mod tests {
 
     #[test]
     fn float_sampling_respects_bounds() {
-        let lower: f64 = 10.0;
-        let upper: f64 = 20.0;
+        let mut lower: f64;
+        let mut upper: f64;
         let mut result: f64;
         for _ in 0..100 {
+            lower = 100.0 * thread_rng().gen::<f64>();
+            upper = lower + 100.0 * thread_rng().gen::<f64>();
             result = sample::float_given_bounds(lower, upper);
             assert!(result >= lower);
             assert!(result < upper);
@@ -64,9 +70,10 @@ mod tests {
 
     #[test]
     fn string_sampling_respects_length() {
-        let length: usize = 20;
+        let mut length: usize;
         let mut result: String;
         for _ in 0..100 {
+            length = thread_rng().gen_range(1..100);
             result = sample::string_from_alphanumeric(length);
             assert_eq!(result.len(), length);
         }
