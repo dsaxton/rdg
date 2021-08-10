@@ -30,15 +30,6 @@ fn main() {
                 .about("Delimiter to use between values, default \\n")
                 .takes_value(true),
         )
-        // TODO: implement this
-        .arg(
-            Arg::new("threads")
-                .short('t')
-                .long("threads")
-                .value_name("integer")
-                .about("Number of threads, default 1")
-                .takes_value(true),
-        )
         .subcommand(
             App::new("int")
                 .about("Random integers, default support {0, 1}")
@@ -105,6 +96,14 @@ fn main() {
                         .long("length")
                         .value_name("integer")
                         .about("Length of string, default 10")
+                        .takes_value(true),
+                )
+                .arg(
+                    Arg::new("pattern")
+                        .short('p')
+                        .long("pattern")
+                        .value_name("string")
+                        .about("Pattern from which to sample")
                         .takes_value(true),
                 ),
         )
