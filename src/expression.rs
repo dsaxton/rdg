@@ -1,6 +1,6 @@
 enum Pattern {
-	Composite,
-	Literal,
-	Paren,
-	Bracket,
+    Composite,
+    Literal,
+    Paren,
+    Bracket,
 };
