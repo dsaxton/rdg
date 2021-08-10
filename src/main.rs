@@ -207,11 +207,17 @@ fn main() {
         }
         Some(("string", string_matches)) => {
             let default_length = "10";
-            let length = string_matches
+            let length = if let Ok(l) = string_matches
                 .value_of("length")
                 .unwrap_or(default_length)
                 .parse::<usize>()
-                .expect("length must be a non-negative integer");
+            {
+                l
+            } else {
+                println!("length must be a non-negative integer");
+                process::exit(EXIT_ERROR);
+            };
+
             for _ in 0..count {
                 print!("{}{}", sample::string_from_alphanumeric(length), delimiter);
             }
