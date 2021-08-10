@@ -23,6 +23,7 @@ pub fn from_wordlist(wordlist: &str) -> String {
             selected_word.push(line.unwrap())
         }
     }
+
     selected_word.pop().unwrap()
 }
 
