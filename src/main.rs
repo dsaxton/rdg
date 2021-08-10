@@ -113,6 +113,7 @@ fn main() {
     let count = if let Ok(c) = app_matches.value_of("count").unwrap_or("1").parse::<u64>() {
         c
     } else {
+        // TODO: exit in a better way
         println!("invalid count argument");
         process::exit(EXIT_ERROR);
     };
@@ -123,7 +124,6 @@ fn main() {
             let lower = if let Ok(l) = int_matches.value_of("lower").unwrap_or("0").parse::<u64>() {
                 l
             } else {
-                // TODO: exit in a better way
                 println!("invalid lower argument");
                 process::exit(EXIT_ERROR);
             };
@@ -146,7 +146,6 @@ fn main() {
                     delimiter
                 );
             }
-            process::exit(EXIT_SUCCESS);
         }
         Some(("float", float_matches)) => {
             let lower = if let Ok(l) = float_matches
@@ -179,14 +178,12 @@ fn main() {
             for _ in 0..count {
                 print!("{}{}", sample::float_given_bounds(lower, upper), delimiter);
             }
-            process::exit(EXIT_SUCCESS);
         }
         Some(("word", word_matches)) => {
             let wordlist = word_matches.value_of("wordlist").unwrap();
             for _ in 0..count {
                 print!("{}{}", sample::from_wordlist(wordlist), delimiter);
             }
-            process::exit(EXIT_SUCCESS);
         }
         Some(("string", string_matches)) => {
             let length = string_matches
@@ -197,10 +194,10 @@ fn main() {
             for _ in 0..count {
                 print!("{}{}", sample::string_from_alphanumeric(length), delimiter);
             }
-            process::exit(EXIT_SUCCESS);
         }
         _ => {
             process::exit(EXIT_ERROR);
         }
     }
+    process::exit(EXIT_SUCCESS);
 }
