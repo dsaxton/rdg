@@ -15,7 +15,7 @@ pub fn float_given_bounds(lower: f64, upper: f64) -> f64 {
 pub fn from_wordlist(wordlist: &str) -> String {
     let file = File::open(wordlist).expect("file does not exist");
     let reader = BufReader::new(file);
-    let mut selected_word = vec![String::from("")]; // FIXME: this feels like a hack
+    let mut selected_word = vec![String::from("")];
 
     for (idx, line) in reader.lines().enumerate() {
         if thread_rng().gen::<f64>() < 1.0 / ((idx + 1) as f64) {
@@ -23,7 +23,7 @@ pub fn from_wordlist(wordlist: &str) -> String {
             selected_word.push(line.unwrap())
         }
     }
-    selected_word[0].clone()
+    selected_word.pop().unwrap()
 }
 
 pub fn string_from_alphanumeric(length: usize) -> String {
