@@ -104,7 +104,7 @@ fn main() {
                         .short('p')
                         .long("pattern")
                         .value_name("string")
-                        .about("Pattern from which to sample")
+                        .about("Pattern from which to sample, default \"[A-Za-z0-9]{10}\"")
                         .takes_value(true),
                 ),
         )
