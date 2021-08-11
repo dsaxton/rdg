@@ -112,44 +112,40 @@ fn main() {
 
     let default_count = "1";
     let default_delimiter = "\n";
-    let count = if let Ok(c) = app_matches
+    let count = app_matches
         .value_of("count")
         .unwrap_or(default_count)
-        .parse::<u64>()
-    {
-        c
-    } else {
-        // TODO: exit in a better way
-        println!("invalid count argument");
-        process::exit(EXIT_ERROR);
+        .parse::<u64>();
+    let count = match count {
+        Ok(c) => c,
+        Err(err) => {
+            println!("{}", err);
+            process::exit(EXIT_ERROR);
+        }
     };
+
     let delimiter = app_matches
         .value_of("delimiter")
         .unwrap_or(default_delimiter);
 
     match app_matches.subcommand() {
         Some(("int", int_matches)) => {
-            let default_lower = "0";
-            let default_upper = "2";
-            let lower = if let Ok(l) = int_matches
-                .value_of("lower")
-                .unwrap_or(default_lower)
-                .parse::<u64>()
-            {
-                l
-            } else {
-                println!("invalid lower argument");
-                process::exit(EXIT_ERROR);
+            let lower = int_matches.value_of("lower").unwrap_or("0").parse::<u64>();
+            let lower = match lower {
+                Ok(l) => l,
+                Err(err) => {
+                    println!("Error parsing lower: {}", err);
+                    process::exit(EXIT_ERROR);
+                }
             };
-            let upper = if let Ok(u) = int_matches
-                .value_of("upper")
-                .unwrap_or(default_upper)
-                .parse::<u64>()
-            {
-                u
-            } else {
-                println!("invalid upper argument");
-                process::exit(EXIT_ERROR);
+
+            let upper = int_matches.value_of("upper").unwrap_or("1").parse::<u64>();
+            let upper = match upper {
+                Ok(u) => u,
+                Err(err) => {
+                    println!("Error parsing upper: {}", err);
+                    process::exit(EXIT_ERROR);
+                }
             };
 
             if lower >= upper {
@@ -166,28 +162,28 @@ fn main() {
             }
         }
         Some(("float", float_matches)) => {
-            let default_lower = "0";
-            let default_upper = "1";
-            let lower = if let Ok(l) = float_matches
+            let lower = float_matches
                 .value_of("lower")
-                .unwrap_or(default_lower)
-                .parse::<f64>()
-            {
-                l
-            } else {
-                // TODO: exit in a better way
-                println!("invalid lower argument");
-                process::exit(EXIT_ERROR);
+                .unwrap_or("0")
+                .parse::<f64>();
+            let lower = match lower {
+                Ok(l) => l,
+                Err(err) => {
+                    println!("Error parsing lower: {}", err);
+                    process::exit(EXIT_ERROR);
+                }
             };
-            let upper = if let Ok(u) = float_matches
+
+            let upper = float_matches
                 .value_of("upper")
-                .unwrap_or(default_upper)
-                .parse::<f64>()
-            {
-                u
-            } else {
-                println!("invalid upper argument");
-                process::exit(EXIT_ERROR);
+                .unwrap_or("1")
+                .parse::<f64>();
+            let upper = match upper {
+                Ok(u) => u,
+                Err(err) => {
+                    println!("Error parsing upper: {}", err);
+                    process::exit(EXIT_ERROR);
+                }
             };
 
             if lower >= upper {
@@ -206,16 +202,16 @@ fn main() {
             }
         }
         Some(("string", string_matches)) => {
-            let default_length = "10";
-            let length = if let Ok(l) = string_matches
+            let length = string_matches
                 .value_of("length")
-                .unwrap_or(default_length)
-                .parse::<usize>()
-            {
-                l
-            } else {
-                println!("length must be a non-negative integer");
-                process::exit(EXIT_ERROR);
+                .unwrap_or("10")
+                .parse::<usize>();
+            let length = match length {
+                Ok(l) => l,
+                Err(err) => {
+                    println!("Error parsing length: {}", err);
+                    process::exit(EXIT_ERROR);
+                }
             };
 
             for _ in 0..count {
