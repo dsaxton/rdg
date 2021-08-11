@@ -110,12 +110,7 @@ fn main() {
         )
         .get_matches();
 
-    let default_count = "1";
-    let default_delimiter = "\n";
-    let count = app_matches
-        .value_of("count")
-        .unwrap_or(default_count)
-        .parse::<u64>();
+    let count = app_matches.value_of("count").unwrap_or("1").parse::<u64>();
     let count = match count {
         Ok(c) => c,
         Err(err) => {
@@ -124,9 +119,7 @@ fn main() {
         }
     };
 
-    let delimiter = app_matches
-        .value_of("delimiter")
-        .unwrap_or(default_delimiter);
+    let delimiter = app_matches.value_of("delimiter").unwrap_or("\n");
 
     match app_matches.subcommand() {
         Some(("int", int_matches)) => {
