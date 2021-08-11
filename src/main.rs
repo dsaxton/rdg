@@ -2,6 +2,7 @@ use std::process;
 
 use clap::{App, AppSettings, Arg};
 
+mod expression;
 mod sample;
 
 const EXIT_SUCCESS: i32 = 0;
