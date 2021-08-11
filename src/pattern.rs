@@ -1,26 +1,18 @@
 #[allow(dead_code)]
 #[derive(Debug, PartialEq)]
-struct Composite {
+struct Pattern {
     value: String,
-    repetitions: usize,
+    kind: PatternKind,
+    repetitions: u8,
 }
+
 #[allow(dead_code)]
 #[derive(Debug, PartialEq)]
-struct Literal {
-    value: String,
-    repetitions: usize,
-}
-#[allow(dead_code)]
-#[derive(Debug, PartialEq)]
-struct Paren {
-    value: String,
-    repetitions: usize,
-}
-#[allow(dead_code)]
-#[derive(Debug, PartialEq)]
-struct Bracket {
-    value: String,
-    repetitions: usize,
+enum PatternKind {
+    Literal,
+    Parentheses,
+    Brackets,
+    Compound,
 }
 
 #[cfg(test)]
