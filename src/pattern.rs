@@ -16,24 +16,12 @@ enum PatternKind {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, PartialEq)]
-struct ParseError {
-    message: String,
-}
-
-#[allow(dead_code)]
 impl Pattern {
-    fn parse(string: &str) -> Result<Pattern, ParseError> {
-        if string.is_empty() {
-            Ok(Pattern {
-                value: String::from(""),
-                kind: PatternKind::Literal,
-                repetitions: 1,
-            })
-        } else {
-            Err(ParseError {
-                message: String::from("Failed to parse string"),
-            })
+    fn parse(string: &str) -> Pattern {
+        Pattern {
+            value: String::from(string),
+            kind: PatternKind::Literal,
+            repetitions: 1,
         }
     }
 }
@@ -44,7 +32,7 @@ mod tests {
 
     #[test]
     fn parse_literal_pattern() {
-        let result = Pattern::parse("abc").unwrap();
+        let result = Pattern::parse("abc");
         let expected = Pattern {
             value: String::from("abc"),
             kind: PatternKind::Literal,
