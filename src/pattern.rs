@@ -50,7 +50,12 @@ fn is_valid_parentheses_type(string: &str) -> bool {
     if string.is_empty() {
         return false;
     }
-    true
+
+    if !string.starts_with('(') || !string.ends_with(')') {
+        return false;
+    }
+
+    true // FIXME: this is wrong
 }
 
 #[allow(dead_code)]
@@ -129,7 +134,10 @@ mod tests {
     }
 
     #[test]
-    fn literal_is_not_parentheses() {
+    fn is_not_parentheses_type() {
         assert!(!pattern::is_valid_parentheses_type(""));
+        assert!(!pattern::is_valid_parentheses_type("abc"));
+        assert!(!pattern::is_valid_parentheses_type("(abc"));
+        assert!(!pattern::is_valid_parentheses_type("abc)"));
     }
 }
