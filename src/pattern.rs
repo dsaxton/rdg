@@ -46,6 +46,14 @@ fn is_valid_literal(string: &str) -> bool {
 }
 
 #[allow(dead_code)]
+fn is_valid_parentheses_type(string: &str) -> bool {
+    if string.is_empty() {
+        return false;
+    }
+    true
+}
+
+#[allow(dead_code)]
 impl Pattern {
     // TODO: make this correct
     fn parse(string: &str) -> Pattern {
@@ -88,7 +96,11 @@ mod tests {
     #[test]
     fn alphanumerics_are_not_special() {
         assert!(!pattern::is_special_char('a'));
-        assert!(!pattern::is_special_char('1'));
+        assert!(!pattern::is_special_char('z'));
+        assert!(!pattern::is_special_char('A'));
+        assert!(!pattern::is_special_char('Z'));
+        assert!(!pattern::is_special_char('0'));
+        assert!(!pattern::is_special_char('9'));
     }
 
     #[test]
@@ -99,5 +111,25 @@ mod tests {
     #[test]
     fn slash_is_special() {
         assert!(pattern::is_special_char('\\'));
+    }
+
+    #[test]
+    fn alphanumerics_are_literal() {
+        let mut result: bool;
+        result = pattern::is_valid_literal("abc");
+        assert!(result);
+
+        result = pattern::is_valid_literal("123");
+        assert!(result);
+    }
+
+    #[test]
+    fn trailing_escape_is_not_literal() {
+        assert!(!pattern::is_valid_literal("abc\\"));
+    }
+
+    #[test]
+    fn literal_is_not_parentheses() {
+        assert!(!pattern::is_valid_parentheses_type(""));
     }
 }
