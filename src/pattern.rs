@@ -25,6 +25,7 @@ fn is_special_char(character: char) -> bool {
     false
 }
 
+// The type in the name indicates it should be an implementation
 #[allow(dead_code)]
 fn is_valid_literal(string: &str) -> bool {
     let mut escaped = false;
