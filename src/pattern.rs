@@ -98,28 +98,22 @@ mod tests {
 
     #[test]
     fn parse_invalid_pattern() {
-        let mut result: Option<Pattern>;
         for value in [")abc", ")(", "[", "(())", "[[]]"].iter() {
-            result = Pattern::parse(value);
-            assert!(result.is_none());
+            assert!(Pattern::parse(value).is_none());
         }
     }
 
     #[test]
     fn check_special_characters() {
-        let mut result: bool;
         for c in ['(', ')', '[', ']', '{', '}', '*', '\\'].iter() {
-            result = Pattern::is_special_char(*c);
-            assert!(result);
+            assert!(Pattern::is_special_char(*c));
         }
     }
 
     #[test]
     fn check_non_special_characters() {
-        let mut result: bool;
         for c in ['A', 'Z', 'a', 'z', '0', '9'].iter() {
-            result = Pattern::is_special_char(*c);
-            assert!(!result);
+            assert!(!Pattern::is_special_char(*c));
         }
     }
 }
