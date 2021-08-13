@@ -40,6 +40,23 @@ OPTIONS:
     -l, --length <integer>    Length of string, default 10
 ```
 
+## `rd word`
+
+```
+rd-word
+Random words, requires a wordlist
+
+USAGE:
+    rd word --wordlist <path>
+
+FLAGS:
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+OPTIONS:
+    -w, --wordlist <path>    Wordlist used for sampling
+```
+
 ## `rd float`
 
 ```
@@ -74,21 +91,4 @@ FLAGS:
 OPTIONS:
     -l, --lower <integer>    Lower bound (inclusive), default 0
     -u, --upper <integer>    Upper bound (exclusive), default 2
-```
-
-## `rd word`
-
-```
-rd-word
-Random words, requires a wordlist
-
-USAGE:
-    rd word --wordlist <path>
-
-FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-
-OPTIONS:
-    -w, --wordlist <path>    Wordlist used for sampling
 ```
