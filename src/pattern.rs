@@ -25,49 +25,56 @@ fn is_special_char(character: char) -> bool {
     false
 }
 
-// The type in the name indicates it should be an implementation
-#[allow(dead_code)]
-fn is_valid_literal(string: &str) -> bool {
-    let mut escaped = false;
-    for (i, c) in string.chars().enumerate() {
-        if escaped {
-            escaped = false;
-            continue;
-        }
-        if c == '\\' && i < string.len() - 1 {
-            escaped = true;
-            continue;
-        }
-        if is_special_char(c) {
-            return false;
-        }
-        escaped = false;
-    }
-    true
-}
-
-#[allow(dead_code)]
-fn is_valid_parentheses_type(string: &str) -> bool {
-    if string.is_empty() {
-        return false;
-    }
-
-    if !string.starts_with('(') || !string.ends_with(')') {
-        return false;
-    }
-
-    true // FIXME: this is wrong
-}
-
 #[allow(dead_code)]
 impl Pattern {
     // TODO: make this correct
-    fn parse(string: &str) -> Pattern {
-        Pattern {
-            value: String::from(string),
-            kind: PatternKind::Literal,
-            repetitions: 1,
+    fn parse(string: &str) -> Option<Pattern> {
+        if Pattern::is_valid_literal_type(string) {
+            return Some(Pattern {
+                value: String::from(string),
+                kind: PatternKind::Literal,
+                repetitions: 1,
+            });
         }
+        if Pattern::is_valid_parentheses_type(string) {
+            return Some(Pattern {
+                value: String::from(string),
+                kind: PatternKind::Parentheses,
+                repetitions: 1,
+            });
+        }
+        None
+    }
+
+    fn is_valid_literal_type(string: &str) -> bool {
+        let mut escaped = false;
+        for (i, c) in string.chars().enumerate() {
+            if escaped {
+                escaped = false;
+                continue;
+            }
+            if c == '\\' && i < string.len() - 1 {
+                escaped = true;
+                continue;
+            }
+            if is_special_char(c) {
+                return false;
+            }
+            escaped = false;
+        }
+        true
+    }
+
+    fn is_valid_parentheses_type(string: &str) -> bool {
+        if string.is_empty() {
+            return false;
+        }
+
+        if !string.starts_with('(') || !string.ends_with(')') {
+            return false;
+        }
+
+        true // FIXME: this is wrong
     }
 }
 
@@ -77,14 +84,27 @@ mod tests {
     use crate::pattern::{Pattern, PatternKind};
 
     #[test]
-    fn parse_literal_pattern() {
-        let result = Pattern::parse("abc");
-        let expected = Pattern {
-            value: String::from("abc"),
-            kind: PatternKind::Literal,
-            repetitions: 1,
-        };
-        assert_eq!(result, expected);
+    fn parse_valid_literal_pattern() {
+        let mut result: Pattern;
+        let mut expected: Pattern;
+        for value in ["abc", "a2c", "abc\\(", "\\(xyz", "012"].iter() {
+            result = Pattern::parse(value).unwrap();
+            expected = Pattern {
+                value: String::from(*value),
+                kind: PatternKind::Literal,
+                repetitions: 1,
+            };
+            assert_eq!(result, expected);
+        }
+    }
+
+    #[test]
+    fn parse_invalid_pattern() {
+        let mut result: Option<Pattern>;
+        for value in [")abc", ")(", "["].iter() {
+            result = Pattern::parse(value);
+            assert!(result.is_none());
+        }
     }
 
     #[test]
@@ -117,28 +137,5 @@ mod tests {
     #[test]
     fn slash_is_special() {
         assert!(pattern::is_special_char('\\'));
-    }
-
-    #[test]
-    fn alphanumerics_are_literal() {
-        let mut result: bool;
-        result = pattern::is_valid_literal("abc");
-        assert!(result);
-
-        result = pattern::is_valid_literal("123");
-        assert!(result);
-    }
-
-    #[test]
-    fn trailing_escape_is_not_literal() {
-        assert!(!pattern::is_valid_literal("abc\\"));
-    }
-
-    #[test]
-    fn is_not_parentheses_type() {
-        assert!(!pattern::is_valid_parentheses_type(""));
-        assert!(!pattern::is_valid_parentheses_type("abc"));
-        assert!(!pattern::is_valid_parentheses_type("(abc"));
-        assert!(!pattern::is_valid_parentheses_type("abc)"));
     }
 }
