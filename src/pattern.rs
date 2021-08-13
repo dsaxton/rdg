@@ -60,7 +60,7 @@ impl Pattern {
             return false;
         }
 
-        if !string.starts_with('(') || !string.ends_with(')') {
+        if !string.starts_with('(') || (!string.ends_with(')') && !string.ends_with('}')) {
             return false;
         }
 
@@ -69,7 +69,7 @@ impl Pattern {
 
     #[allow(dead_code)]
     fn is_special_char(character: char) -> bool {
-        for c in ['(', ')', '[', ']', '*', '\\'].iter() {
+        for c in ['(', ')', '[', ']', '{', '}', '*', '\\'].iter() {
             if character == *c {
                 return true;
             }
@@ -107,34 +107,20 @@ mod tests {
     }
 
     #[test]
-    fn parens_are_special() {
-        assert!(Pattern::is_special_char('('));
-        assert!(Pattern::is_special_char(')'));
+    fn check_special_characters() {
+        let mut result: bool;
+        for c in ['(', ')', '[', ']', '{', '}', '*', '\\'].iter() {
+            result = Pattern::is_special_char(*c);
+            assert!(result);
+        }
     }
 
     #[test]
-    fn brackets_are_special() {
-        assert!(Pattern::is_special_char('['));
-        assert!(Pattern::is_special_char(']'));
-    }
-
-    #[test]
-    fn alphanumerics_are_not_special() {
-        assert!(!Pattern::is_special_char('a'));
-        assert!(!Pattern::is_special_char('z'));
-        assert!(!Pattern::is_special_char('A'));
-        assert!(!Pattern::is_special_char('Z'));
-        assert!(!Pattern::is_special_char('0'));
-        assert!(!Pattern::is_special_char('9'));
-    }
-
-    #[test]
-    fn star_is_special() {
-        assert!(Pattern::is_special_char('*'));
-    }
-
-    #[test]
-    fn slash_is_special() {
-        assert!(Pattern::is_special_char('\\'));
+    fn check_non_special_characters() {
+        let mut result: bool;
+        for c in ['A', 'Z', 'a', 'z', '0', '9'].iter() {
+            result = Pattern::is_special_char(*c);
+            assert!(!result);
+        }
     }
 }
