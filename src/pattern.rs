@@ -16,16 +16,6 @@ enum PatternKind {
 }
 
 #[allow(dead_code)]
-fn is_special_char(character: char) -> bool {
-    for c in ['(', ')', '[', ']', '*', '\\'].iter() {
-        if character == *c {
-            return true;
-        }
-    }
-    false
-}
-
-#[allow(dead_code)]
 impl Pattern {
     // TODO: make this correct
     fn parse(string: &str) -> Option<Pattern> {
@@ -57,7 +47,7 @@ impl Pattern {
                 escaped = true;
                 continue;
             }
-            if is_special_char(c) {
+            if Pattern::is_special_char(c) {
                 return false;
             }
             escaped = false;
@@ -76,11 +66,20 @@ impl Pattern {
 
         true // FIXME: this is wrong
     }
+
+    #[allow(dead_code)]
+    fn is_special_char(character: char) -> bool {
+        for c in ['(', ')', '[', ']', '*', '\\'].iter() {
+            if character == *c {
+                return true;
+            }
+        }
+        false
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::pattern;
     use crate::pattern::{Pattern, PatternKind};
 
     #[test]
@@ -109,33 +108,33 @@ mod tests {
 
     #[test]
     fn parens_are_special() {
-        assert!(pattern::is_special_char('('));
-        assert!(pattern::is_special_char(')'));
+        assert!(Pattern::is_special_char('('));
+        assert!(Pattern::is_special_char(')'));
     }
 
     #[test]
     fn brackets_are_special() {
-        assert!(pattern::is_special_char('['));
-        assert!(pattern::is_special_char(']'));
+        assert!(Pattern::is_special_char('['));
+        assert!(Pattern::is_special_char(']'));
     }
 
     #[test]
     fn alphanumerics_are_not_special() {
-        assert!(!pattern::is_special_char('a'));
-        assert!(!pattern::is_special_char('z'));
-        assert!(!pattern::is_special_char('A'));
-        assert!(!pattern::is_special_char('Z'));
-        assert!(!pattern::is_special_char('0'));
-        assert!(!pattern::is_special_char('9'));
+        assert!(!Pattern::is_special_char('a'));
+        assert!(!Pattern::is_special_char('z'));
+        assert!(!Pattern::is_special_char('A'));
+        assert!(!Pattern::is_special_char('Z'));
+        assert!(!Pattern::is_special_char('0'));
+        assert!(!Pattern::is_special_char('9'));
     }
 
     #[test]
     fn star_is_special() {
-        assert!(pattern::is_special_char('*'));
+        assert!(Pattern::is_special_char('*'));
     }
 
     #[test]
     fn slash_is_special() {
-        assert!(pattern::is_special_char('\\'));
+        assert!(Pattern::is_special_char('\\'));
     }
 }
