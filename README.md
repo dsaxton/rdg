@@ -23,6 +23,23 @@ SUBCOMMANDS:
     word      Random words, requires a wordlist
 ```
 
+## `rd string`
+
+```
+rd-string
+Random strings, default length 10
+
+USAGE:
+    rd string [OPTIONS]
+
+FLAGS:
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+OPTIONS:
+    -l, --length <integer>    Length of string, default 10
+```
+
 ## `rd float`
 
 ```
@@ -57,23 +74,6 @@ FLAGS:
 OPTIONS:
     -l, --lower <integer>    Lower bound (inclusive), default 0
     -u, --upper <integer>    Upper bound (exclusive), default 2
-```
-
-## `rd string`
-
-```
-rd-string
-Random strings, default length 10
-
-USAGE:
-    rd string [OPTIONS]
-
-FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-
-OPTIONS:
-    -l, --length <integer>    Length of string, default 10
 ```
 
 ## `rd word`
