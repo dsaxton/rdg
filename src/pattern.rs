@@ -100,7 +100,7 @@ mod tests {
     #[test]
     fn parse_invalid_pattern() {
         let mut result: Option<Pattern>;
-        for value in [")abc", ")(", "["].iter() {
+        for value in [")abc", ")(", "[", "(())", "[[]]"].iter() {
             result = Pattern::parse(value);
             assert!(result.is_none());
         }
