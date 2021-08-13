@@ -59,11 +59,9 @@ impl Pattern {
         if string.is_empty() {
             return false;
         }
-
         if !string.starts_with('(') || (!string.ends_with(')') && !string.ends_with('}')) {
             return false;
         }
-
         true // FIXME: this is wrong
     }
 
