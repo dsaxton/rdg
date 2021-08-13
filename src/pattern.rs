@@ -67,7 +67,6 @@ impl Pattern {
         true // FIXME: this is wrong
     }
 
-    #[allow(dead_code)]
     fn is_special_char(character: char) -> bool {
         for c in ['(', ')', '[', ']', '{', '}', '*', '\\'].iter() {
             if character == *c {
