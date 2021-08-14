@@ -127,7 +127,7 @@ fn main() {
             let lower = match lower {
                 Ok(l) => l,
                 Err(err) => {
-                    println!("Error parsing lower: {}", err);
+                    eprintln!("Error parsing lower: {}", err);
                     process::exit(EXIT_ERROR);
                 }
             };
@@ -136,13 +136,13 @@ fn main() {
             let upper = match upper {
                 Ok(u) => u,
                 Err(err) => {
-                    println!("Error parsing upper: {}", err);
+                    eprintln!("Error parsing upper: {}", err);
                     process::exit(EXIT_ERROR);
                 }
             };
 
             if lower >= upper {
-                println!("lower must be strictly less than upper");
+                eprintln!("lower must be strictly less than upper");
                 process::exit(EXIT_ERROR);
             }
 
@@ -162,7 +162,7 @@ fn main() {
             let lower = match lower {
                 Ok(l) => l,
                 Err(err) => {
-                    println!("Error parsing lower: {}", err);
+                    eprintln!("Error parsing lower: {}", err);
                     process::exit(EXIT_ERROR);
                 }
             };
@@ -174,13 +174,13 @@ fn main() {
             let upper = match upper {
                 Ok(u) => u,
                 Err(err) => {
-                    println!("Error parsing upper: {}", err);
+                    eprintln!("Error parsing upper: {}", err);
                     process::exit(EXIT_ERROR);
                 }
             };
 
             if lower >= upper {
-                println!("lower must be strictly less than upper");
+                eprintln!("lower must be strictly less than upper");
                 process::exit(EXIT_ERROR);
             }
 
@@ -202,7 +202,7 @@ fn main() {
             let length = match length {
                 Ok(l) => l,
                 Err(err) => {
-                    println!("Error parsing length: {}", err);
+                    eprintln!("Error parsing length: {}", err);
                     process::exit(EXIT_ERROR);
                 }
             };
