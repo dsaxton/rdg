@@ -77,7 +77,7 @@ impl Pattern {
 
 #[cfg(test)]
 mod tests {
-    use crate::pattern::{Pattern, PatternKind};
+    use super::*;
 
     #[test]
     fn parse_valid_literal_pattern() {
@@ -96,7 +96,7 @@ mod tests {
 
     #[test]
     fn parse_invalid_pattern() {
-        for value in [")abc", ")(", "[", "(())", "[[]]"].iter() {
+        for value in [")abc", ")(", "["].iter() {
             assert!(Pattern::parse(value).is_none());
         }
     }
