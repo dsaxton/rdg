@@ -1,3 +1,5 @@
+use rand::{thread_rng, Rng};
+
 #[allow(dead_code)]
 #[derive(Debug, PartialEq)]
 struct Pattern {
@@ -36,6 +38,14 @@ impl Pattern {
         None
     }
 
+    // TODO: implement this
+    fn to_string_sampler(&self) -> StringSampler {
+        StringSampler {
+            support: vec![self.value.clone()],
+            repetitions: self.repetitions,
+        }
+    }
+
     fn is_valid_literal_type(string: &str) -> bool {
         let mut escaped = false;
         for (i, c) in string.chars().enumerate() {
@@ -62,7 +72,9 @@ impl Pattern {
         if !string.starts_with('(') || (!string.ends_with(')') && !string.ends_with('}')) {
             return false;
         }
-        true // FIXME: this is wrong
+        // split on every unescaped pipe, remove surrounding parens and ensure each pattern is literal
+        // ignore quantifiers for now
+        true
     }
 
     fn is_special_character(character: char) -> bool {
@@ -75,9 +87,56 @@ impl Pattern {
     }
 }
 
+#[allow(dead_code)]
+#[derive(Debug, PartialEq)]
+struct StringSampler {
+    support: Vec<String>,
+    repetitions: u8,
+}
+
+#[allow(dead_code)]
+impl StringSampler {
+    fn sample(&self) -> String {
+        let mut result = String::from("");
+        let mut idx: usize;
+        for _ in 0..self.repetitions {
+            idx = (thread_rng().gen::<f64>() * (self.support.len() as f64)).floor() as usize;
+            result.push_str(&self.support[idx])
+        }
+        result
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn string_sample() {
+        let mut sampler: StringSampler;
+        let mut result: String;
+
+        sampler = StringSampler {
+            support: vec![String::from("abc")],
+            repetitions: 1,
+        };
+        result = sampler.sample();
+        assert_eq!(result, String::from("abc"));
+
+        sampler = StringSampler {
+            support: vec![String::from("abc")],
+            repetitions: 3,
+        };
+        result = sampler.sample();
+        assert_eq!(result, String::from("abcabcabc"));
+
+        sampler = StringSampler {
+            support: vec![String::from("a"), String::from("z")],
+            repetitions: 2,
+        };
+        result = sampler.sample();
+        assert!(result == *"aa" || result == *"zz" || result == *"az" || result == *"za");
+    }
 
     #[test]
     fn parse_valid_literal_pattern() {
@@ -98,6 +157,21 @@ mod tests {
             expected = Pattern {
                 value: String::from(*value),
                 kind: PatternKind::Literal,
+                repetitions: 1,
+            };
+            assert_eq!(result, expected);
+        }
+    }
+
+    #[test]
+    fn parse_valid_parentheses_pattern() {
+        let mut result: Pattern;
+        let mut expected: Pattern;
+        for value in ["(abc)", "(abc\\*)", "(a|b|c)"].iter() {
+            result = Pattern::parse(value).unwrap();
+            expected = Pattern {
+                value: String::from(*value),
+                kind: PatternKind::Parentheses,
                 repetitions: 1,
             };
             assert_eq!(result, expected);
