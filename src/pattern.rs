@@ -47,7 +47,7 @@ impl Pattern {
                 escaped = true;
                 continue;
             }
-            if Pattern::is_special_char(c) {
+            if Pattern::is_special_character(c) {
                 return false;
             }
             escaped = false;
@@ -65,7 +65,7 @@ impl Pattern {
         true // FIXME: this is wrong
     }
 
-    fn is_special_char(character: char) -> bool {
+    fn is_special_character(character: char) -> bool {
         for c in ['(', ')', '[', ']', '{', '}', '*', '\\'].iter() {
             if character == *c {
                 return true;
@@ -114,14 +114,14 @@ mod tests {
     #[test]
     fn check_special_characters() {
         for c in ['(', ')', '[', ']', '{', '}', '*', '\\'].iter() {
-            assert!(Pattern::is_special_char(*c));
+            assert!(Pattern::is_special_character(*c));
         }
     }
 
     #[test]
     fn check_non_special_characters() {
         for c in ['A', 'Z', 'a', 'z', '0', '9', '!', '@', '#'].iter() {
-            assert!(!Pattern::is_special_char(*c));
+            assert!(!Pattern::is_special_character(*c));
         }
     }
 }
