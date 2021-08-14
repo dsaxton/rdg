@@ -83,7 +83,17 @@ mod tests {
     fn parse_valid_literal_pattern() {
         let mut result: Pattern;
         let mut expected: Pattern;
-        for value in ["abc", "a2c", "abc\\(", "\\(xyz", "012"].iter() {
+        for value in [
+            "abc",
+            "a2c",
+            "abc\\(",
+            "\\(xyz",
+            "012",
+            "\\[abc\\]",
+            "\\(abc\\)",
+        ]
+        .iter()
+        {
             result = Pattern::parse(value).unwrap();
             expected = Pattern {
                 value: String::from(*value),
@@ -110,7 +120,7 @@ mod tests {
 
     #[test]
     fn check_non_special_characters() {
-        for c in ['A', 'Z', 'a', 'z', '0', '9'].iter() {
+        for c in ['A', 'Z', 'a', 'z', '0', '9', '!', '@', '#'].iter() {
             assert!(!Pattern::is_special_char(*c));
         }
     }
