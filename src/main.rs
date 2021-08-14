@@ -110,39 +110,37 @@ fn main() {
         )
         .get_matches();
 
-    let count = app_matches.value_of("count").unwrap_or("1").parse::<u64>();
-    let count = match count {
-        Ok(c) => c,
-        Err(err) => {
-            println!("{}", err);
+    let count = app_matches
+        .value_of("count")
+        .unwrap_or("1")
+        .parse::<u64>()
+        .unwrap_or_else(|err| {
+            eprintln!("Error parsing count: {}", err);
             process::exit(EXIT_ERROR);
-        }
-    };
-
+        });
     let delimiter = app_matches.value_of("delimiter").unwrap_or("\n");
 
     match app_matches.subcommand() {
         Some(("int", int_matches)) => {
-            let lower = int_matches.value_of("lower").unwrap_or("0").parse::<u64>();
-            let lower = match lower {
-                Ok(l) => l,
-                Err(err) => {
+            let lower = int_matches
+                .value_of("lower")
+                .unwrap_or("0")
+                .parse::<u64>()
+                .unwrap_or_else(|err| {
                     eprintln!("Error parsing lower: {}", err);
                     process::exit(EXIT_ERROR);
-                }
-            };
-
-            let upper = int_matches.value_of("upper").unwrap_or("1").parse::<u64>();
-            let upper = match upper {
-                Ok(u) => u,
-                Err(err) => {
+                });
+            let upper = int_matches
+                .value_of("upper")
+                .unwrap_or("1")
+                .parse::<u64>()
+                .unwrap_or_else(|err| {
                     eprintln!("Error parsing upper: {}", err);
                     process::exit(EXIT_ERROR);
-                }
-            };
+                });
 
             if lower >= upper {
-                eprintln!("lower must be strictly less than upper");
+                eprintln!("Error: lower must be strictly less than upper");
                 process::exit(EXIT_ERROR);
             }
 
@@ -158,26 +156,19 @@ fn main() {
             let lower = float_matches
                 .value_of("lower")
                 .unwrap_or("0")
-                .parse::<f64>();
-            let lower = match lower {
-                Ok(l) => l,
-                Err(err) => {
+                .parse::<f64>()
+                .unwrap_or_else(|err| {
                     eprintln!("Error parsing lower: {}", err);
                     process::exit(EXIT_ERROR);
-                }
-            };
-
+                });
             let upper = float_matches
                 .value_of("upper")
                 .unwrap_or("1")
-                .parse::<f64>();
-            let upper = match upper {
-                Ok(u) => u,
-                Err(err) => {
+                .parse::<f64>()
+                .unwrap_or_else(|err| {
                     eprintln!("Error parsing upper: {}", err);
                     process::exit(EXIT_ERROR);
-                }
-            };
+                });
 
             if lower >= upper {
                 eprintln!("lower must be strictly less than upper");
@@ -198,14 +189,11 @@ fn main() {
             let length = string_matches
                 .value_of("length")
                 .unwrap_or("10")
-                .parse::<usize>();
-            let length = match length {
-                Ok(l) => l,
-                Err(err) => {
+                .parse::<usize>()
+                .unwrap_or_else(|err| {
                     eprintln!("Error parsing length: {}", err);
                     process::exit(EXIT_ERROR);
-                }
-            };
+                });
 
             for _ in 0..count {
                 print!("{}{}", sample::string_from_alphanumeric(length), delimiter);
