@@ -94,11 +94,11 @@ impl Pattern {
         false
     }
 
-    fn parse_quantifier(quantifier_str: &str) -> u8 {
-        if quantifier_str.is_empty() {
-            return 1;
+    fn parse_quantifier(string: &str) -> Result<u8, ParseError> {
+        if !string.ends_with('}') {
+            return Err(ParseError);
         }
-        1
+        Ok(1)
     }
 }
 
@@ -217,8 +217,20 @@ mod tests {
     }
 
     #[test]
-    fn parse_implicit_quantifier() {
-        let result = Pattern::parse_quantifier("(abc)");
-        assert_eq!(result, 1);
+    fn parse_quantifier_invalid() {
+        let mut result: Result<u8, ParseError>;
+        for s in ["(abc)", "(abc)}", "(a|b|c){}}", "[abc]{", "(abc){x}"].iter() {
+            result = Pattern::parse_quantifier(s);
+            assert!(result.is_err());
+        }
+    }
+
+    #[test]
+    fn parse_quantifier_valid() {
+        let mut result: u8;
+        for (input, expected) in [("(abc){1}", 1), ("(abc){23}", 23), ("[A-Z]{3}", 3)].iter() {
+            result = Pattern::parse_quantifier(input).unwrap();
+            assert_eq!(result, *expected);
+        }
     }
 }
