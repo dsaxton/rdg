@@ -24,14 +24,14 @@ struct ParseError;
 impl Pattern {
     // TODO: make this correct
     fn parse(string: &str) -> Result<Pattern, ParseError> {
-        if Pattern::is_valid_literal_type(string) {
+        if Pattern::can_parse_as_literal_type(string) {
             return Ok(Pattern {
                 value: String::from(string),
                 kind: PatternKind::Literal,
                 repetitions: 1,
             });
         }
-        if Pattern::is_valid_parentheses_type(string) {
+        if Pattern::can_parse_as_parentheses_type(string) {
             return Ok(Pattern {
                 value: String::from(string),
                 kind: PatternKind::Parentheses,
@@ -49,7 +49,7 @@ impl Pattern {
         }
     }
 
-    fn is_valid_literal_type(string: &str) -> bool {
+    fn can_parse_as_literal_type(string: &str) -> bool {
         let mut escaped = false;
         for (i, c) in string.chars().enumerate() {
             if escaped {
@@ -68,7 +68,7 @@ impl Pattern {
         true
     }
 
-    fn is_valid_parentheses_type(string: &str) -> bool {
+    fn can_parse_as_parentheses_type(string: &str) -> bool {
         if string.is_empty() {
             return false;
         }
