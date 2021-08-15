@@ -76,7 +76,6 @@ impl Pattern {
             return false;
         }
         // split on every unescaped pipe, remove surrounding parens and ensure each pattern is literal
-        // ignore quantifiers for now
         true
     }
 
