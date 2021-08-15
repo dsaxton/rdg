@@ -17,25 +17,28 @@ enum PatternKind {
     Compound,
 }
 
+#[derive(Debug)]
+struct ParseError;
+
 #[allow(dead_code)]
 impl Pattern {
     // TODO: make this correct
-    fn parse(string: &str) -> Option<Pattern> {
+    fn parse(string: &str) -> Result<Pattern, ParseError> {
         if Pattern::is_valid_literal_type(string) {
-            return Some(Pattern {
+            return Ok(Pattern {
                 value: String::from(string),
                 kind: PatternKind::Literal,
                 repetitions: 1,
             });
         }
         if Pattern::is_valid_parentheses_type(string) {
-            return Some(Pattern {
+            return Ok(Pattern {
                 value: String::from(string),
                 kind: PatternKind::Parentheses,
                 repetitions: 1,
             });
         }
-        None
+        Err(ParseError)
     }
 
     // TODO: implement this
@@ -180,8 +183,10 @@ mod tests {
 
     #[test]
     fn parse_invalid_pattern() {
+        let mut result: Result<Pattern, ParseError>;
         for value in [")abc", ")(", "["].iter() {
-            assert!(Pattern::parse(value).is_none());
+            result = Pattern::parse(value);
+            assert!(result.is_err());
         }
     }
 
