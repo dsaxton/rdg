@@ -95,10 +95,17 @@ impl Pattern {
     }
 
     fn parse_quantifier(string: &str) -> Result<u8, ParseError> {
-        if !string.ends_with('}') {
-            return Err(ParseError);
+        if let Some(tail) = string.split('{').last() {
+            if !tail.ends_with('}') {
+                return Err(ParseError);
+            }
+            let parsed = tail[0..(tail.len() - 1)].parse::<u8>();
+            match parsed {
+                Ok(parsed) => return Ok(parsed),
+                _ => return Err(ParseError),
+            }
         }
-        Ok(1)
+        Err(ParseError)
     }
 }
 
