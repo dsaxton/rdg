@@ -72,11 +72,17 @@ impl Pattern {
         if string.is_empty() {
             return false;
         }
-        if !string.starts_with('(') || (!string.ends_with(')') && !string.ends_with('}')) {
+        if !string.starts_with('(') {
+            return false;
+        }
+        if string.ends_with(')') {
+            if Pattern::can_parse_as_literal_type(&string[1..(string.len() - 1)]) {
+                return true;
+            }
             return false;
         }
         // split on every unescaped pipe, remove surrounding parens and ensure each pattern is literal
-        true
+        false
     }
 
     fn is_special_character(character: char) -> bool {
@@ -86,6 +92,13 @@ impl Pattern {
             }
         }
         false
+    }
+
+    fn parse_quantifier(quantifier_str: &str) -> u8 {
+        if quantifier_str.is_empty() {
+            return 1;
+        }
+        1
     }
 }
 
@@ -201,5 +214,11 @@ mod tests {
         for c in ['A', 'Z', 'a', 'z', '0', '9', '!', '@', '#'].iter() {
             assert!(!Pattern::is_special_character(*c));
         }
+    }
+
+    #[test]
+    fn parse_implicit_quantifier() {
+        let result = Pattern::parse_quantifier("(abc)");
+        assert_eq!(result, 1);
     }
 }
