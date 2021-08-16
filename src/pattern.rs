@@ -220,15 +220,15 @@ mod tests {
 
     #[test]
     fn check_special_characters() {
-        for c in ['(', ')', '[', ']', '{', '}', '*', '\\'].iter() {
-            assert!(Pattern::is_special_character(*c));
+        for c in "()[]{}*\\".chars() {
+            assert!(Pattern::is_special_character(c));
         }
     }
 
     #[test]
     fn check_non_special_characters() {
-        for c in ['A', 'Z', 'a', 'z', '0', '9', '!', '@', '#'].iter() {
-            assert!(!Pattern::is_special_character(*c));
+        for c in "AZaz09!@#".chars() {
+            assert!(!Pattern::is_special_character(c));
         }
     }
 
