@@ -69,12 +69,11 @@ impl Pattern {
     }
 
     fn can_parse_as_parentheses_type(string: &str) -> bool {
-        if string.is_empty() {
-            return false;
-        }
+        // need to pop quantifier off the end
         if !string.starts_with('(') {
             return false;
         }
+        // what about pipes?
         if string.ends_with(')') {
             if Pattern::can_parse_as_literal_type(&string[1..(string.len() - 1)]) {
                 return true;
