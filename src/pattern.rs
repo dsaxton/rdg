@@ -92,18 +92,29 @@ impl Pattern {
             .unwrap()
     }
 
-    fn parse_quantifier(string: &str) -> Result<u8, ParseError> {
+    fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
+        let mut opening_brace_found = false;
         if !string.ends_with('}') {
-            return Err(ParseError);
+            return (string, None);
         }
-        if let Some(tail) = string.split('{').last() {
-            let parsed = tail[0..(tail.len() - 1)].parse::<u8>();
-            match parsed {
-                Ok(parsed) => return Ok(parsed),
-                _ => return Err(ParseError),
+        // walk the string from right to left and look for an opening brace
+        // once we know it's unescaped try to parse the string in between and
+        // if successful return this value along with the truncated input string
+        for (reflected_idx, c) in string.chars().rev().enumerate() {
+            let idx = string.len() - reflected_idx - 1;
+            if opening_brace_found && c != '\\' {
+                let parsed_quantifier = string[(idx + 2)..(string.len() - 1)].parse::<u8>();
+                match parsed_quantifier {
+                    Ok(value) => return (&string[..(idx + 1)], Some(value)),
+                    _ => return (string, None),
+                };
+            }
+            opening_brace_found = false;
+            if c == '{' && idx > 0 {
+                opening_brace_found = true;
             }
         }
-        Err(ParseError)
+        (string, None)
     }
 }
 
@@ -222,19 +233,19 @@ mod tests {
     }
 
     #[test]
-    fn parse_quantifier_invalid() {
-        let mut result: Result<u8, ParseError>;
-        for s in ["(abc)", "(abc)}", "(a|b|c){}}", "[abc]{", "(abc){x}"].iter() {
-            result = Pattern::parse_quantifier(s);
-            assert!(result.is_err());
-        }
-    }
-
-    #[test]
-    fn parse_quantifier_valid() {
-        let mut result: u8;
-        for (input, expected) in [("(abc){1}", 1), ("(abc){23}", 23), ("[A-Z]{3}", 3)].iter() {
-            result = Pattern::parse_quantifier(input).unwrap();
+    fn check_pop_quantifier() {
+        let mut result: (&str, Option<u8>);
+        for (input, expected) in [
+            ("(abc){5}", ("(abc)", Some(5))),
+            ("[abc]{25}", ("[abc]", Some(25))),
+            ("[123]{25}", ("[123]", Some(25))),
+            ("[123]{00025}", ("[123]", Some(25))),
+            ("[abc]\\{}", ("[abc]\\{}", None)),
+            ("[abc]", ("[abc]", None)),
+        ]
+        .iter()
+        {
+            result = Pattern::pop_quantifier(input);
             assert_eq!(result, *expected);
         }
     }
