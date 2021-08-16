@@ -143,6 +143,24 @@ mod tests {
     use super::*;
 
     #[test]
+    fn can_parse_as_literal_valid() {
+        let mut result: bool;
+        for s in ["abc", "abc\\(", "\\(abc\\)", "123", "\\*\\{"] {
+            result = Pattern::can_parse_as_literal_type(s);
+            assert!(result)
+        }
+    }
+
+    #[test]
+    fn can_parse_as_literal_invalid() {
+        let mut result: bool;
+        for s in ["(abc)", "[123]", "\\[123]", "abc(1|2|3)"] {
+            result = Pattern::can_parse_as_literal_type(s);
+            assert!(!result)
+        }
+    }
+
+    #[test]
     fn string_sample() {
         let mut sampler: StringSampler;
         let mut result: String;
