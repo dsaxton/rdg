@@ -85,12 +85,11 @@ impl Pattern {
     }
 
     fn is_special_character(character: char) -> bool {
-        for c in ['(', ')', '[', ']', '{', '}', '*', '\\'].iter() {
-            if character == *c {
-                return true;
-            }
-        }
-        false
+        "()[]{}*\\"
+            .chars()
+            .map(|c| c == character)
+            .reduce(|a, b| a || b)
+            .unwrap()
     }
 
     fn parse_quantifier(string: &str) -> Result<u8, ParseError> {
