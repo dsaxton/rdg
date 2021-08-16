@@ -96,23 +96,17 @@ impl Pattern {
         if !string.ends_with('}') {
             return (string, None);
         }
-        let mut opening_brace_found = false;
-        // walk the string from right to left and look for an opening brace
-        // once we know it's unescaped try to parse the string in between and
-        // if successful return this value along with the truncated input string
+        let mut escapable_brace_found = false;
         for (reflected_idx, c) in string.chars().rev().enumerate() {
             let idx = string.len() - reflected_idx - 1;
-            if opening_brace_found && c != '\\' {
+            if escapable_brace_found && c != '\\' {
                 let parsed_quantifier = string[(idx + 2)..(string.len() - 1)].parse::<u8>();
                 match parsed_quantifier {
                     Ok(value) => return (&string[..(idx + 1)], Some(value)),
                     _ => return (string, None),
                 };
             }
-            opening_brace_found = false;
-            if c == '{' && idx > 0 {
-                opening_brace_found = true;
-            }
+            escapable_brace_found = c == '{' && idx > 0;
         }
         (string, None)
     }
