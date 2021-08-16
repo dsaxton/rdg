@@ -93,10 +93,10 @@ impl Pattern {
     }
 
     fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
-        let mut opening_brace_found = false;
         if !string.ends_with('}') {
             return (string, None);
         }
+        let mut opening_brace_found = false;
         // walk the string from right to left and look for an opening brace
         // once we know it's unescaped try to parse the string in between and
         // if successful return this value along with the truncated input string
@@ -241,6 +241,7 @@ mod tests {
             ("[123]{25}", ("[123]", Some(25))),
             ("[123]{00025}", ("[123]", Some(25))),
             ("[abc]\\{}", ("[abc]\\{}", None)),
+            ("[abc]\\{25\\}", ("[abc]\\{25\\}", None)),
             ("[abc]", ("[abc]", None)),
         ]
         .iter()
