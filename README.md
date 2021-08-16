@@ -14,20 +14,18 @@ FLAGS:
 OPTIONS:
     -c, --count <integer>       Number of values to generate, default 1
     -d, --delimiter <string>    Delimiter to use between values, default \n
-    -t, --threads <integer>     Number of threads, default 1
 
 SUBCOMMANDS:
     float     Random floating point numbers, default support [0, 1)
     int       Random integers, default support {0, 1}
-    string    Random strings, default length 10
+    string    Random strings, default pattern "[A-Za-z0-9]{10}"
     word      Random words, requires a wordlist
 ```
 
 ## `rd string`
 
 ```
-rd-string
-Random strings, default length 10
+Random strings, default pattern "[A-Za-z0-9]{10}"
 
 USAGE:
     rd string [OPTIONS]
@@ -37,7 +35,7 @@ FLAGS:
     -V, --version    Prints version information
 
 OPTIONS:
-    -l, --length <integer>    Length of string, default 10
+    -p, --pattern <string>    Pattern from which to sample, default "[A-Za-z0-9]{10}"
 ```
 
 ## `rd word`
