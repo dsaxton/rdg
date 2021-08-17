@@ -98,17 +98,17 @@ fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
     if !string.ends_with('}') {
         return (string, None);
     }
-    let mut previous_was_brace = false;
+    let mut previous_was_open_brace = false;
     for (reflected_idx, c) in string.chars().rev().enumerate() {
         let idx = string.len() - reflected_idx - 1;
-        if previous_was_brace && !is_escape_character(c) {
+        if previous_was_open_brace && !is_escape_character(c) {
             let parsed_quantifier = string[(idx + 2)..(string.len() - 1)].parse::<u8>();
             match parsed_quantifier {
                 Ok(value) => return (&string[..(idx + 1)], Some(value)),
                 _ => return (string, None),
             };
         }
-        previous_was_brace = c == '{' && idx > 0;
+        previous_was_open_brace = c == '{';
     }
     (string, None)
 }
