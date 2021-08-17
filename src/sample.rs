@@ -15,21 +15,20 @@ pub struct StringSampler {
 impl StringSampler {
     fn sample(&self) -> String {
         let mut result = String::from("");
-        let mut idx: usize;
-        for _ in 0..self.repetitions {
-            idx = (thread_rng().gen::<f64>() * (self.support.len() as f64)).floor() as usize;
+        (0..self.repetitions).for_each(|_| {
+            let idx = (rand_uniform() * (self.support.len() as f64)).floor() as usize;
             result.push_str(&self.support[idx])
-        }
+        });
         result
     }
 }
 
 pub fn integer_given_bounds(lower: u64, upper: u64) -> u64 {
-    lower + (thread_rng().gen::<f64>() * ((upper - lower) as f64)).floor() as u64
+    lower + (rand_uniform() * ((upper - lower) as f64)).floor() as u64
 }
 
 pub fn float_given_bounds(lower: f64, upper: f64) -> f64 {
-    lower + thread_rng().gen::<f64>() * (upper - lower)
+    lower + rand_uniform() * (upper - lower)
 }
 
 pub fn from_wordlist(wordlist: &str) -> String {
@@ -38,7 +37,7 @@ pub fn from_wordlist(wordlist: &str) -> String {
     let mut selected_word = vec![String::from("")];
 
     for (idx, line) in reader.lines().enumerate() {
-        if thread_rng().gen::<f64>() < 1.0 / ((idx + 1) as f64) {
+        if rand_uniform() < 1.0 / ((idx + 1) as f64) {
             selected_word.pop();
             selected_word.push(line.unwrap())
         }
@@ -53,6 +52,10 @@ pub fn string_from_alphanumeric(length: usize) -> String {
         .take(length)
         .map(char::from)
         .collect()
+}
+
+fn rand_uniform() -> f64 {
+    thread_rng().gen::<f64>()
 }
 
 #[cfg(test)]
@@ -81,8 +84,8 @@ mod tests {
         let mut upper: f64;
         let mut result: f64;
         for _ in 0..100 {
-            lower = 100.0 * thread_rng().gen::<f64>();
-            upper = lower + 100.0 * thread_rng().gen::<f64>();
+            lower = 100.0 * rand_uniform();
+            upper = lower + 100.0 * rand_uniform();
             result = float_given_bounds(lower, upper);
             assert!(result >= lower);
             assert!(result < upper);
