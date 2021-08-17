@@ -52,12 +52,12 @@ impl Pattern {
 
 fn can_parse_as_literal_kind(string: &str) -> bool {
     let mut escaped_by_previous = false;
-    for (i, c) in string.chars().enumerate() {
+    for c in string.chars() {
         if escaped_by_previous {
             escaped_by_previous = false;
             continue;
         }
-        if is_escape_character(c) && i < string.len() - 1 {
+        if is_escape_character(c) {
             escaped_by_previous = true;
             continue;
         }
