@@ -50,20 +50,20 @@ impl Pattern {
     }
 
     fn can_parse_as_literal_kind(string: &str) -> bool {
-        let mut escaped = false;
+        let mut escaped_by_previous = false;
         for (i, c) in string.chars().enumerate() {
-            if escaped {
-                escaped = false;
+            if escaped_by_previous {
+                escaped_by_previous = false;
                 continue;
             }
             if c == '\\' && i < string.len() - 1 {
-                escaped = true;
+                escaped_by_previous = true;
                 continue;
             }
             if Pattern::is_special_character(c) {
                 return false;
             }
-            escaped = false;
+            escaped_by_previous = false;
         }
         true
     }
