@@ -56,7 +56,7 @@ impl Pattern {
                 escaped_by_previous = false;
                 continue;
             }
-            if c == '\\' && i < string.len() - 1 {
+            if Pattern::is_escape_character(c) && i < string.len() - 1 {
                 escaped_by_previous = true;
                 continue;
             }
@@ -88,21 +88,25 @@ impl Pattern {
         "()[]{}*\\".chars().any(|c| c == character)
     }
 
+    fn is_escape_character(character: char) -> bool {
+        character == '\\'
+    }
+
     fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
         if !string.ends_with('}') {
             return (string, None);
         }
-        let mut escapable_brace_found = false;
+        let mut previous_was_brace = false;
         for (reflected_idx, c) in string.chars().rev().enumerate() {
             let idx = string.len() - reflected_idx - 1;
-            if escapable_brace_found && c != '\\' {
+            if previous_was_brace && !Pattern::is_escape_character(c) {
                 let parsed_quantifier = string[(idx + 2)..(string.len() - 1)].parse::<u8>();
                 match parsed_quantifier {
                     Ok(value) => return (&string[..(idx + 1)], Some(value)),
                     _ => return (string, None),
                 };
             }
-            escapable_brace_found = c == '{' && idx > 0;
+            previous_was_brace = c == '{' && idx > 0;
         }
         (string, None)
     }
