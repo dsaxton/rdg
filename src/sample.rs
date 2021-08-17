@@ -4,6 +4,26 @@ use std::io::{BufRead, BufReader};
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 
+#[allow(dead_code)]
+#[derive(Debug, PartialEq)]
+pub struct StringSampler {
+    pub support: Vec<String>,
+    pub repetitions: u8,
+}
+
+#[allow(dead_code)]
+impl StringSampler {
+    fn sample(&self) -> String {
+        let mut result = String::from("");
+        let mut idx: usize;
+        for _ in 0..self.repetitions {
+            idx = (thread_rng().gen::<f64>() * (self.support.len() as f64)).floor() as usize;
+            result.push_str(&self.support[idx])
+        }
+        result
+    }
+}
+
 pub fn integer_given_bounds(lower: u64, upper: u64) -> u64 {
     lower + (thread_rng().gen::<f64>() * ((upper - lower) as f64)).floor() as u64
 }
@@ -78,5 +98,32 @@ mod tests {
             result = string_from_alphanumeric(length);
             assert_eq!(result.len(), length);
         }
+    }
+
+    #[test]
+    fn string_sample() {
+        let mut sampler: StringSampler;
+        let mut result: String;
+
+        sampler = StringSampler {
+            support: vec![String::from("abc")],
+            repetitions: 1,
+        };
+        result = sampler.sample();
+        assert_eq!(result, String::from("abc"));
+
+        sampler = StringSampler {
+            support: vec![String::from("abc")],
+            repetitions: 3,
+        };
+        result = sampler.sample();
+        assert_eq!(result, String::from("abcabcabc"));
+
+        sampler = StringSampler {
+            support: vec![String::from("a"), String::from("z")],
+            repetitions: 2,
+        };
+        result = sampler.sample();
+        assert!(result == *"aa" || result == *"zz" || result == *"az" || result == *"za");
     }
 }

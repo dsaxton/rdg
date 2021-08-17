@@ -1,4 +1,4 @@
-use rand::{thread_rng, Rng};
+use crate::sample;
 
 #[allow(dead_code)]
 #[derive(Debug, PartialEq)]
@@ -42,8 +42,8 @@ impl Pattern {
     }
 
     // TODO: implement this
-    fn to_string_sampler(&self) -> StringSampler {
-        StringSampler {
+    fn to_string_sampler(&self) -> sample::StringSampler {
+        sample::StringSampler {
             support: vec![self.value.clone()],
             repetitions: self.repetitions,
         }
@@ -113,26 +113,6 @@ impl Pattern {
     }
 }
 
-#[allow(dead_code)]
-#[derive(Debug, PartialEq)]
-struct StringSampler {
-    support: Vec<String>,
-    repetitions: u8,
-}
-
-#[allow(dead_code)]
-impl StringSampler {
-    fn sample(&self) -> String {
-        let mut result = String::from("");
-        let mut idx: usize;
-        for _ in 0..self.repetitions {
-            idx = (thread_rng().gen::<f64>() * (self.support.len() as f64)).floor() as usize;
-            result.push_str(&self.support[idx])
-        }
-        result
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -153,33 +133,6 @@ mod tests {
             result = Pattern::can_parse_as_literal_kind(s);
             assert!(!result)
         }
-    }
-
-    #[test]
-    fn string_sample() {
-        let mut sampler: StringSampler;
-        let mut result: String;
-
-        sampler = StringSampler {
-            support: vec![String::from("abc")],
-            repetitions: 1,
-        };
-        result = sampler.sample();
-        assert_eq!(result, String::from("abc"));
-
-        sampler = StringSampler {
-            support: vec![String::from("abc")],
-            repetitions: 3,
-        };
-        result = sampler.sample();
-        assert_eq!(result, String::from("abcabcabc"));
-
-        sampler = StringSampler {
-            support: vec![String::from("a"), String::from("z")],
-            repetitions: 2,
-        };
-        result = sampler.sample();
-        assert!(result == *"aa" || result == *"zz" || result == *"az" || result == *"za");
     }
 
     #[test]
