@@ -70,15 +70,8 @@ fn can_parse_as_literal_kind(string: &str) -> bool {
 }
 
 fn can_parse_as_parentheses_kind(string: &str) -> bool {
-    // need to pop quantifier off the end
-    if !string.starts_with('(') {
-        return false;
-    }
-    // what about pipes?
-    if string.ends_with(')') {
-        if can_parse_as_literal_kind(&string[1..(string.len() - 1)]) {
-            return true;
-        }
+    let (string, _) = pop_quantifier(string);
+    if !string.starts_with('(') || !string.ends_with(')') {
         return false;
     }
     // split on every unescaped pipe, remove surrounding parens and ensure each pattern is literal
@@ -86,7 +79,7 @@ fn can_parse_as_parentheses_kind(string: &str) -> bool {
 }
 
 fn is_special_character(character: char) -> bool {
-    "()[]{}*\\".chars().any(|c| c == character)
+    "()[]{}*\\|".chars().any(|c| c == character)
 }
 
 fn is_escape_character(character: char) -> bool {
@@ -132,6 +125,24 @@ mod tests {
         for s in ["(abc)", "[123]", "\\[123]", "abc(1|2|3)"] {
             result = can_parse_as_literal_kind(s);
             assert!(!result)
+        }
+    }
+
+    #[test]
+    fn can_parse_as_parentheses_invalid() {
+        let mut result: bool;
+        for s in ["abc", "[abc]", "(abc", "abc)", "(abc)a"] {
+            result = can_parse_as_parentheses_kind(s);
+            assert!(!result)
+        }
+    }
+
+    #[test]
+    fn can_parse_as_parentheses_valid() {
+        let mut result: bool;
+        for s in ["(abc)", "(123)", "(abc){5}", "(a|b|c)"] {
+            result = can_parse_as_parentheses_kind(s);
+            assert!(result)
         }
     }
 
@@ -186,7 +197,7 @@ mod tests {
 
     #[test]
     fn check_special_characters() {
-        for c in "()[]{}*\\".chars() {
+        for c in "()[]{}*\\|".chars() {
             assert!(is_special_character(c));
         }
     }
