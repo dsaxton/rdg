@@ -85,12 +85,7 @@ impl Pattern {
     }
 
     fn is_special_character(character: char) -> bool {
-        for c in "()[]{}*\\".chars() {
-            if c == character {
-                return true;
-            }
-        }
-        false
+        "()[]{}*\\".chars().any(|c| c == character)
     }
 
     fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
