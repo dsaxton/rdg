@@ -24,14 +24,14 @@ struct ParseError;
 impl Pattern {
     // TODO: make this correct
     fn parse(string: &str) -> Result<Pattern, ParseError> {
-        if Pattern::can_parse_as_literal_type(string) {
+        if Pattern::can_parse_as_literal_kind(string) {
             return Ok(Pattern {
                 value: String::from(string),
                 kind: PatternKind::Literal,
                 repetitions: 1,
             });
         }
-        if Pattern::can_parse_as_parentheses_type(string) {
+        if Pattern::can_parse_as_parentheses_kind(string) {
             return Ok(Pattern {
                 value: String::from(string),
                 kind: PatternKind::Parentheses,
@@ -49,7 +49,7 @@ impl Pattern {
         }
     }
 
-    fn can_parse_as_literal_type(string: &str) -> bool {
+    fn can_parse_as_literal_kind(string: &str) -> bool {
         let mut escaped = false;
         for (i, c) in string.chars().enumerate() {
             if escaped {
@@ -68,14 +68,14 @@ impl Pattern {
         true
     }
 
-    fn can_parse_as_parentheses_type(string: &str) -> bool {
+    fn can_parse_as_parentheses_kind(string: &str) -> bool {
         // need to pop quantifier off the end
         if !string.starts_with('(') {
             return false;
         }
         // what about pipes?
         if string.ends_with(')') {
-            if Pattern::can_parse_as_literal_type(&string[1..(string.len() - 1)]) {
+            if Pattern::can_parse_as_literal_kind(&string[1..(string.len() - 1)]) {
                 return true;
             }
             return false;
@@ -141,7 +141,7 @@ mod tests {
     fn can_parse_as_literal_valid() {
         let mut result: bool;
         for s in ["abc", "abc\\(", "\\(abc\\)", "123", "\\*\\{"] {
-            result = Pattern::can_parse_as_literal_type(s);
+            result = Pattern::can_parse_as_literal_kind(s);
             assert!(result)
         }
     }
@@ -150,7 +150,7 @@ mod tests {
     fn can_parse_as_literal_invalid() {
         let mut result: bool;
         for s in ["(abc)", "[123]", "\\[123]", "abc(1|2|3)"] {
-            result = Pattern::can_parse_as_literal_type(s);
+            result = Pattern::can_parse_as_literal_kind(s);
             assert!(!result)
         }
     }
