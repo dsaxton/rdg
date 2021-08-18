@@ -78,15 +78,15 @@ fn can_parse_as_parentheses_kind(string: &str) -> bool {
     if indexes.len() == 2 {
         return can_parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]);
     }
-    let mut all_patterns_literal = true;
     for (i, p) in indexes.iter().enumerate() {
         if i == 0 {
             continue;
         }
-        all_patterns_literal =
-            all_patterns_literal && can_parse_as_literal_kind(&string[(indexes[i - 1] + 1)..*p]);
+        if !can_parse_as_literal_kind(&string[(indexes[i - 1] + 1)..*p]) {
+            return false;
+        }
     }
-    all_patterns_literal
+    true
 }
 
 #[allow(dead_code)]
