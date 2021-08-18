@@ -72,8 +72,8 @@ fn can_parse_as_literal_kind(string: &str) -> bool {
 fn can_parse_as_parentheses_kind(string: &str) -> bool {
     let (string, _) = pop_quantifier(string);
     let indexes = match find_parentheses_boundaries(string) {
-        Some(vec) => vec,
-        _ => return false,
+        Ok(vec) => vec,
+        Err(_) => return false,
     };
     if indexes.len() == 2 {
         return can_parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]);
@@ -95,11 +95,11 @@ fn can_parse_as_brackets_kind(string: &str) -> bool {
     !string.is_empty()
 }
 
-fn find_parentheses_boundaries(string: &str) -> Option<Vec<usize>> {
+fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
     // TODO: think more about the case ()
     // depends whether the empty string should be regarded as a valid literal pattern
     if !string.starts_with('(') || !string.ends_with(')') || string.len() < 3 {
-        return None;
+        return Err(ParseError);
     }
 
     let mut indexes: Vec<usize> = vec![0];
@@ -119,7 +119,7 @@ fn find_parentheses_boundaries(string: &str) -> Option<Vec<usize>> {
         escaped_by_previous = false;
     }
     indexes.push(string.len() - 1);
-    Some(indexes)
+    Ok(indexes)
 }
 
 fn is_special_character(character: char) -> bool {
@@ -349,10 +349,10 @@ mod tests {
             assert_eq!(valid_result, expected);
         }
 
-        let mut invalid_result: Option<Vec<usize>>;
+        let mut invalid_result: Result<Vec<usize>, ParseError>;
         for invalid in ["abc", "(abc", "abc)", "[a|b|c]"] {
             invalid_result = find_parentheses_boundaries(invalid);
-            assert!(invalid_result.is_none())
+            assert!(invalid_result.is_err())
         }
     }
 }
