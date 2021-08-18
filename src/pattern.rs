@@ -79,7 +79,6 @@ fn can_parse_as_parentheses_kind(string: &str) -> bool {
     if indexes.len() == 2 {
         return can_parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]);
     }
-    // TODO: should this actaully be the case? what about the wild card * in a subpattern?
     let mut all_patterns_literal = true;
     for (i, p) in indexes.iter().enumerate() {
         if i == 0 {
@@ -99,6 +98,7 @@ fn can_parse_as_brackets_kind(string: &str) -> bool {
 
 fn find_parentheses_boundaries(string: &str) -> Option<Vec<usize>> {
     // TODO: think more about the case ()
+    // depends whether the empty string should be regarded as a valid literal pattern
     if !string.starts_with('(') || !string.ends_with(')') || string.len() < 3 {
         return None;
     }
@@ -182,7 +182,10 @@ mod tests {
     #[test]
     fn can_parse_as_literal_invalid() {
         let mut result: bool;
-        for s in ["(abc)", "[123]", "\\[123]", "abc(1|2|3)"] {
+        for s in [
+            "(abc)", "\\(abc)", "(abc\\)", "abc)", "(abc", "[123]", "\\[123]", "[123\\]",
+            "abc(123)", "(123)abc", ")(",
+        ] {
             result = can_parse_as_literal_kind(s);
             assert!(!result)
         }
