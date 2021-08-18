@@ -158,7 +158,22 @@ mod tests {
     #[test]
     fn can_parse_as_literal_valid() {
         let mut result: bool;
-        for s in ["abc", "abc\\(", "\\(abc\\)", "123", "*\\{", "&#$", "ab-*"] {
+        for s in [
+            "abc",
+            "abc\\(",
+            "\\(abc",
+            "\\(abc\\)",
+            "abc\\]",
+            "\\[abc",
+            "\\[abc\\]",
+            "123",
+            "*\\{",
+            "&#$",
+            "ab-*",
+            "...",
+            "$^",
+            "a2z#@",
+        ] {
             result = can_parse_as_literal_kind(s);
             assert!(result)
         }
@@ -238,6 +253,10 @@ mod tests {
         for value in [
             "abc",
             "a2c",
+            "ABC",
+            "...",
+            "$^",
+            "#$@#",
             "abc\\(",
             "\\(xyz",
             "012",
