@@ -74,7 +74,23 @@ fn can_parse_as_parentheses_kind(string: &str) -> bool {
     if !string.starts_with('(') || !string.ends_with(')') || string.len() < 3 {
         return false;
     }
-    let mut terminal_indexes: Vec<usize> = vec![0];
+    let indexes = find_parentheses_boundaries(string);
+    if indexes.len() == 2 {
+        return can_parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]);
+    }
+    let mut all_patterns_valid = true;
+    for (i, p) in indexes.iter().enumerate() {
+        if i == 0 {
+            continue;
+        }
+        all_patterns_valid =
+            all_patterns_valid && can_parse_as_literal_kind(&string[(indexes[i - 1] + 1)..*p]);
+    }
+    all_patterns_valid
+}
+
+fn find_parentheses_boundaries(string: &str) -> Vec<usize> {
+    let mut indexes: Vec<usize> = vec![0];
     let mut escaped_by_previous = false;
     for (i, c) in string.chars().enumerate() {
         if escaped_by_previous {
@@ -86,23 +102,12 @@ fn can_parse_as_parentheses_kind(string: &str) -> bool {
             continue;
         }
         if c == '|' {
-            terminal_indexes.push(i);
+            indexes.push(i);
         }
         escaped_by_previous = false;
     }
-    terminal_indexes.push(string.len() - 1);
-    if terminal_indexes.len() == 2 {
-        return can_parse_as_literal_kind(&string[(terminal_indexes[0] + 1)..terminal_indexes[1]]);
-    }
-    let mut all_patterns_valid = true;
-    for (i, p) in terminal_indexes.iter().enumerate() {
-        if i == 0 {
-            continue;
-        }
-        all_patterns_valid = all_patterns_valid
-            && can_parse_as_literal_kind(&string[(terminal_indexes[i - 1] + 1)..*p]);
-    }
-    all_patterns_valid
+    indexes.push(string.len() - 1);
+    indexes
 }
 
 fn is_special_character(character: char) -> bool {
