@@ -71,11 +71,39 @@ fn can_parse_as_literal_kind(string: &str) -> bool {
 
 fn can_parse_as_parentheses_kind(string: &str) -> bool {
     let (string, _) = pop_quantifier(string);
-    if !string.starts_with('(') || !string.ends_with(')') {
+    if !string.starts_with('(') || !string.ends_with(')') || string.len() < 3 {
         return false;
     }
-    // split on every unescaped pipe, remove surrounding parens and ensure each pattern is literal
-    false
+    // simply trim off '(' and ')' before doing all this?
+    let mut terminal_indexes: Vec<usize> = vec![0];
+    let mut escaped_by_previous = false;
+    for (i, c) in string.chars().enumerate() {
+        if escaped_by_previous {
+            escaped_by_previous = false;
+            continue;
+        }
+        if is_escape_character(c) {
+            escaped_by_previous = true;
+            continue;
+        }
+        if c == '|' {
+            terminal_indexes.push(i);
+        }
+        escaped_by_previous = false;
+    }
+    terminal_indexes.push(string.len() - 1);
+    if terminal_indexes.len() == 2 {
+        return can_parse_as_literal_kind(&string[terminal_indexes[0]..terminal_indexes[1]]);
+    }
+    let mut all_patterns_valid = true;
+    for (i, p) in terminal_indexes.iter().enumerate() {
+        if i == 0 {
+            continue;
+        }
+        all_patterns_valid = all_patterns_valid
+            && can_parse_as_literal_kind(&string[(terminal_indexes[i - 1] + 1)..*p]);
+    }
+    all_patterns_valid
 }
 
 fn is_special_character(character: char) -> bool {
