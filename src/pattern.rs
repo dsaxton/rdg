@@ -173,6 +173,8 @@ mod tests {
         for s in [
             "(abc)",
             "(123)",
+            "(alice|bob)",
+            "(alice|bob){2}",
             "(abc){5}",
             "(a|bc){5}",
             "(ab|c){5}",
