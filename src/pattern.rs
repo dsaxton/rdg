@@ -118,7 +118,7 @@ fn find_parentheses_boundaries(string: &str) -> Vec<usize> {
 }
 
 fn is_special_character(character: char) -> bool {
-    "()[]{}*\\|".chars().any(|c| c == character)
+    "()[]{}\\|".chars().any(|c| c == character)
 }
 
 fn is_escape_character(character: char) -> bool {
@@ -152,7 +152,7 @@ mod tests {
     #[test]
     fn can_parse_as_literal_valid() {
         let mut result: bool;
-        for s in ["abc", "abc\\(", "\\(abc\\)", "123", "\\*\\{"] {
+        for s in ["abc", "abc\\(", "\\(abc\\)", "123", "*\\{", "&#$", "ab-*"] {
             result = can_parse_as_literal_kind(s);
             assert!(result)
         }
@@ -171,7 +171,19 @@ mod tests {
     fn can_parse_as_parentheses_valid() {
         let mut result: bool;
         for s in [
-            "(abc)", "(123)", "(abc){5}", "(a|b|c)", "(a|\\|)", "($|%|^)", "(12|a|-)",
+            "(abc)",
+            "(123)",
+            "(abc){5}",
+            "(a|bc){5}",
+            "(ab|c){5}",
+            "(1&$#@){5}",
+            "(1&|$#@){5}",
+            "(a|b|c)",
+            "(a|\\|)",
+            "(a|2|$|%|^)",
+            "(a|2|$|%|^){100}",
+            "(12|a|-)",
+            "(12|a|-){100}",
         ] {
             result = can_parse_as_parentheses_kind(s);
             assert!(result)
@@ -182,7 +194,20 @@ mod tests {
     fn can_parse_as_parentheses_invalid() {
         let mut result: bool;
         for s in [
-            "abc", "[abc]", "(abc", "abc)", "(abc)a", "(abc))", "((abc))",
+            "abc",
+            "[abc]",
+            "(abc",
+            "abc)",
+            "(abc))",
+            "((abc)",
+            "((abc))",
+            "|abc)",
+            "(abc|",
+            "(abc)a",
+            "a(abc)",
+            "(abc){1}}",
+            "{1}(abc)",
+            "(abc){{1}",
         ] {
             result = can_parse_as_parentheses_kind(s);
             assert!(!result)
@@ -249,7 +274,7 @@ mod tests {
 
     #[test]
     fn check_special_characters() {
-        for c in "()[]{}*\\|".chars() {
+        for c in "()[]{}\\|".chars() {
             assert!(is_special_character(c));
         }
     }
