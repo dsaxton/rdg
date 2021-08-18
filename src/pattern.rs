@@ -71,8 +71,7 @@ fn can_parse_as_literal_kind(string: &str) -> bool {
 
 fn can_parse_as_parentheses_kind(string: &str) -> bool {
     let (string, _) = pop_quantifier(string);
-    let indexes = find_parentheses_boundaries(string);
-    let indexes = match indexes {
+    let indexes = match find_parentheses_boundaries(string) {
         Some(vec) => vec,
         _ => return false,
     };
