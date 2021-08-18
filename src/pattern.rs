@@ -92,7 +92,7 @@ fn can_parse_as_parentheses_kind(string: &str) -> bool {
     }
     terminal_indexes.push(string.len() - 1);
     if terminal_indexes.len() == 2 {
-        return can_parse_as_literal_kind(&string[terminal_indexes[0]..terminal_indexes[1]]);
+        return can_parse_as_literal_kind(&string[(terminal_indexes[0] + 1)..terminal_indexes[1]]);
     }
     let mut all_patterns_valid = true;
     for (i, p) in terminal_indexes.iter().enumerate() {
