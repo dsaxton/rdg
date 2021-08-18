@@ -71,10 +71,11 @@ fn can_parse_as_literal_kind(string: &str) -> bool {
 
 fn can_parse_as_parentheses_kind(string: &str) -> bool {
     let (string, _) = pop_quantifier(string);
-    if !string.starts_with('(') || !string.ends_with(')') || string.len() < 3 {
-        return false;
-    }
     let indexes = find_parentheses_boundaries(string);
+    let indexes = match indexes {
+        Some(vec) => vec,
+        _ => return false,
+    };
     if indexes.len() == 2 {
         return can_parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]);
     }
@@ -96,7 +97,12 @@ fn can_parse_as_brackets_kind(string: &str) -> bool {
     !string.is_empty()
 }
 
-fn find_parentheses_boundaries(string: &str) -> Vec<usize> {
+fn find_parentheses_boundaries(string: &str) -> Option<Vec<usize>> {
+    // TODO: think more about the case ()
+    if !string.starts_with('(') || !string.ends_with(')') || string.len() < 3 {
+        return None;
+    }
+
     let mut indexes: Vec<usize> = vec![0];
     let mut escaped_by_previous = false;
     for (i, c) in string.chars().enumerate() {
@@ -114,7 +120,7 @@ fn find_parentheses_boundaries(string: &str) -> Vec<usize> {
         escaped_by_previous = false;
     }
     indexes.push(string.len() - 1);
-    indexes
+    Some(indexes)
 }
 
 fn is_special_character(character: char) -> bool {
@@ -307,6 +313,25 @@ mod tests {
         {
             result = pop_quantifier(input);
             assert_eq!(result, *expected);
+        }
+    }
+
+    #[test]
+    fn check_find_parentheses_boundaries() {
+        let mut valid_result: Vec<usize>;
+        for (input, expected) in [
+            ("(abc)", vec![0, 4]),
+            ("(a|b|c)", vec![0, 2, 4, 6]),
+            ("(a|bbb|c)", vec![0, 2, 6, 8]),
+        ] {
+            valid_result = find_parentheses_boundaries(input).unwrap();
+            assert_eq!(valid_result, expected);
+        }
+
+        let mut invalid_result: Option<Vec<usize>>;
+        for invalid in ["abc", "(abc", "abc)", "[a|b|c]"] {
+            invalid_result = find_parentheses_boundaries(invalid);
+            assert!(invalid_result.is_none())
         }
     }
 }
