@@ -191,6 +191,12 @@ mod tests {
     }
 
     #[test]
+    fn can_parse_as_literal_empty_string() {
+        let result = can_parse_as_literal_kind("");
+        assert!(!result)
+    }
+
+    #[test]
     fn can_parse_as_parentheses_valid() {
         let mut result: bool;
         for s in [
