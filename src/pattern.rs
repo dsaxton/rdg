@@ -74,7 +74,6 @@ fn can_parse_as_parentheses_kind(string: &str) -> bool {
     if !string.starts_with('(') || !string.ends_with(')') || string.len() < 3 {
         return false;
     }
-    // simply trim off '(' and ')' before doing all this?
     let mut terminal_indexes: Vec<usize> = vec![0];
     let mut escaped_by_previous = false;
     for (i, c) in string.chars().enumerate() {
