@@ -78,6 +78,7 @@ fn can_parse_as_parentheses_kind(string: &str) -> bool {
     if indexes.len() == 2 {
         return can_parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]);
     }
+    // TODO: should this actaully be the case? what about the wild card * in a subpattern?
     let mut all_patterns_literal = true;
     for (i, p) in indexes.iter().enumerate() {
         if i == 0 {
