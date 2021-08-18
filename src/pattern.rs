@@ -90,6 +90,12 @@ fn can_parse_as_parentheses_kind(string: &str) -> bool {
     all_patterns_literal
 }
 
+#[allow(dead_code)]
+fn can_parse_as_brackets_kind(string: &str) -> bool {
+    // TODO: fix this
+    !string.is_empty()
+}
+
 fn find_parentheses_boundaries(string: &str) -> Vec<usize> {
     let mut indexes: Vec<usize> = vec![0];
     let mut escaped_by_previous = false;
