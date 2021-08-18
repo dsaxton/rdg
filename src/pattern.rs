@@ -161,6 +161,17 @@ mod tests {
     }
 
     #[test]
+    fn can_parse_as_parentheses_valid() {
+        let mut result: bool;
+        for s in [
+            "(abc)", "(123)", "(abc){5}", "(a|b|c)", "(a|\\|)", "($|%|^)", "(12|a|-)",
+        ] {
+            result = can_parse_as_parentheses_kind(s);
+            assert!(result)
+        }
+    }
+
+    #[test]
     fn can_parse_as_parentheses_invalid() {
         let mut result: bool;
         for s in [
@@ -172,12 +183,10 @@ mod tests {
     }
 
     #[test]
-    fn can_parse_as_parentheses_valid() {
+    fn can_parse_as_brackets_valid() {
         let mut result: bool;
-        for s in [
-            "(abc)", "(123)", "(abc){5}", "(a|b|c)", "(a|\\|)", "($|%|^)", "(12|a|-)",
-        ] {
-            result = can_parse_as_parentheses_kind(s);
+        for s in ["[abc]"] {
+            result = can_parse_as_brackets_kind(s);
             assert!(result)
         }
     }
