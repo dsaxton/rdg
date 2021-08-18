@@ -158,7 +158,9 @@ mod tests {
     #[test]
     fn can_parse_as_parentheses_invalid() {
         let mut result: bool;
-        for s in ["abc", "[abc]", "(abc", "abc)", "(abc)a"] {
+        for s in [
+            "abc", "[abc]", "(abc", "abc)", "(abc)a", "(abc))", "((abc))",
+        ] {
             result = can_parse_as_parentheses_kind(s);
             assert!(!result)
         }
@@ -167,7 +169,9 @@ mod tests {
     #[test]
     fn can_parse_as_parentheses_valid() {
         let mut result: bool;
-        for s in ["(abc)", "(123)", "(abc){5}", "(a|b|c)"] {
+        for s in [
+            "(abc)", "(123)", "(abc){5}", "(a|b|c)", "(a|\\|)", "($|%|^)", "(12|a|-)",
+        ] {
             result = can_parse_as_parentheses_kind(s);
             assert!(result)
         }
