@@ -46,6 +46,7 @@ pub fn from_wordlist(wordlist: &str) -> String {
     selected_word.pop().unwrap()
 }
 
+// TODO: get rid of this and use StringSampler
 pub fn string_from_alphanumeric(length: usize) -> String {
     thread_rng()
         .sample_iter(&Alphanumeric)
