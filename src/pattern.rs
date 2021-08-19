@@ -96,12 +96,9 @@ fn can_parse_as_brackets_kind(string: &str) -> bool {
 }
 
 fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
-    // TODO: think more about the case ()
-    // depends whether the empty string should be regarded as a valid literal pattern
-    if !string.starts_with('(') || !string.ends_with(')') || string.len() < 3 {
+    if !string.starts_with('(') || !string.ends_with(')') {
         return Err(ParseError);
     }
-
     let mut indexes: Vec<usize> = vec![0];
     let mut escaped_by_previous = false;
     for (i, c) in string.chars().enumerate() {
@@ -172,6 +169,7 @@ mod tests {
             "...",
             "$^",
             "a2z#@",
+            "",
         ] {
             result = can_parse_as_literal_kind(s);
             assert!(result)
@@ -188,12 +186,6 @@ mod tests {
             result = can_parse_as_literal_kind(s);
             assert!(!result)
         }
-    }
-
-    #[test]
-    fn can_parse_as_literal_empty_string() {
-        let result = can_parse_as_literal_kind("");
-        assert!(!result)
     }
 
     #[test]
