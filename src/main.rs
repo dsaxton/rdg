@@ -94,16 +94,23 @@ fn main() {
         }
         Some(("string", string_matches)) => {
             // TODO: remove this debugging
-            let pat = string_matches.value_of("pattern").expect("invalid pattern");
+            let pat = string_matches
+                .value_of("pattern")
+                .unwrap_or("[A-Za-z0-9]{10}");
             println!(
-                "pattern: {} can_parse_as_literal_kind: {}",
+                "pattern: {:?} can_parse_as_literal_kind: {:?}",
                 pat,
                 pattern::can_parse_as_literal_kind(pat)
             );
             println!(
-                "pattern: {} can_parse_as_parentheses_kind: {}",
+                "pattern: {:?} can_parse_as_parentheses_kind: {:?}",
                 pat,
                 pattern::can_parse_as_parentheses_kind(pat)
+            );
+            println!(
+                "pattern: {:?} find_parentheses_boundaries: {:?}",
+                pat,
+                pattern::find_parentheses_boundaries(pat).unwrap_or_default()
             );
         }
         _ => {

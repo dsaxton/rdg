@@ -18,7 +18,7 @@ enum PatternKind {
 }
 
 #[derive(Debug)]
-struct ParseError;
+pub struct ParseError;
 
 #[allow(dead_code)]
 impl Pattern {
@@ -95,7 +95,7 @@ fn can_parse_as_brackets_kind(string: &str) -> bool {
     !string.is_empty()
 }
 
-fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
+pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
     if !string.starts_with('(') || !string.ends_with(')') {
         return Err(ParseError);
     }
