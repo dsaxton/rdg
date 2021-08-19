@@ -32,7 +32,7 @@ fn main() {
                 });
             let upper = int_matches
                 .value_of("upper")
-                .unwrap_or("1")
+                .unwrap_or("2")
                 .parse::<u64>()
                 .unwrap_or_else(|err| {
                     eprintln!("Error parsing upper: {}", err);
