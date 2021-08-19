@@ -84,7 +84,7 @@ fn main() {
             let file = match File::open(wordlist) {
                 Ok(f) => f,
                 Err(err) => {
-                    eprintln!("Error parsing length: {}", err);
+                    eprintln!("Error reading file: {}", err);
                     process::exit(EXIT_ERROR);
                 }
             };
@@ -93,18 +93,18 @@ fn main() {
             }
         }
         Some(("string", string_matches)) => {
-            let length = string_matches
-                .value_of("length")
-                .unwrap_or("10")
-                .parse::<usize>()
-                .unwrap_or_else(|err| {
-                    eprintln!("Error parsing length: {}", err);
-                    process::exit(EXIT_ERROR);
-                });
-
-            for _ in 0..count {
-                print!("{}{}", sample::string_from_alphanumeric(length), delimiter);
-            }
+            // TODO: remove this debugging
+            let pat = string_matches.value_of("pattern").expect("invalid pattern");
+            println!(
+                "pattern: {} can_parse_as_literal_kind: {}",
+                pat,
+                pattern::can_parse_as_literal_kind(pat)
+            );
+            println!(
+                "pattern: {} can_parse_as_parentheses_kind: {}",
+                pat,
+                pattern::can_parse_as_parentheses_kind(pat)
+            );
         }
         _ => {
             process::exit(EXIT_ERROR);

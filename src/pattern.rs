@@ -50,7 +50,7 @@ impl Pattern {
     }
 }
 
-fn can_parse_as_literal_kind(string: &str) -> bool {
+pub fn can_parse_as_literal_kind(string: &str) -> bool {
     let mut escaped_by_previous = false;
     for c in string.chars() {
         if escaped_by_previous {
@@ -69,7 +69,7 @@ fn can_parse_as_literal_kind(string: &str) -> bool {
     true
 }
 
-fn can_parse_as_parentheses_kind(string: &str) -> bool {
+pub fn can_parse_as_parentheses_kind(string: &str) -> bool {
     let (string, _) = pop_quantifier(string);
     let indexes = match find_parentheses_boundaries(string) {
         Ok(vec) => vec,

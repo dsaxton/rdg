@@ -1,7 +1,6 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 
 #[allow(dead_code)]
@@ -45,15 +44,6 @@ pub fn from_wordlist(file: &File) -> String {
     selected_word.pop().unwrap()
 }
 
-// TODO: get rid of this and use StringSampler
-pub fn string_from_alphanumeric(length: usize) -> String {
-    thread_rng()
-        .sample_iter(&Alphanumeric)
-        .take(length)
-        .map(char::from)
-        .collect()
-}
-
 fn random_uniform() -> f64 {
     thread_rng().gen::<f64>()
 }
@@ -89,17 +79,6 @@ mod tests {
             result = float_given_bounds(lower, upper);
             assert!(result >= lower);
             assert!(result < upper);
-        }
-    }
-
-    #[test]
-    fn string_sampling_respects_length() {
-        let mut length: usize;
-        let mut result: String;
-        for _ in 0..100 {
-            length = thread_rng().gen_range(1..100);
-            result = string_from_alphanumeric(length);
-            assert_eq!(result.len(), length);
         }
     }
 
