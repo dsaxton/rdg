@@ -89,8 +89,7 @@ pub fn can_parse_as_parentheses_kind(string: &str) -> bool {
     true
 }
 
-#[allow(dead_code)]
-fn can_parse_as_brackets_kind(string: &str) -> bool {
+pub fn can_parse_as_brackets_kind(string: &str) -> bool {
     // TODO: fix this
     !string.is_empty()
 }
@@ -127,8 +126,7 @@ fn is_escape_character(character: char) -> bool {
     character == '\\'
 }
 
-#[allow(dead_code)]
-fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
+pub fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
     if !string.ends_with('}') {
         return (string, None);
     }

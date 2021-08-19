@@ -108,9 +108,19 @@ fn main() {
                 pattern::can_parse_as_parentheses_kind(pat)
             );
             println!(
+                "pattern: {:?} can_parse_as_brackets_kind: {:?}",
+                pat,
+                pattern::can_parse_as_brackets_kind(pat),
+            );
+            println!(
                 "pattern: {:?} find_parentheses_boundaries: {:?}",
                 pat,
                 pattern::find_parentheses_boundaries(pat).unwrap_or_default()
+            );
+            println!(
+                "pattern: {:?} pop_quantifier: {:?}",
+                pat,
+                pattern::pop_quantifier(pat),
             );
         }
         _ => {
