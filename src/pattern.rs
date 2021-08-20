@@ -314,10 +314,10 @@ mod tests {
     fn parse_valid_parentheses_pattern() {
         let mut result: Pattern;
         let mut expected: Pattern;
-        for value in ["(abc)", "(abc\\*)", "(a|b|c)"].iter() {
+        for value in ["(abc)", "(abc\\*)", "(a|b|c)"] {
             result = Pattern::parse(value).unwrap();
             expected = Pattern {
-                value: String::from(*value),
+                value: String::from(&value[1..(value.len() - 1)]),
                 kind: PatternKind::Parentheses,
                 repetitions: 1,
             };
