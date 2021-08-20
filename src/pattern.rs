@@ -263,7 +263,10 @@ mod tests {
     #[test]
     fn can_parse_as_brackets_invalid() {
         let mut result: bool;
-        for s in ["[abc\\]"] {
+        for s in [
+            "[abc\\]", "\\[abc]", "[()]", "[[]]", "[(]", "[)]", "[[]", "[]]", "[abc|]", "[|]",
+            "[abc}]", "[{abc]",
+        ] {
             result = can_parse_as_brackets_kind(s);
             assert!(!result)
         }
