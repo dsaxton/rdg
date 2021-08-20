@@ -52,14 +52,17 @@ impl Pattern {
 
 pub fn can_parse_as_literal_kind(string: &str) -> bool {
     let mut escaped_by_previous = false;
-    for c in string.chars() {
+    for (i, c) in string.chars().enumerate() {
         if escaped_by_previous {
             escaped_by_previous = false;
             continue;
         }
         if is_escape_character(c) {
-            escaped_by_previous = true;
-            continue;
+            if i < string.len() - 1 {
+                escaped_by_previous = true;
+                continue;
+            }
+            return false;
         }
         if is_special_character(c) {
             return false;
@@ -90,8 +93,11 @@ pub fn can_parse_as_parentheses_kind(string: &str) -> bool {
 }
 
 pub fn can_parse_as_brackets_kind(string: &str) -> bool {
-    // TODO: fix this
-    !string.is_empty()
+    let (string, _) = pop_quantifier(string);
+    if !string.starts_with('[') || !string.ends_with(']') {
+        return false;
+    }
+    can_parse_as_literal_kind(&string[1..(string.len() - 1)])
 }
 
 pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
@@ -168,6 +174,7 @@ mod tests {
             "$^",
             "a2z#@",
             "",
+            "\\\\",
         ] {
             result = can_parse_as_literal_kind(s);
             assert!(result)
@@ -179,7 +186,7 @@ mod tests {
         let mut result: bool;
         for s in [
             "(abc)", "\\(abc)", "(abc\\)", "abc)", "(abc", "[123]", "\\[123]", "[123\\]",
-            "abc(123)", "(123)abc", ")(",
+            "abc(123)", "(123)abc", ")(", "\\",
         ] {
             result = can_parse_as_literal_kind(s);
             assert!(!result)
@@ -238,9 +245,27 @@ mod tests {
     #[test]
     fn can_parse_as_brackets_valid() {
         let mut result: bool;
-        for s in ["[abc]"] {
+        for s in [
+            "[abc]",
+            "[abc]{10}",
+            "[A-Z]",
+            "[a-z]",
+            "[0-9]",
+            "[A-Za-z0-9]{3}",
+            "[a&^#]",
+            "[\\|]",
+        ] {
             result = can_parse_as_brackets_kind(s);
             assert!(result)
+        }
+    }
+
+    #[test]
+    fn can_parse_as_brackets_invalid() {
+        let mut result: bool;
+        for s in ["[abc\\]"] {
+            result = can_parse_as_brackets_kind(s);
+            assert!(!result)
         }
     }
 
