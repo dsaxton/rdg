@@ -54,7 +54,7 @@ impl Pattern {
     pub fn to_string_sampler(&self) -> sample::StringSampler {
         sample::StringSampler {
             support: vec![self.value.clone()],
-            quantifier: self.quantifier,
+            repetitions: self.quantifier,
         }
     }
 }
