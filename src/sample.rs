@@ -7,14 +7,14 @@ use rand::{thread_rng, Rng};
 #[derive(Debug, PartialEq)]
 pub struct StringSampler {
     pub support: Vec<String>,
-    pub repetitions: u8,
+    pub quantifier: u8,
 }
 
 #[allow(dead_code)]
 impl StringSampler {
     fn sample(&self) -> String {
         let mut result = String::from("");
-        (0..self.repetitions).for_each(|_| {
+        (0..self.quantifier).for_each(|_| {
             let idx = (random_uniform() * (self.support.len() as f64)).floor() as usize;
             result.push_str(&self.support[idx])
         });
@@ -90,21 +90,21 @@ mod tests {
 
         sampler = StringSampler {
             support: vec![String::from("abc")],
-            repetitions: 1,
+            quantifier: 1,
         };
         result = sampler.sample();
         assert_eq!(result, String::from("abc"));
 
         sampler = StringSampler {
             support: vec![String::from("abc")],
-            repetitions: 3,
+            quantifier: 3,
         };
         result = sampler.sample();
         assert_eq!(result, String::from("abcabcabc"));
 
         sampler = StringSampler {
             support: vec![String::from("a"), String::from("z")],
-            repetitions: 2,
+            quantifier: 2,
         };
         result = sampler.sample();
         assert!(result == *"aa" || result == *"zz" || result == *"az" || result == *"za");

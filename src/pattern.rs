@@ -4,7 +4,7 @@ use crate::sample;
 pub struct Pattern {
     value: String,
     kind: PatternKind,
-    repetitions: u8,
+    quantifier: u8,
 }
 
 #[allow(dead_code)]
@@ -29,14 +29,14 @@ impl Pattern {
             return Ok(Pattern {
                 value: String::from(string),
                 kind: PatternKind::Literal,
-                repetitions: q,
+                quantifier: q,
             });
         }
         if can_parse_as_parentheses_kind(string) {
             return Ok(Pattern {
                 value: String::from(&string[1..(string.len() - 1)]),
                 kind: PatternKind::Parentheses,
-                repetitions: q,
+                quantifier: q,
             });
         }
         if can_parse_as_brackets_kind(string) {
@@ -44,7 +44,7 @@ impl Pattern {
             return Ok(Pattern {
                 value: String::from(&string[1..(string.len() - 1)]),
                 kind: PatternKind::Brackets,
-                repetitions: q,
+                quantifier: q,
             });
         }
         Err(ParseError)
@@ -54,7 +54,7 @@ impl Pattern {
     pub fn to_string_sampler(&self) -> sample::StringSampler {
         sample::StringSampler {
             support: vec![self.value.clone()],
-            repetitions: self.repetitions,
+            quantifier: self.quantifier,
         }
     }
 }
@@ -309,7 +309,7 @@ mod tests {
             expected = Pattern {
                 value: String::from(*value),
                 kind: PatternKind::Literal,
-                repetitions: 1,
+                quantifier: 1,
             };
             assert_eq!(result, expected);
         }
@@ -324,7 +324,7 @@ mod tests {
             expected = Pattern {
                 value: String::from(&value[1..(value.len() - 1)]),
                 kind: PatternKind::Parentheses,
-                repetitions: 1,
+                quantifier: 1,
             };
             assert_eq!(result, expected);
         }
