@@ -34,6 +34,8 @@ fn main() {
             println!("String pattern: {:?}", pat);
             let pat = pattern::Pattern::parse(pat).expect("unable to parse pat");
             println!("Parsed pattern: {:?}", pat);
+            let sampler = pat.to_string_sampler();
+            println!("Sampler: {:?}", sampler);
         }
         Some(("int", int_matches)) => {
             let lower = int_matches

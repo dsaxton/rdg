@@ -51,7 +51,7 @@ impl Pattern {
     }
 
     // TODO: implement this
-    fn to_string_sampler(&self) -> sample::StringSampler {
+    pub fn to_string_sampler(&self) -> sample::StringSampler {
         sample::StringSampler {
             support: vec![self.value.clone()],
             repetitions: self.repetitions,
@@ -158,6 +158,11 @@ pub fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
         previous_was_open_brace = c == '{';
     }
     (string, None)
+}
+
+#[allow(dead_code)]
+fn expand_ranges(string: &str) -> &str {
+    string
 }
 
 #[cfg(test)]
@@ -386,6 +391,25 @@ mod tests {
         for invalid in ["abc", "(abc", "abc)", "[a|b|c]"] {
             invalid_result = find_parentheses_boundaries(invalid);
             assert!(invalid_result.is_err())
+        }
+    }
+
+    #[test]
+    fn check_expand_ranges() {
+        let mut result: &str;
+        for (input, expected) in [
+            ("A-Z", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            ("a-z", "abcdefghijklmnopqrstuvwxyz"),
+            ("0-9", "0123456789"),
+            ("a-z0-9", "abcdefghijklmnopqrstuvwxyz0123456789"),
+            ("A-Z0-9", "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
+            ("0-9abc", "0123456789abc"),
+            ("abc0-9", "abc0123456789"),
+            ("A-Z123", "ABCDEFGHIJKLMNOPQRSTUVWXYZ123"),
+            ("123A-Z", "123ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+        ] {
+            result = expand_ranges(input);
+            assert_eq!(result, expected);
         }
     }
 }
