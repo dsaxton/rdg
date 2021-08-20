@@ -40,9 +40,8 @@ impl Pattern {
             });
         }
         if can_parse_as_brackets_kind(string) {
-            // need to make "canonical" by expanding out ranges
             return Ok(Pattern {
-                value: String::from(&string[1..(string.len() - 1)]),
+                value: expand_ranges(&string[1..(string.len() - 1)]),
                 kind: PatternKind::Brackets,
                 quantifier: q,
             });
