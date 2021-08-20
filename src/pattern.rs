@@ -161,8 +161,11 @@ pub fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
 }
 
 #[allow(dead_code)]
-fn expand_ranges(string: &str) -> &str {
+fn expand_ranges(string: &str) -> String {
     string
+        .replace("A-Z", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        .replace("0-9", "0123456789")
+        .replace("a-z", "abcdefghijklmnopqrstuvwxyz")
 }
 
 #[cfg(test)]
@@ -396,7 +399,7 @@ mod tests {
 
     #[test]
     fn check_expand_ranges() {
-        let mut result: &str;
+        let mut result: String;
         for (input, expected) in [
             ("A-Z", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             ("a-z", "abcdefghijklmnopqrstuvwxyz"),
