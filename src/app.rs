@@ -24,6 +24,33 @@ pub fn create_app() -> App<'static> {
                 .takes_value(true),
         )
         .subcommand(
+            App::new("word")
+                .about("Random words, requires a wordlist")
+                .setting(AppSettings::ColoredHelp)
+                .arg(
+                    Arg::new("wordlist")
+                        .short('w')
+                        .long("wordlist")
+                        .value_name("path")
+                        .about("Wordlist used for sampling")
+                        .takes_value(true)
+                        .required(true),
+                ),
+        )
+        .subcommand(
+            App::new("string")
+                .about("Random strings, default pattern \"[A-Za-z0-9]{10}\"")
+                .setting(AppSettings::ColoredHelp)
+                .arg(
+                    Arg::new("pattern")
+                        .short('p')
+                        .long("pattern")
+                        .value_name("string")
+                        .about("Pattern from which to sample, default \"[A-Za-z0-9]{10}\"")
+                        .takes_value(true),
+                ),
+        )
+        .subcommand(
             App::new("int")
                 .about("Random integers, default support {0, 1}")
                 .setting(AppSettings::ColoredHelp)
@@ -62,33 +89,6 @@ pub fn create_app() -> App<'static> {
                         .long("upper")
                         .value_name("integer")
                         .about("Upper bound (exclusive), default 1")
-                        .takes_value(true),
-                ),
-        )
-        .subcommand(
-            App::new("word")
-                .about("Random words, requires a wordlist")
-                .setting(AppSettings::ColoredHelp)
-                .arg(
-                    Arg::new("wordlist")
-                        .short('w')
-                        .long("wordlist")
-                        .value_name("path")
-                        .about("Wordlist used for sampling")
-                        .takes_value(true)
-                        .required(true),
-                ),
-        )
-        .subcommand(
-            App::new("string")
-                .about("Random strings, default pattern \"[A-Za-z0-9]{10}\"")
-                .setting(AppSettings::ColoredHelp)
-                .arg(
-                    Arg::new("pattern")
-                        .short('p')
-                        .long("pattern")
-                        .value_name("string")
-                        .about("Pattern from which to sample, default \"[A-Za-z0-9]{10}\"")
                         .takes_value(true),
                 ),
         )
