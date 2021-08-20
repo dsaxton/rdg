@@ -30,12 +30,13 @@ pub fn float_given_bounds(lower: f64, upper: f64) -> f64 {
     lower + random_uniform() * (upper - lower)
 }
 
-pub fn from_wordlist(file: &File) -> String {
+pub fn from_wordlist(wordlist: &str) -> String {
+    let file = File::open(wordlist).expect("error reading file");
     let reader = BufReader::new(file);
     let mut selected_word = vec![String::from("")];
 
     for (idx, line) in reader.lines().enumerate() {
-        if random_uniform() < 1.0 / ((idx + 1) as f64) {
+        if thread_rng().gen::<f64>() < 1.0 / ((idx + 1) as f64) {
             selected_word.pop();
             selected_word.push(line.unwrap())
         }

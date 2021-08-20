@@ -1,4 +1,3 @@
-use std::fs::File;
 use std::process;
 
 mod app;
@@ -81,15 +80,8 @@ fn main() {
         }
         Some(("word", word_matches)) => {
             let wordlist = word_matches.value_of("wordlist").unwrap();
-            let file = match File::open(wordlist) {
-                Ok(f) => f,
-                Err(err) => {
-                    eprintln!("Error reading file: {}", err);
-                    process::exit(EXIT_ERROR);
-                }
-            };
             for _ in 0..count {
-                print!("{}{}", sample::from_wordlist(&file), delimiter);
+                print!("{}{}", sample::from_wordlist(wordlist), delimiter);
             }
         }
         Some(("string", string_matches)) => {
