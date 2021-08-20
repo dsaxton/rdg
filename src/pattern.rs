@@ -1,8 +1,7 @@
 use crate::sample;
 
-#[allow(dead_code)]
 #[derive(Debug, PartialEq)]
-struct Pattern {
+pub struct Pattern {
     value: String,
     kind: PatternKind,
     repetitions: u8,
@@ -23,19 +22,29 @@ pub struct ParseError;
 #[allow(dead_code)]
 impl Pattern {
     // TODO: make this correct
-    fn parse(string: &str) -> Result<Pattern, ParseError> {
+    pub fn parse(string: &str) -> Result<Pattern, ParseError> {
+        let (string, q) = pop_quantifier(string);
+        let q = q.unwrap_or(1);
         if can_parse_as_literal_kind(string) {
             return Ok(Pattern {
                 value: String::from(string),
                 kind: PatternKind::Literal,
-                repetitions: 1,
+                repetitions: q,
             });
         }
         if can_parse_as_parentheses_kind(string) {
             return Ok(Pattern {
-                value: String::from(string),
+                value: String::from(&string[1..(string.len() - 1)]),
                 kind: PatternKind::Parentheses,
-                repetitions: 1,
+                repetitions: q,
+            });
+        }
+        if can_parse_as_brackets_kind(string) {
+            // need to make "canonical" by expanding out ranges
+            return Ok(Pattern {
+                value: String::from(&string[1..(string.len() - 1)]),
+                kind: PatternKind::Brackets,
+                repetitions: q,
             });
         }
         Err(ParseError)

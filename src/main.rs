@@ -31,31 +31,9 @@ fn main() {
             let pat = string_matches
                 .value_of("pattern")
                 .unwrap_or("[A-Za-z0-9]{10}");
-            println!(
-                "pattern: {:?} can_parse_as_literal_kind: {:?}",
-                pat,
-                pattern::can_parse_as_literal_kind(pat)
-            );
-            println!(
-                "pattern: {:?} can_parse_as_parentheses_kind: {:?}",
-                pat,
-                pattern::can_parse_as_parentheses_kind(pat)
-            );
-            println!(
-                "pattern: {:?} can_parse_as_brackets_kind: {:?}",
-                pat,
-                pattern::can_parse_as_brackets_kind(pat),
-            );
-            println!(
-                "pattern: {:?} find_parentheses_boundaries: {:?}",
-                pat,
-                pattern::find_parentheses_boundaries(pat).unwrap_or_default()
-            );
-            println!(
-                "pattern: {:?} pop_quantifier: {:?}",
-                pat,
-                pattern::pop_quantifier(pat),
-            );
+            println!("String pattern: {:?}", pat);
+            let pat = pattern::Pattern::parse(pat).expect("unable to parse pat");
+            println!("Parsed pattern: {:?}", pat);
         }
         Some(("int", int_matches)) => {
             let lower = int_matches
