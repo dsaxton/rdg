@@ -31,11 +31,11 @@ fn main() {
             let pat = string_matches
                 .value_of("pattern")
                 .unwrap_or("[A-Za-z0-9]{10}");
-            println!("String pattern: {:?}", pat);
-            let pat = pattern::Pattern::parse(pat).expect("unable to parse pat");
-            println!("Parsed pattern: {:?}", pat);
+            println!("{:?}", pat);
+            let pat = pattern::Pattern::parse(pat).expect("unable to parse pattern");
+            println!("{:?}", pat);
             let sampler = pat.to_string_sampler();
-            println!("Sampler: {:?}", sampler);
+            println!("{:?}", sampler);
         }
         Some(("int", int_matches)) => {
             let lower = int_matches
