@@ -159,7 +159,6 @@ pub fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
     (string, None)
 }
 
-#[allow(dead_code)]
 fn expand_ranges(string: &str) -> String {
     string
         .replace("A-Z", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
