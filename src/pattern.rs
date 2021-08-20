@@ -51,9 +51,27 @@ impl Pattern {
 
     // TODO: implement this
     pub fn to_string_sampler(&self) -> sample::StringSampler {
-        sample::StringSampler {
-            support: vec![self.value.clone()],
-            repetitions: self.quantifier,
+        match &self {
+            Pattern {
+                value,
+                kind: PatternKind::Literal,
+                quantifier,
+            } => sample::StringSampler {
+                support: vec![value.clone()],
+                repetitions: *quantifier,
+            },
+            Pattern {
+                value,
+                kind: PatternKind::Brackets,
+                quantifier,
+            } => sample::StringSampler {
+                support: value.chars().map(|c| c.to_string()).collect(),
+                repetitions: *quantifier,
+            },
+            _ => sample::StringSampler {
+                support: vec![String::from("...")],
+                repetitions: 1,
+            },
         }
     }
 }
