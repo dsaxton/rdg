@@ -7,19 +7,18 @@ pub struct Pattern {
     quantifier: u8,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, PartialEq)]
 enum PatternKind {
     Literal,
     Parentheses,
     Brackets,
+    #[allow(dead_code)]
     Compound,
 }
 
 #[derive(Debug)]
 pub struct ParseError;
 
-#[allow(dead_code)]
 impl Pattern {
     // TODO: make this correct
     pub fn parse(string: &str) -> Result<Pattern, ParseError> {

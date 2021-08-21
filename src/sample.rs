@@ -3,16 +3,14 @@ use std::io::{BufRead, BufReader};
 
 use rand::{thread_rng, Rng};
 
-#[allow(dead_code)]
 #[derive(Debug, PartialEq)]
 pub struct StringSampler {
     pub support: Vec<String>,
     pub repetitions: u8,
 }
 
-#[allow(dead_code)]
 impl StringSampler {
-    fn sample(&self) -> String {
+    pub fn sample(&self) -> String {
         let mut result = String::from("");
         (0..self.repetitions).for_each(|_| {
             let idx = (random_uniform() * (self.support.len() as f64)).floor() as usize;

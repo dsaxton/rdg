@@ -27,15 +27,21 @@ fn main() {
             }
         }
         Some(("string", string_matches)) => {
-            // TODO: remove this debugging
-            let pat = string_matches
+            let string_pattern = string_matches
                 .value_of("pattern")
                 .unwrap_or("[A-Za-z0-9]{10}");
-            println!("{:?}", pat);
-            let pat = pattern::Pattern::parse(pat).expect("unable to parse pattern");
-            println!("{:?}", pat);
-            let sampler = pat.to_string_sampler();
-            println!("{:?}", sampler);
+            let parsed_pattern = pattern::Pattern::parse(string_pattern);
+            let sampler = match parsed_pattern {
+                Ok(s) => s.to_string_sampler(),
+                Err(_) => {
+                    eprintln!("Unable to parse pattern: {}", string_pattern);
+                    process::exit(EXIT_ERROR);
+                }
+            };
+            for _ in 0..count {
+                let sample = sampler.sample();
+                print!("{}{}", sample, delimiter);
+            }
         }
         Some(("int", int_matches)) => {
             let lower = int_matches
