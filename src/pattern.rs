@@ -128,6 +128,7 @@ pub fn can_parse_as_brackets_kind(string: &str) -> bool {
 
 #[allow(dead_code)]
 fn can_parse_as_compound_kind(string: &str) -> bool {
+    // TODO: fix this
     !string.is_empty()
 }
 
