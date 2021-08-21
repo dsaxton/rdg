@@ -27,14 +27,13 @@ fn main() {
             }
         }
         Some(("string", string_matches)) => {
-            let string_pattern = string_matches
+            let pattern = string_matches
                 .value_of("pattern")
                 .unwrap_or("[A-Za-z0-9]{10}");
-            let parsed_pattern = pattern::Pattern::parse(string_pattern);
-            let sampler = match parsed_pattern {
+            let sampler = match pattern::Pattern::parse(pattern) {
                 Ok(s) => s.to_string_sampler(),
                 Err(_) => {
-                    eprintln!("Unable to parse pattern: {}", string_pattern);
+                    eprintln!("Unable to parse pattern: {}", pattern);
                     process::exit(EXIT_ERROR);
                 }
             };
