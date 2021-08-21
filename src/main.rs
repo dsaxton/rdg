@@ -21,9 +21,9 @@ fn main() {
 
     match app_matches.subcommand() {
         Some(("word", word_matches)) => {
-            let wordlist = word_matches.value_of("wordlist").unwrap();
+            let file = word_matches.value_of("file").unwrap();
             for _ in 0..count {
-                print!("{}{}", sample::from_wordlist(wordlist), delimiter);
+                print!("{}{}", sample::from_wordlist(file), delimiter);
             }
         }
         Some(("string", string_matches)) => {

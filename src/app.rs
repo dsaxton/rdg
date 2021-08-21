@@ -28,9 +28,9 @@ pub fn create_app() -> App<'static> {
                 .about("Random words, requires a wordlist")
                 .setting(AppSettings::ColoredHelp)
                 .arg(
-                    Arg::new("wordlist")
-                        .short('w')
-                        .long("wordlist")
+                    Arg::new("file")
+                        .short('f')
+                        .long("file")
                         .value_name("path")
                         .about("Wordlist used for sampling")
                         .takes_value(true)
