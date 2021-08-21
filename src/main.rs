@@ -39,8 +39,7 @@ fn main() {
                 }
             };
             for _ in 0..count {
-                let sample = sampler.sample();
-                println!("{}", sample);
+                println!("{}", sampler.sample());
             }
         }
         Some(("int", int_matches)) => {
