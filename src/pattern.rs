@@ -56,7 +56,7 @@ impl Pattern {
                 kind: PatternKind::Literal,
                 quantifier,
             } => sample::StringSampler {
-                support: vec![value.clone()],
+                support: vec![unescape(value)],
                 repetitions: *quantifier,
             },
             Pattern {
@@ -64,7 +64,7 @@ impl Pattern {
                 kind: PatternKind::Brackets,
                 quantifier,
             } => sample::StringSampler {
-                support: value.chars().map(|c| c.to_string()).collect(),
+                support: value.chars().map(|c| unescape(&c.to_string())).collect(),
                 repetitions: *quantifier,
             },
             _ => sample::StringSampler {
@@ -181,6 +181,21 @@ fn expand_ranges(string: &str) -> String {
         .replace("A-Z", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
         .replace("0-9", "0123456789")
         .replace("a-z", "abcdefghijklmnopqrstuvwxyz")
+}
+
+#[allow(dead_code)]
+fn unescape(string: &str) -> String {
+    let mut result = String::from("");
+    let mut escaped = false;
+    for c in string.chars() {
+        if !escaped && c == '\\' {
+            escaped = true;
+            continue;
+        }
+        escaped = false;
+        result.push(c);
+    }
+    result
 }
 
 #[cfg(test)]
@@ -427,6 +442,22 @@ mod tests {
             ("123A-Z", "123ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
         ] {
             result = expand_ranges(input);
+            assert_eq!(result, expected);
+        }
+    }
+
+    #[test]
+    fn check_unescape() {
+        let mut result: String;
+        for (input, expected) in [
+            ("abc\\)", "abc)"),
+            ("\\|", "|"),
+            ("\\(abc\\)", "(abc)"),
+            ("\\(abc", "(abc"),
+            ("\\(abc\\]", "(abc]"),
+            ("\\[abc\\]", "[abc]"),
+        ] {
+            result = unescape(input);
             assert_eq!(result, expected);
         }
     }
