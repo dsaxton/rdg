@@ -64,7 +64,7 @@ impl Pattern {
                 kind: PatternKind::Brackets,
                 quantifier,
             } => sample::StringSampler {
-                support: value.chars().map(|c| unescape(&c.to_string())).collect(),
+                support: unescape(value).chars().map(|c| c.to_string()).collect(),
                 repetitions: *quantifier,
             },
             _ => sample::StringSampler {
