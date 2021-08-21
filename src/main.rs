@@ -94,7 +94,7 @@ fn main() {
                 });
 
             if lower >= upper {
-                eprintln!("lower must be strictly less than upper");
+                eprintln!("Error: lower must be strictly less than upper");
                 process::exit(EXIT_ERROR);
             }
 
