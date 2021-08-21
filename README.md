@@ -24,6 +24,7 @@ SUBCOMMANDS:
 ## `rd string`
 
 ```
+rd-string
 Random strings, default pattern "[A-Za-z0-9]{10}"
 
 USAGE:
