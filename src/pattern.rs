@@ -125,6 +125,11 @@ pub fn can_parse_as_brackets_kind(string: &str) -> bool {
     can_parse_as_literal_kind(&string[1..(string.len() - 1)])
 }
 
+#[allow(dead_code)]
+fn can_parse_as_compound_kind(string: &str) -> bool {
+    !string.is_empty()
+}
+
 pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
     if !string.starts_with('(') || !string.ends_with(')') {
         return Err(ParseError);
@@ -147,14 +152,6 @@ pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseErro
     }
     indexes.push(string.len() - 1);
     Ok(indexes)
-}
-
-fn is_special_character(character: char) -> bool {
-    "()[]{}\\|".chars().any(|c| c == character)
-}
-
-fn is_escape_character(character: char) -> bool {
-    character == '\\'
 }
 
 pub fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
@@ -195,6 +192,14 @@ fn unescape(string: &str) -> String {
         result.push(c);
     }
     result
+}
+
+fn is_special_character(character: char) -> bool {
+    "()[]{}\\|".chars().any(|c| c == character)
+}
+
+fn is_escape_character(character: char) -> bool {
+    character == '\\'
 }
 
 #[cfg(test)]
@@ -314,6 +319,24 @@ mod tests {
             "[abc}]", "[{abc]",
         ] {
             result = can_parse_as_brackets_kind(s);
+            assert!(!result)
+        }
+    }
+
+    #[test]
+    fn can_parse_as_compound_valid() {
+        let mut result: bool;
+        for s in ["abc[0-9]{10}"] {
+            result = can_parse_as_compound_kind(s);
+            assert!(result)
+        }
+    }
+
+    #[test]
+    fn can_parse_as_compound_invalid() {
+        let mut result: bool;
+        for s in ["abc[[0-9]{10}"] {
+            result = can_parse_as_compound_kind(s);
             assert!(!result)
         }
     }

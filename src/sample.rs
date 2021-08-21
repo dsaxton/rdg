@@ -3,6 +3,9 @@ use std::io::{BufRead, BufReader};
 
 use rand::{thread_rng, Rng};
 
+// TODO: make StringSampler use vectors for support and repetitions,
+// zip and iterate over both, concatenating into a single string,
+// should ensure both have the same length
 #[derive(Debug, PartialEq)]
 pub struct StringSampler {
     pub support: Vec<String>,
@@ -29,12 +32,13 @@ pub fn float_given_bounds(lower: f64, upper: f64) -> f64 {
 }
 
 pub fn from_wordlist(wordlist: &str) -> String {
+    // TODO: don't panic here, propagate error and exit gracefully
     let file = File::open(wordlist).expect("error reading file");
     let reader = BufReader::new(file);
     let mut selected_word = vec![String::from("")];
 
     for (idx, line) in reader.lines().enumerate() {
-        if thread_rng().gen::<f64>() < 1.0 / ((idx + 1) as f64) {
+        if random_uniform() < 1.0 / ((idx + 1) as f64) {
             selected_word.pop();
             selected_word.push(line.unwrap())
         }
