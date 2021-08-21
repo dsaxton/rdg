@@ -22,6 +22,7 @@ pub struct ParseError;
 impl Pattern {
     // TODO: make this correct
     pub fn parse(string: &str) -> Result<Pattern, ParseError> {
+        // TODO: this is wrong, cannot pop first
         let (string, q) = pop_quantifier(string);
         let q = q.unwrap_or(1);
         if can_parse_as_literal_kind(string) {
