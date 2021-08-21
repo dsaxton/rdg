@@ -48,7 +48,7 @@ impl Pattern {
         Err(ParseError)
     }
 
-    // TODO: implement this
+    // TODO: implement for composite
     pub fn to_string_sampler(&self) -> sample::StringSampler {
         match &self {
             Pattern {
