@@ -99,6 +99,7 @@ pub fn can_parse_as_literal_kind(string: &str) -> bool {
 
 pub fn can_parse_as_parentheses_kind(string: &str) -> bool {
     let (string, _) = pop_quantifier(string);
+    // TODO: pull this outside the function so indexes can be reused?
     let indexes = match find_parentheses_boundaries(string) {
         Ok(vec) => vec,
         Err(_) => return false,
