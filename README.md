@@ -13,7 +13,6 @@ FLAGS:
 
 OPTIONS:
     -c, --count <integer>       Number of values to generate, default 1
-    -d, --delimiter <string>    Delimiter to use between values, default \n
 
 SUBCOMMANDS:
     float     Random floating point numbers, default support [0, 1)

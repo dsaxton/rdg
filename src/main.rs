@@ -19,13 +19,12 @@ fn main() {
             eprintln!("Error parsing count: {}", err);
             process::exit(EXIT_ERROR);
         });
-    let delimiter = app_matches.value_of("delimiter").unwrap_or("\n");
 
     match app_matches.subcommand() {
         Some(("word", word_matches)) => {
             let file = word_matches.value_of("file").unwrap();
             for _ in 0..count {
-                print!("{}{}", sample::from_wordlist(file), delimiter);
+                println!("{}", sample::from_wordlist(file));
             }
         }
         Some(("string", string_matches)) => {
@@ -41,7 +40,7 @@ fn main() {
             };
             for _ in 0..count {
                 let sample = sampler.sample();
-                print!("{}{}", sample, delimiter);
+                println!("{}", sample);
             }
         }
         Some(("int", int_matches)) => {
@@ -68,11 +67,7 @@ fn main() {
             }
 
             for _ in 0..count {
-                print!(
-                    "{}{}",
-                    sample::integer_given_bounds(lower, upper),
-                    delimiter
-                );
+                println!("{}", sample::integer_given_bounds(lower, upper));
             }
         }
         Some(("float", float_matches)) => {
@@ -99,7 +94,7 @@ fn main() {
             }
 
             for _ in 0..count {
-                print!("{}{}", sample::float_given_bounds(lower, upper), delimiter);
+                println!("{}", sample::float_given_bounds(lower, upper));
             }
         }
         _ => {

@@ -15,14 +15,6 @@ pub fn create_app() -> App<'static> {
                 .about("Number of values to generate, default 1")
                 .takes_value(true),
         )
-        .arg(
-            Arg::new("delimiter")
-                .short('d')
-                .long("delimiter")
-                .value_name("string")
-                .about("Delimiter to use between values, default \\n")
-                .takes_value(true),
-        )
         .subcommand(
             App::new("word")
                 .about("Random words, requires a wordlist")
