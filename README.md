@@ -45,14 +45,14 @@ rd-word
 Random words, requires a wordlist
 
 USAGE:
-    rd word --wordlist <path>
+    rd word --file <path>
 
 FLAGS:
     -h, --help       Prints help information
     -V, --version    Prints version information
 
 OPTIONS:
-    -w, --wordlist <path>    Wordlist used for sampling
+    -f, --file <path>    Wordlist used for sampling
 ```
 
 ## `rd float`
