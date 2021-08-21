@@ -188,7 +188,7 @@ fn unescape(string: &str) -> String {
     let mut result = String::from("");
     let mut escaped = false;
     for c in string.chars() {
-        if !escaped && c == '\\' {
+        if !escaped && is_escape_character(c) {
             escaped = true;
             continue;
         }
