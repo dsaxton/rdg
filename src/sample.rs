@@ -31,9 +31,9 @@ pub fn float_given_bounds(lower: f64, upper: f64) -> f64 {
     lower + random_uniform() * (upper - lower)
 }
 
-pub fn from_wordlist(wordlist: &str) -> String {
+pub fn from_wordlist(file_path: &str) -> String {
     // TODO: don't panic here, propagate error and exit gracefully
-    let file = File::open(wordlist).expect("error reading file");
+    let file = File::open(file_path).expect("error reading file");
     let reader = BufReader::new(file);
     let mut selected_word = vec![String::from("")];
 
