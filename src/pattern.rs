@@ -183,7 +183,6 @@ fn expand_ranges(string: &str) -> String {
         .replace("a-z", "abcdefghijklmnopqrstuvwxyz")
 }
 
-#[allow(dead_code)]
 fn unescape(string: &str) -> String {
     let mut result = String::from("");
     let mut escaped = false;
