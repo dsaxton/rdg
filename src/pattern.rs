@@ -36,34 +36,21 @@ impl Pattern {
 
     // TODO: implement for composite
     pub fn to_string_sampler(&self) -> sample::StringSampler {
-        match &self {
-            Pattern {
-                value,
-                kind: PatternKind::Literal,
-                delimiters: _,
-                quantifier,
-            } => sample::StringSampler {
-                support: vec![unescape(value)],
-                repetitions: *quantifier,
+        match &self.kind {
+            PatternKind::Literal => sample::StringSampler {
+                support: vec![unescape(&self.value)],
+                repetitions: self.quantifier,
             },
-            Pattern {
-                value: _,
-                kind: PatternKind::Parentheses,
-                // need to use delimiters here
-                delimiters: _,
-                quantifier: _,
-            } => sample::StringSampler {
-                support: vec![String::from("")],
+            PatternKind::Parentheses => sample::StringSampler {
+                support: vec![String::from("...")],
                 repetitions: 1,
             },
-            Pattern {
-                value,
-                kind: PatternKind::Brackets,
-                delimiters: _,
-                quantifier,
-            } => sample::StringSampler {
-                support: unescape(value).chars().map(|c| c.to_string()).collect(),
-                repetitions: *quantifier,
+            PatternKind::Brackets => sample::StringSampler {
+                support: unescape(&self.value)
+                    .chars()
+                    .map(|c| c.to_string())
+                    .collect(),
+                repetitions: self.quantifier,
             },
             _ => sample::StringSampler {
                 support: vec![String::from("...")],
