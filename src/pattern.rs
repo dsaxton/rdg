@@ -100,7 +100,6 @@ pub fn parse_as_literal_kind(string: &str) -> Result<Pattern, ParseError> {
     })
 }
 
-// TODO: put indexes into the type
 pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
     let (string, q) = pop_quantifier(string);
     let q = q.unwrap_or(1);
