@@ -376,13 +376,24 @@ mod tests {
 
     #[test]
     fn parse_valid_parentheses_pattern_quantifier() {
-        // TODO: take this and turn it into a StringSampler
         let actual = Pattern::parse("(a|b|c){5}").unwrap();
         let expected = Pattern {
             value: String::from("a|b|c"),
             kind: PatternKind::Parentheses,
             delimiters: Some(vec![1, 3]),
             quantifier: 5,
+        };
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn parse_valid_parentheses_pattern_with_escape() {
+        let actual = Pattern::parse("(a\\)bc){23}").unwrap();
+        let expected = Pattern {
+            value: String::from("a\\)bc"),
+            kind: PatternKind::Parentheses,
+            delimiters: None,
+            quantifier: 23,
         };
         assert_eq!(actual, expected);
     }
