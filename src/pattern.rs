@@ -32,7 +32,7 @@ impl Pattern {
         if let Ok(pattern) = parse_as_brackets_kind(string) {
             return Ok(pattern);
         }
-        Err(ParseError)
+        parse_as_compound_kind(string)
     }
 
     pub fn to_string_sampler(&self) -> sample::StringSampler {
@@ -131,6 +131,17 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
         },
         quantifier: q,
     })
+}
+
+pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
+    if string.is_empty() {
+        return Ok(Pattern {
+            value: String::from(string),
+            kind: PatternKind::Compound,
+            quantifier: 1,
+        });
+    }
+    Err(ParseError)
 }
 
 pub fn parse_as_brackets_kind(string: &str) -> Result<Pattern, ParseError> {
