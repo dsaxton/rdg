@@ -517,6 +517,15 @@ mod tests {
             ("abc0-9", "abc0123456789"),
             ("A-Z123", "ABCDEFGHIJKLMNOPQRSTUVWXYZ123"),
             ("123A-Z", "123ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            ("-AZ", "-AZ"),
+            ("AZ-", "AZ-"),
+            ("Z-A", "Z-A"),
+            ("az-", "az-"),
+            ("-az", "-az"),
+            ("z-a", "z-a"),
+            ("09-", "09-"),
+            ("-09", "-09"),
+            ("9-0", "9-0"),
         ] {
             result = expand_ranges(input);
             assert_eq!(result, expected);
