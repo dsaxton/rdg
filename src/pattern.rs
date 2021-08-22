@@ -20,11 +20,13 @@ enum PatternKind {
 pub struct ParseError;
 
 impl Pattern {
-    // TODO: make this correct
     pub fn parse(string: &str) -> Result<Pattern, ParseError> {
         // TODO: this is wrong, cannot pop first
         let (string, q) = pop_quantifier(string);
         let q = q.unwrap_or(1);
+        // instead of "can parse", simply parse and return Result
+        // of Vec<String> and the repetitions? this would replace
+        // StringSampler and instead add a sample method to Pattern
         if can_parse_as_literal_kind(string) {
             return Ok(Pattern {
                 value: String::from(string),
@@ -59,6 +61,17 @@ impl Pattern {
             } => sample::StringSampler {
                 support: vec![unescape(value)],
                 repetitions: *quantifier,
+            },
+            // TODO: need to handle this case, known parentheses
+            // still needs to be split, for this kind we should
+            // indicate the breakpoints as a separate field
+            Pattern {
+                value: _,
+                kind: PatternKind::Parentheses,
+                quantifier: _,
+            } => sample::StringSampler {
+                support: vec![String::from("")],
+                repetitions: 1,
             },
             Pattern {
                 value,
@@ -98,6 +111,7 @@ pub fn can_parse_as_literal_kind(string: &str) -> bool {
     true
 }
 
+// TODO: is it useful here to also return indexes?
 pub fn can_parse_as_parentheses_kind(string: &str) -> bool {
     let (string, _) = pop_quantifier(string);
     // TODO: pull this outside the function so indexes can be reused?
