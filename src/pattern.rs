@@ -10,9 +10,14 @@ pub struct Pattern {
 #[derive(Debug, PartialEq)]
 enum PatternKind {
     Literal,
-    Parentheses { pipe_positions: Option<Vec<usize>> },
+    Parentheses {
+        pipe_positions: Option<Vec<usize>>,
+    },
     Brackets,
-    Compound { start_positions: Vec<usize> },
+    Compound {
+        start_positions: Vec<usize>,
+        kinds: Vec<PatternKind>,
+    },
 }
 
 #[derive(Debug)]
@@ -58,7 +63,10 @@ impl Pattern {
                     .collect(),
                 repetitions: self.quantifier,
             },
-            PatternKind::Compound { start_positions: _ } => sample::StringSampler {
+            PatternKind::Compound {
+                start_positions: _,
+                kinds: _,
+            } => sample::StringSampler {
                 support: vec![String::from("...")],
                 repetitions: self.quantifier,
             },
@@ -136,6 +144,7 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
             value: String::from(string),
             kind: PatternKind::Compound {
                 start_positions: vec![0],
+                kinds: vec![PatternKind::Literal],
             },
             quantifier: 1,
         });
@@ -366,6 +375,15 @@ mod tests {
     }
 
     #[test]
+    fn can_parse_as_compound_valid() {
+        let mut actual: Result<Pattern, ParseError>;
+        for s in ["(bob|alice)@example.com"] {
+            actual = parse_as_compound_kind(s);
+            assert!(actual.is_ok())
+        }
+    }
+
+    #[test]
     fn parse_valid_literal_pattern() {
         let mut actual: Pattern;
         let mut expected: Pattern;
@@ -412,7 +430,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_valid_parentheses_pattern_quantifier() {
+    fn parse_valid_parentheses_pattern_with_quantifier() {
         let actual = Pattern::parse("(a|b|c){5}").unwrap();
         let expected = Pattern {
             value: String::from("a|b|c"),
