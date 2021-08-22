@@ -139,6 +139,9 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
 }
 
 pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
+    // TODO: scan from left to right and determine types, keeping track of
+    // positions where new PatternKinds start, return a ParseError if ever
+    // we have an impossible pattern
     if string.is_empty() {
         return Ok(Pattern {
             value: String::from(string),
