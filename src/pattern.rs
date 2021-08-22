@@ -314,7 +314,7 @@ mod tests {
 
     #[test]
     fn can_parse_as_brackets_valid() {
-        let mut result: Result<Pattern, ParseError>;
+        let mut actual: Result<Pattern, ParseError>;
         for s in [
             "[abc]",
             "[abc]{10}",
@@ -325,26 +325,26 @@ mod tests {
             "[a&^#]",
             "[\\|]",
         ] {
-            result = parse_as_brackets_kind(s);
-            assert!(result.is_ok())
+            actual = parse_as_brackets_kind(s);
+            assert!(actual.is_ok())
         }
     }
 
     #[test]
     fn can_parse_as_brackets_invalid() {
-        let mut result: Result<Pattern, ParseError>;
+        let mut actual: Result<Pattern, ParseError>;
         for s in [
             "[abc\\]", "\\[abc]", "[()]", "[[]]", "[(]", "[)]", "[[]", "[]]", "[abc|]", "[|]",
             "[abc}]", "[{abc]",
         ] {
-            result = parse_as_brackets_kind(s);
-            assert!(result.is_err())
+            actual = parse_as_brackets_kind(s);
+            assert!(actual.is_err())
         }
     }
 
     #[test]
     fn parse_valid_literal_pattern() {
-        let mut result: Pattern;
+        let mut actual: Pattern;
         let mut expected: Pattern;
         for value in [
             "abc",
@@ -361,39 +361,52 @@ mod tests {
         ]
         .iter()
         {
-            result = Pattern::parse(value).unwrap();
+            actual = Pattern::parse(value).unwrap();
             expected = Pattern {
                 value: String::from(*value),
                 kind: PatternKind::Literal,
                 delimiters: None,
                 quantifier: 1,
             };
-            assert_eq!(result, expected);
+            assert_eq!(actual, expected);
         }
     }
 
     #[test]
     fn parse_valid_parentheses_pattern() {
-        let mut result: Pattern;
+        let mut actual: Pattern;
         let mut expected: Pattern;
         for value in ["(a|b|c)", "(1|2|3)"] {
-            result = Pattern::parse(value).unwrap();
+            actual = Pattern::parse(value).unwrap();
             expected = Pattern {
                 value: String::from(&value[1..(value.len() - 1)]),
                 kind: PatternKind::Parentheses,
                 delimiters: Some(vec![1, 3]),
                 quantifier: 1,
             };
-            assert_eq!(result, expected);
+            assert_eq!(actual, expected);
         }
     }
 
     #[test]
+    fn parse_valid_parentheses_pattern_quantifier() {
+        // TODO: take this and turn it into a StringSampler
+        let actual = Pattern::parse("(a|b|c){5}").unwrap();
+        let expected = Pattern {
+            value: String::from("a|b|c"),
+            kind: PatternKind::Parentheses,
+            delimiters: Some(vec![1, 3]),
+            quantifier: 5,
+        };
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
     fn parse_invalid_pattern() {
-        let mut result: Result<Pattern, ParseError>;
+        let mut actual: Result<Pattern, ParseError>;
         for value in [")abc", ")(", "["].iter() {
-            result = Pattern::parse(value);
-            assert!(result.is_err());
+            actual = Pattern::parse(value);
+            assert!(actual.is_err());
         }
     }
 
@@ -413,7 +426,7 @@ mod tests {
 
     #[test]
     fn check_pop_quantifier() {
-        let mut result: (&str, Option<u8>);
+        let mut actual: (&str, Option<u8>);
         for (input, expected) in [
             ("(abc){5}", ("(abc)", Some(5))),
             ("[abc]{25}", ("[abc]", Some(25))),
@@ -428,27 +441,30 @@ mod tests {
         ]
         .iter()
         {
-            result = pop_quantifier(input);
-            assert_eq!(result, *expected);
+            actual = pop_quantifier(input);
+            assert_eq!(actual, *expected);
         }
     }
 
     #[test]
-    fn check_find_parentheses_boundaries() {
-        let mut valid_result: Vec<usize>;
+    fn check_find_parentheses_boundaries_valid() {
+        let mut actual: Vec<usize>;
         for (input, expected) in [
             ("(abc)", vec![0, 4]),
             ("(a|b|c)", vec![0, 2, 4, 6]),
             ("(a|bbb|c)", vec![0, 2, 6, 8]),
         ] {
-            valid_result = find_parentheses_boundaries(input).unwrap();
-            assert_eq!(valid_result, expected);
+            actual = find_parentheses_boundaries(input).unwrap();
+            assert_eq!(actual, expected);
         }
+    }
 
-        let mut invalid_result: Result<Vec<usize>, ParseError>;
+    #[test]
+    fn check_find_parentheses_boundaries_invalid() {
+        let mut actual: Result<Vec<usize>, ParseError>;
         for invalid in ["abc", "(abc", "abc)", "[a|b|c]"] {
-            invalid_result = find_parentheses_boundaries(invalid);
-            assert!(invalid_result.is_err())
+            actual = find_parentheses_boundaries(invalid);
+            assert!(actual.is_err())
         }
     }
 
