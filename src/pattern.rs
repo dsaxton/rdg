@@ -154,11 +154,11 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
         '[' => {
             current_kind = PatternKind::Brackets;
         }
-        '|' => return Err(ParseError),
         '\\' => {
             escaped = true;
             current_kind = PatternKind::Literal;
         }
+        '|' => return Err(ParseError),
         _ => current_kind = PatternKind::Literal,
     };
     for c in char_iter {
