@@ -10,11 +10,8 @@ pub struct Pattern {
 #[derive(Debug, PartialEq)]
 enum PatternKind {
     Literal,
-    Parentheses {
-        pipe_positions: Option<Vec<usize>>,
-    },
+    Parentheses { pipe_positions: Option<Vec<usize>> },
     Brackets,
-    #[allow(dead_code)]
     Compound,
 }
 
