@@ -40,35 +40,35 @@ impl Pattern {
     pub fn to_string_sampler(&self) -> sample::StringSampler {
         match &self.kind {
             PatternKind::Literal => sample::StringSampler {
-                support: vec![unescape(&self.value)],
-                repetitions: self.quantifier,
+                support: vec![vec![unescape(&self.value)]],
+                repetitions: vec![self.quantifier],
             },
             PatternKind::Parentheses { pipe_positions } => match pipe_positions {
                 Some(pipes) => {
                     let split_string = split_at_positions(&self.value, pipes);
                     sample::StringSampler {
-                        support: split_string,
-                        repetitions: self.quantifier,
+                        support: vec![split_string],
+                        repetitions: vec![self.quantifier],
                     }
                 }
                 None => sample::StringSampler {
-                    support: vec![self.value.clone()],
-                    repetitions: self.quantifier,
+                    support: vec![vec![self.value.clone()]],
+                    repetitions: vec![self.quantifier],
                 },
             },
             PatternKind::Brackets => sample::StringSampler {
-                support: unescape(&self.value)
+                support: vec![unescape(&self.value)
                     .chars()
                     .map(|c| c.to_string())
-                    .collect(),
-                repetitions: self.quantifier,
+                    .collect()],
+                repetitions: vec![self.quantifier],
             },
             PatternKind::Compound {
                 start_positions: _,
                 kinds: _,
             } => sample::StringSampler {
-                support: vec![String::from("...")],
-                repetitions: self.quantifier,
+                support: vec![vec![String::from("...")]],
+                repetitions: vec![self.quantifier],
             },
         }
     }

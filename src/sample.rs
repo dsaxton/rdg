@@ -8,17 +8,22 @@ use rand::{thread_rng, Rng};
 // should ensure both have the same length
 #[derive(Debug, PartialEq)]
 pub struct StringSampler {
-    pub support: Vec<String>,
-    pub repetitions: u8,
+    pub support: Vec<Vec<String>>,
+    pub repetitions: Vec<u8>,
 }
 
 impl StringSampler {
     pub fn sample(&self) -> String {
+        if self.support.len() != self.repetitions.len() {
+            panic!("Support and repetitions do not have the same length.");
+        }
         let mut result = String::from("");
-        (0..self.repetitions).for_each(|_| {
-            let idx = (random_uniform() * (self.support.len() as f64)).floor() as usize;
-            result.push_str(&self.support[idx])
-        });
+        for (s, r) in self.support.iter().zip(&self.repetitions) {
+            for _ in 0..*r {
+                let idx = (random_uniform() * (s.len() as f64)).floor() as usize;
+                result.push_str(&s[idx])
+            }
+        }
         result
     }
 }
@@ -90,22 +95,22 @@ mod tests {
         let mut result: String;
 
         sampler = StringSampler {
-            support: vec![String::from("abc")],
-            repetitions: 1,
+            support: vec![vec![String::from("abc")]],
+            repetitions: vec![1],
         };
         result = sampler.sample();
         assert_eq!(result, String::from("abc"));
 
         sampler = StringSampler {
-            support: vec![String::from("abc")],
-            repetitions: 3,
+            support: vec![vec![String::from("abc")]],
+            repetitions: vec![3],
         };
         result = sampler.sample();
         assert_eq!(result, String::from("abcabcabc"));
 
         sampler = StringSampler {
-            support: vec![String::from("a"), String::from("z")],
-            repetitions: 2,
+            support: vec![vec![String::from("a"), String::from("z")]],
+            repetitions: vec![2],
         };
         result = sampler.sample();
         assert!(result == *"aa" || result == *"zz" || result == *"az" || result == *"za");
