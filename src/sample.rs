@@ -3,9 +3,6 @@ use std::io::{BufRead, BufReader, Error};
 
 use rand::{thread_rng, Rng};
 
-// TODO: make StringSampler use vectors for support and repetitions,
-// zip and iterate over both, concatenating into a single string,
-// should ensure both have the same length
 #[derive(Debug, PartialEq)]
 pub struct StringSampler {
     pub support: Vec<Vec<String>>,
