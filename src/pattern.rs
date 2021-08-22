@@ -169,8 +169,7 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
                 if (c == ')' || c == ']' || c == '|') && !escaped {
                     return Err(ParseError);
                 }
-                // TODO: now account for '(' and '[' and account for
-                // previous literal pattern
+                // TODO: now account for '(' and '[' and previous literal pattern
             }
             PatternKind::Parentheses { pipe_positions: _ } => {}
             PatternKind::Brackets => {}
