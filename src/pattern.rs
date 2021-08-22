@@ -43,10 +43,15 @@ impl Pattern {
             },
             PatternKind::Parentheses => {
                 let mut sup = Vec::new();
-                for (i, d) in self.delimiters.clone().unwrap().iter().enumerate() {
-                    // TODO: this is wrong
+                let delimiters = self.delimiters.clone().unwrap();
+                for (i, d) in delimiters.iter().enumerate() {
                     if i == 0 {
                         sup.push(String::from(&self.value[0..*d]));
+                    } else {
+                        sup.push(String::from(&self.value[(delimiters[i - 1] + 1)..*d]));
+                    }
+                    if i == delimiters.len() - 1 {
+                        sup.push(String::from(&self.value[(*d + 1)..]));
                     }
                 }
                 sample::StringSampler {
