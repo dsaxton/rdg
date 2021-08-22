@@ -43,7 +43,7 @@ impl Pattern {
             },
             PatternKind::Parentheses => sample::StringSampler {
                 support: vec![String::from("...")],
-                repetitions: 1,
+                repetitions: self.quantifier,
             },
             PatternKind::Brackets => sample::StringSampler {
                 support: unescape(&self.value)
@@ -54,7 +54,7 @@ impl Pattern {
             },
             _ => sample::StringSampler {
                 support: vec![String::from("...")],
-                repetitions: 1,
+                repetitions: self.quantifier,
             },
         }
     }
