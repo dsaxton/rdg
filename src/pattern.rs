@@ -41,10 +41,19 @@ impl Pattern {
                 support: vec![unescape(&self.value)],
                 repetitions: self.quantifier,
             },
-            PatternKind::Parentheses => sample::StringSampler {
-                support: vec![String::from("...")],
-                repetitions: self.quantifier,
-            },
+            PatternKind::Parentheses => {
+                let mut sup = Vec::new();
+                for (i, d) in self.delimiters.clone().unwrap().iter().enumerate() {
+                    // TODO: this is wrong
+                    if i == 0 {
+                        sup.push(String::from(&self.value[0..*d]));
+                    }
+                }
+                sample::StringSampler {
+                    support: sup,
+                    repetitions: self.quantifier,
+                }
+            }
             PatternKind::Brackets => sample::StringSampler {
                 support: unescape(&self.value)
                     .chars()
