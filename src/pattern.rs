@@ -7,7 +7,7 @@ pub struct Pattern {
     quantifier: u8,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 enum PatternKind {
     Literal,
     Parentheses {
@@ -139,7 +139,7 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
 }
 
 pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
-    let mut kinds: Vec<PatternKind>;
+    let mut kinds: Vec<PatternKind> = vec![];
     let mut start_positions = vec![0];
     let mut current_kind: PatternKind;
     let mut escaped = false;
@@ -161,15 +161,25 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
         '|' => return Err(ParseError),
         _ => current_kind = PatternKind::Literal,
     };
-    for c in char_iter {
+    for (i, c) in char_iter.enumerate() {
         // TODO: look for unparsable and return ParseError, update
         // kinds and start_positions, or simply continue
         match current_kind {
             PatternKind::Literal => {
-                if (c == ')' || c == ']' || c == '|') && !escaped {
+                if (c == ')' || c == ']' || c == '{' || c == '}' || c == '|') && !escaped {
                     return Err(ParseError);
                 }
-                // TODO: now account for '(' and '[' and previous literal pattern
+                if (c == '(' || c == '[') && !escaped {
+                    kinds.push(current_kind.clone());
+                    start_positions.push(i);
+                    if c == '(' {
+                        current_kind = PatternKind::Parentheses {
+                            pipe_positions: None,
+                        };
+                    } else if c == '[' {
+                        current_kind = PatternKind::Brackets;
+                    }
+                }
             }
             PatternKind::Parentheses { pipe_positions: _ } => {}
             PatternKind::Brackets => {}
@@ -177,7 +187,14 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
         }
         escaped = is_escape_character(c);
     }
-    Err(ParseError)
+    Ok(Pattern {
+        value: String::from("dummy"),
+        kind: PatternKind::Compound {
+            start_positions,
+            kinds,
+        },
+        quantifier: 1, // placeholder
+    })
 }
 
 pub fn parse_as_brackets_kind(string: &str) -> Result<Pattern, ParseError> {
