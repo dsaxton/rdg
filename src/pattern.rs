@@ -43,19 +43,19 @@ impl Pattern {
             },
             PatternKind::Parentheses { pipe_positions } => match pipe_positions {
                 Some(pipes) => {
-                    let mut sup = Vec::new();
+                    let mut split_string = Vec::new();
                     for (i, d) in pipes.iter().enumerate() {
                         if i == 0 {
-                            sup.push(String::from(&self.value[0..*d]));
+                            split_string.push(String::from(&self.value[0..*d]));
                         } else {
-                            sup.push(String::from(&self.value[(pipes[i - 1] + 1)..*d]));
+                            split_string.push(String::from(&self.value[(pipes[i - 1] + 1)..*d]));
                         }
                         if i == pipes.len() - 1 {
-                            sup.push(String::from(&self.value[(*d + 1)..]));
+                            split_string.push(String::from(&self.value[(*d + 1)..]));
                         }
                     }
                     sample::StringSampler {
-                        support: sup,
+                        support: split_string,
                         repetitions: self.quantifier,
                     }
                 }
