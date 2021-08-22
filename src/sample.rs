@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, Error};
 
 use rand::{thread_rng, Rng};
 
@@ -31,9 +31,8 @@ pub fn float_given_bounds(lower: f64, upper: f64) -> f64 {
     lower + random_uniform() * (upper - lower)
 }
 
-pub fn from_wordlist(file_path: &str) -> String {
-    // TODO: don't panic here, propagate error and exit gracefully
-    let file = File::open(file_path).expect("error reading file");
+pub fn from_wordlist(file_path: &str) -> Result<String, Error> {
+    let file = File::open(file_path)?;
     let reader = BufReader::new(file);
     let mut selected_word = vec![String::from("")];
 
@@ -44,7 +43,7 @@ pub fn from_wordlist(file_path: &str) -> String {
         }
     }
 
-    selected_word.pop().unwrap()
+    Ok(selected_word.pop().unwrap())
 }
 
 fn random_uniform() -> f64 {

@@ -24,7 +24,13 @@ fn main() {
         Some(("word", word_matches)) => {
             let file = word_matches.value_of("file").unwrap();
             for _ in 0..count {
-                println!("{}", sample::from_wordlist(file));
+                match sample::from_wordlist(file) {
+                    Ok(value) => println!("{}", value),
+                    Err(err) => {
+                        eprintln!("Error reading file: {}", err);
+                        process::exit(EXIT_ERROR);
+                    }
+                }
             }
         }
         Some(("string", string_matches)) => {
