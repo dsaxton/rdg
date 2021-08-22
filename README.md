@@ -35,7 +35,7 @@ FLAGS:
     -V, --version    Prints version information
 
 OPTIONS:
-    -p, --pattern <string>    Pattern from which to sample, default "[A-Za-z0-9]{10}"
+    -p, --pattern <string>    Pattern from which to sample, default [A-Za-z0-9]{10}
 ```
 
 ## `rd word`
