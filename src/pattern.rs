@@ -21,24 +21,14 @@ pub struct ParseError;
 
 impl Pattern {
     pub fn parse(string: &str) -> Result<Pattern, ParseError> {
-        // TODO: do not pop first
-        let (_, q) = pop_quantifier(string);
-        let q = q.unwrap_or(1);
-        // instead of "can parse", simply parse and return Result
-        // of Vec<String> and the repetitions? this would replace
-        // StringSampler and instead add a sample method to Pattern
         if let Ok(pattern) = parse_as_literal_kind(string) {
             return Ok(pattern);
         }
         if let Ok(pattern) = parse_as_parentheses_kind(string) {
             return Ok(pattern);
         }
-        if can_parse_as_brackets_kind(string) {
-            return Ok(Pattern {
-                value: expand_ranges(&string[1..(string.len() - 1)]),
-                kind: PatternKind::Brackets,
-                quantifier: q,
-            });
+        if let Ok(pattern) = parse_as_brackets_kind(string) {
+            return Ok(pattern);
         }
         Err(ParseError)
     }
@@ -137,12 +127,20 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
     })
 }
 
-pub fn can_parse_as_brackets_kind(string: &str) -> bool {
-    let (string, _) = pop_quantifier(string);
+pub fn parse_as_brackets_kind(string: &str) -> Result<Pattern, ParseError> {
+    let (string, q) = pop_quantifier(string);
+    let q = q.unwrap_or(1);
     if !string.starts_with('[') || !string.ends_with(']') {
-        return false;
+        return Err(ParseError);
     }
-    parse_as_literal_kind(&string[1..(string.len() - 1)]).is_ok()
+    if parse_as_literal_kind(&string[1..(string.len() - 1)]).is_ok() {
+        return Ok(Pattern {
+            value: expand_ranges(&string[1..(string.len() - 1)]),
+            kind: PatternKind::Brackets,
+            quantifier: q,
+        });
+    }
+    Err(ParseError)
 }
 
 pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
@@ -310,7 +308,7 @@ mod tests {
 
     #[test]
     fn can_parse_as_brackets_valid() {
-        let mut result: bool;
+        let mut result: Result<Pattern, ParseError>;
         for s in [
             "[abc]",
             "[abc]{10}",
@@ -321,20 +319,20 @@ mod tests {
             "[a&^#]",
             "[\\|]",
         ] {
-            result = can_parse_as_brackets_kind(s);
-            assert!(result)
+            result = parse_as_brackets_kind(s);
+            assert!(result.is_ok())
         }
     }
 
     #[test]
     fn can_parse_as_brackets_invalid() {
-        let mut result: bool;
+        let mut result: Result<Pattern, ParseError>;
         for s in [
             "[abc\\]", "\\[abc]", "[()]", "[[]]", "[(]", "[)]", "[[]", "[]]", "[abc|]", "[|]",
             "[abc}]", "[{abc]",
         ] {
-            result = can_parse_as_brackets_kind(s);
-            assert!(!result)
+            result = parse_as_brackets_kind(s);
+            assert!(result.is_err())
         }
     }
 
