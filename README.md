@@ -17,7 +17,7 @@ OPTIONS:
 SUBCOMMANDS:
     float     Random floating point numbers, default support [0, 1)
     int       Random integers, default support {0, 1}
-    string    Random strings, default pattern "[A-Za-z0-9]{10}"
+    string    Random strings, default pattern [A-Za-z0-9]{10}
     word      Random words, requires a wordlist
 ```
 
@@ -25,7 +25,7 @@ SUBCOMMANDS:
 
 ```
 rd-string
-Random strings, default pattern "[A-Za-z0-9]{10}"
+Random strings, default pattern [A-Za-z0-9]{10}
 
 USAGE:
     rd string [OPTIONS]

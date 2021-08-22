@@ -31,14 +31,14 @@ pub fn create_app() -> App<'static> {
         )
         .subcommand(
             App::new("string")
-                .about("Random strings, default pattern \"[A-Za-z0-9]{10}\"")
+                .about("Random strings, default pattern [A-Za-z0-9]{10}")
                 .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("pattern")
                         .short('p')
                         .long("pattern")
                         .value_name("string")
-                        .about("Pattern from which to sample, default \"[A-Za-z0-9]{10}\"")
+                        .about("Pattern from which to sample, default [A-Za-z0-9]{10}")
                         .takes_value(true),
                 ),
         )
