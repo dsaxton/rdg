@@ -139,8 +139,9 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
 }
 
 pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
-    let mut current_kind: PatternKind;
+    let mut kinds: Vec<PatternKind>;
     let mut start_positions = vec![0];
+    let mut current_kind: PatternKind;
     let mut escaped = false;
     // TODO: which other initial characters need to be considered?
     let mut char_iter = string.chars();
@@ -160,10 +161,11 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
         }
         _ => current_kind = PatternKind::Literal,
     };
-    for (i, c) in char_iter.enumerate() {
+    for c in char_iter {
+        // TODO: look for unparsable and return ParseError, update
+        // kinds and start_positions, or simply continue
         match current_kind {
             PatternKind::Literal => {
-                // TODO: need to make sure wasn't already escaped
                 if (c == ')' || c == ']' || c == '|') && !escaped {
                     return Err(ParseError);
                 }
@@ -174,6 +176,7 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
             PatternKind::Brackets => {}
             _ => {}
         }
+        escaped = is_escape_character(c);
     }
     Err(ParseError)
 }
