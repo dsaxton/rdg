@@ -61,7 +61,7 @@ impl Pattern {
                     .collect(),
                 repetitions: self.quantifier,
             },
-            _ => sample::StringSampler {
+            PatternKind::Compound => sample::StringSampler {
                 support: vec![String::from("...")],
                 repetitions: self.quantifier,
             },
