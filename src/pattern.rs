@@ -12,7 +12,7 @@ enum PatternKind {
     Literal,
     Parentheses { pipe_positions: Option<Vec<usize>> },
     Brackets,
-    Compound,
+    Compound { start_positions: Vec<usize> },
 }
 
 #[derive(Debug)]
@@ -58,7 +58,7 @@ impl Pattern {
                     .collect(),
                 repetitions: self.quantifier,
             },
-            PatternKind::Compound => sample::StringSampler {
+            PatternKind::Compound { start_positions: _ } => sample::StringSampler {
                 support: vec![String::from("...")],
                 repetitions: self.quantifier,
             },
@@ -134,7 +134,9 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
     if string.is_empty() {
         return Ok(Pattern {
             value: String::from(string),
-            kind: PatternKind::Compound,
+            kind: PatternKind::Compound {
+                start_positions: vec![0],
+            },
             quantifier: 1,
         });
     }
