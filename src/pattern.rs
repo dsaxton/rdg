@@ -27,12 +27,8 @@ impl Pattern {
         // instead of "can parse", simply parse and return Result
         // of Vec<String> and the repetitions? this would replace
         // StringSampler and instead add a sample method to Pattern
-        if can_parse_as_literal_kind(string) {
-            return Ok(Pattern {
-                value: String::from(string),
-                kind: PatternKind::Literal,
-                quantifier: q,
-            });
+        if let Ok(pattern) = parse_as_literal_kind(string) {
+            return Ok(pattern);
         }
         if can_parse_as_parentheses_kind(string) {
             return Ok(Pattern {
@@ -89,7 +85,7 @@ impl Pattern {
     }
 }
 
-pub fn can_parse_as_literal_kind(string: &str) -> bool {
+pub fn parse_as_literal_kind(string: &str) -> Result<Pattern, ParseError> {
     let mut escaped_by_previous = false;
     for (i, c) in string.chars().enumerate() {
         if escaped_by_previous {
@@ -101,14 +97,18 @@ pub fn can_parse_as_literal_kind(string: &str) -> bool {
                 escaped_by_previous = true;
                 continue;
             }
-            return false;
+            return Err(ParseError);
         }
         if is_special_character(c) {
-            return false;
+            return Err(ParseError);
         }
         escaped_by_previous = false;
     }
-    true
+    Ok(Pattern {
+        kind: PatternKind::Literal,
+        value: String::from(string),
+        quantifier: 1,
+    })
 }
 
 // TODO: is it useful here to also return indexes?
@@ -120,13 +120,13 @@ pub fn can_parse_as_parentheses_kind(string: &str) -> bool {
         Err(_) => return false,
     };
     if indexes.len() == 2 {
-        return can_parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]);
+        return parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]).is_ok();
     }
     for (i, p) in indexes.iter().enumerate() {
         if i == 0 {
             continue;
         }
-        if !can_parse_as_literal_kind(&string[(indexes[i - 1] + 1)..*p]) {
+        if parse_as_literal_kind(&string[(indexes[i - 1] + 1)..*p]).is_err() {
             return false;
         }
     }
@@ -138,13 +138,7 @@ pub fn can_parse_as_brackets_kind(string: &str) -> bool {
     if !string.starts_with('[') || !string.ends_with(']') {
         return false;
     }
-    can_parse_as_literal_kind(&string[1..(string.len() - 1)])
-}
-
-#[allow(dead_code)]
-fn can_parse_as_compound_kind(string: &str) -> bool {
-    // TODO: fix this
-    !string.is_empty()
+    parse_as_literal_kind(&string[1..(string.len() - 1)]).is_ok()
 }
 
 pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
@@ -225,7 +219,7 @@ mod tests {
 
     #[test]
     fn can_parse_as_literal_valid() {
-        let mut result: bool;
+        let mut result: Result<Pattern, ParseError>;
         for s in [
             "abc",
             "abc\\(",
@@ -244,20 +238,20 @@ mod tests {
             "",
             "\\\\",
         ] {
-            result = can_parse_as_literal_kind(s);
-            assert!(result)
+            result = parse_as_literal_kind(s);
+            assert!(result.is_ok())
         }
     }
 
     #[test]
     fn can_parse_as_literal_invalid() {
-        let mut result: bool;
+        let mut result: Result<Pattern, ParseError>;
         for s in [
             "(abc)", "\\(abc)", "(abc\\)", "abc)", "(abc", "[123]", "\\[123]", "[123\\]",
             "abc(123)", "(123)abc", ")(", "\\",
         ] {
-            result = can_parse_as_literal_kind(s);
-            assert!(!result)
+            result = parse_as_literal_kind(s);
+            assert!(result.is_err())
         }
     }
 
@@ -336,24 +330,6 @@ mod tests {
             "[abc}]", "[{abc]",
         ] {
             result = can_parse_as_brackets_kind(s);
-            assert!(!result)
-        }
-    }
-
-    #[test]
-    fn can_parse_as_compound_valid() {
-        let mut result: bool;
-        for s in ["abc[0-9]{10}"] {
-            result = can_parse_as_compound_kind(s);
-            assert!(result)
-        }
-    }
-
-    #[test]
-    fn can_parse_as_compound_invalid() {
-        let mut result: bool;
-        for s in ["abc[[0-9]{10}"] {
-            result = can_parse_as_compound_kind(s);
             assert!(!result)
         }
     }
