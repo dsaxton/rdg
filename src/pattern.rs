@@ -213,6 +213,15 @@ fn unescape(string: &str) -> String {
     result
 }
 
+#[allow(dead_code)]
+fn split_at_positions(string: &str, positions: Vec<usize>) -> Vec<String> {
+    // TODO: implement correctly
+    if positions.is_empty() {
+        return vec![String::from("")];
+    }
+    vec![String::from(string)]
+}
+
 fn is_special_character(character: char) -> bool {
     "()[]{}\\|".chars().any(|c| c == character)
 }
