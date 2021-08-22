@@ -47,12 +47,12 @@ impl Pattern {
                 Some(pipes) => {
                     let split_string = split_at_positions(&self.value, pipes);
                     sample::StringSampler {
-                        support: vec![split_string],
+                        support: vec![split_string.iter().map(|s| unescape(s)).collect()],
                         repetitions: vec![self.quantifier],
                     }
                 }
                 None => sample::StringSampler {
-                    support: vec![vec![self.value.clone()]],
+                    support: vec![vec![unescape(&self.value)]],
                     repetitions: vec![self.quantifier],
                 },
             },
