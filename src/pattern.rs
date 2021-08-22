@@ -43,17 +43,7 @@ impl Pattern {
             },
             PatternKind::Parentheses { pipe_positions } => match pipe_positions {
                 Some(pipes) => {
-                    let mut split_string = Vec::new();
-                    for (i, d) in pipes.iter().enumerate() {
-                        if i == 0 {
-                            split_string.push(String::from(&self.value[0..*d]));
-                        } else {
-                            split_string.push(String::from(&self.value[(pipes[i - 1] + 1)..*d]));
-                        }
-                        if i == pipes.len() - 1 {
-                            split_string.push(String::from(&self.value[(*d + 1)..]));
-                        }
-                    }
+                    let split_string = split_at_positions(&self.value, pipes);
                     sample::StringSampler {
                         support: split_string,
                         repetitions: self.quantifier,
@@ -223,13 +213,22 @@ fn unescape(string: &str) -> String {
     result
 }
 
-#[allow(dead_code)]
-fn split_at_positions(string: &str, positions: Vec<usize>) -> Vec<String> {
-    // TODO: implement correctly
+fn split_at_positions(string: &str, positions: &[usize]) -> Vec<String> {
     if positions.is_empty() {
         return vec![String::from("")];
     }
-    vec![String::from(string)]
+    let mut split_string = Vec::new();
+    for (i, d) in positions.iter().enumerate() {
+        if i == 0 {
+            split_string.push(String::from(&string[0..*d]));
+        } else {
+            split_string.push(String::from(&string[(positions[i - 1] + 1)..*d]));
+        }
+        if i == positions.len() - 1 {
+            split_string.push(String::from(&string[(*d + 1)..]));
+        }
+    }
+    split_string
 }
 
 fn is_special_character(character: char) -> bool {
