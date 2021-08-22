@@ -112,7 +112,7 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
         return Ok(Pattern {
             value: String::from(&string[1..(string.len() - 1)]),
             kind: PatternKind::Parentheses,
-            delimiters: Some(indexes),
+            delimiters: None,
             quantifier: q,
         });
     }
@@ -127,7 +127,12 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
     Ok(Pattern {
         value: String::from(&string[1..(string.len() - 1)]),
         kind: PatternKind::Parentheses,
-        delimiters: Some(indexes),
+        delimiters: Some(
+            indexes[1..(indexes.len() - 1)]
+                .iter()
+                .map(|i| i - 1)
+                .collect(),
+        ),
         quantifier: q,
     })
 }
@@ -371,12 +376,12 @@ mod tests {
     fn parse_valid_parentheses_pattern() {
         let mut result: Pattern;
         let mut expected: Pattern;
-        for value in ["(abc)", "(123)"] {
+        for value in ["(a|b|c)", "(1|2|3)"] {
             result = Pattern::parse(value).unwrap();
             expected = Pattern {
                 value: String::from(&value[1..(value.len() - 1)]),
                 kind: PatternKind::Parentheses,
-                delimiters: Some(vec![0, 4]),
+                delimiters: Some(vec![1, 3]),
                 quantifier: 1,
             };
             assert_eq!(result, expected);
