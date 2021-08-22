@@ -4,14 +4,15 @@ use crate::sample;
 pub struct Pattern {
     value: String,
     kind: PatternKind,
-    delimiters: Option<Vec<usize>>,
     quantifier: u8,
 }
 
 #[derive(Debug, PartialEq)]
 enum PatternKind {
     Literal,
-    Parentheses,
+    Parentheses {
+        pipe_positions: Option<Vec<usize>>,
+    },
     Brackets,
     #[allow(dead_code)]
     Compound,
@@ -34,31 +35,35 @@ impl Pattern {
         Err(ParseError)
     }
 
-    // TODO: implement for composite
     pub fn to_string_sampler(&self) -> sample::StringSampler {
         match &self.kind {
             PatternKind::Literal => sample::StringSampler {
                 support: vec![unescape(&self.value)],
                 repetitions: self.quantifier,
             },
-            PatternKind::Parentheses => {
-                let mut sup = Vec::new();
-                let delimiters = self.delimiters.clone().unwrap();
-                for (i, d) in delimiters.iter().enumerate() {
-                    if i == 0 {
-                        sup.push(String::from(&self.value[0..*d]));
-                    } else {
-                        sup.push(String::from(&self.value[(delimiters[i - 1] + 1)..*d]));
+            PatternKind::Parentheses { pipe_positions } => match pipe_positions {
+                Some(pipes) => {
+                    let mut sup = Vec::new();
+                    for (i, d) in pipes.iter().enumerate() {
+                        if i == 0 {
+                            sup.push(String::from(&self.value[0..*d]));
+                        } else {
+                            sup.push(String::from(&self.value[(pipes[i - 1] + 1)..*d]));
+                        }
+                        if i == pipes.len() - 1 {
+                            sup.push(String::from(&self.value[(*d + 1)..]));
+                        }
                     }
-                    if i == delimiters.len() - 1 {
-                        sup.push(String::from(&self.value[(*d + 1)..]));
+                    sample::StringSampler {
+                        support: sup,
+                        repetitions: self.quantifier,
                     }
                 }
-                sample::StringSampler {
-                    support: sup,
+                None => sample::StringSampler {
+                    support: vec![self.value.clone()],
                     repetitions: self.quantifier,
-                }
-            }
+                },
+            },
             PatternKind::Brackets => sample::StringSampler {
                 support: unescape(&self.value)
                     .chars()
@@ -96,7 +101,6 @@ pub fn parse_as_literal_kind(string: &str) -> Result<Pattern, ParseError> {
     Ok(Pattern {
         kind: PatternKind::Literal,
         value: String::from(string),
-        delimiters: None,
         quantifier: 1,
     })
 }
@@ -111,8 +115,9 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
     if indexes.len() == 2 && parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]).is_ok() {
         return Ok(Pattern {
             value: String::from(&string[1..(string.len() - 1)]),
-            kind: PatternKind::Parentheses,
-            delimiters: None,
+            kind: PatternKind::Parentheses {
+                pipe_positions: None,
+            },
             quantifier: q,
         });
     }
@@ -126,13 +131,14 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
     }
     Ok(Pattern {
         value: String::from(&string[1..(string.len() - 1)]),
-        kind: PatternKind::Parentheses,
-        delimiters: Some(
-            indexes[1..(indexes.len() - 1)]
-                .iter()
-                .map(|i| i - 1)
-                .collect(),
-        ),
+        kind: PatternKind::Parentheses {
+            pipe_positions: Some(
+                indexes[1..(indexes.len() - 1)]
+                    .iter()
+                    .map(|i| i - 1)
+                    .collect(),
+            ),
+        },
         quantifier: q,
     })
 }
@@ -147,7 +153,6 @@ pub fn parse_as_brackets_kind(string: &str) -> Result<Pattern, ParseError> {
         return Ok(Pattern {
             value: expand_ranges(&string[1..(string.len() - 1)]),
             kind: PatternKind::Brackets,
-            delimiters: None,
             quantifier: q,
         });
     }
@@ -292,10 +297,10 @@ mod tests {
             "(12|a|-)",
             "(12|a|-){100}",
         ] {
-            assert_eq!(
+            assert!(matches!(
                 parse_as_parentheses_kind(s).unwrap().kind,
-                PatternKind::Parentheses
-            );
+                PatternKind::Parentheses { .. },
+            ))
         }
     }
 
@@ -374,7 +379,6 @@ mod tests {
             expected = Pattern {
                 value: String::from(*value),
                 kind: PatternKind::Literal,
-                delimiters: None,
                 quantifier: 1,
             };
             assert_eq!(actual, expected);
@@ -389,8 +393,9 @@ mod tests {
             actual = Pattern::parse(value).unwrap();
             expected = Pattern {
                 value: String::from(&value[1..(value.len() - 1)]),
-                kind: PatternKind::Parentheses,
-                delimiters: Some(vec![1, 3]),
+                kind: PatternKind::Parentheses {
+                    pipe_positions: Some(vec![1, 3]),
+                },
                 quantifier: 1,
             };
             assert_eq!(actual, expected);
@@ -402,8 +407,9 @@ mod tests {
         let actual = Pattern::parse("(a|b|c){5}").unwrap();
         let expected = Pattern {
             value: String::from("a|b|c"),
-            kind: PatternKind::Parentheses,
-            delimiters: Some(vec![1, 3]),
+            kind: PatternKind::Parentheses {
+                pipe_positions: Some(vec![1, 3]),
+            },
             quantifier: 5,
         };
         assert_eq!(actual, expected);
@@ -414,8 +420,9 @@ mod tests {
         let actual = Pattern::parse("(a\\)bc){23}").unwrap();
         let expected = Pattern {
             value: String::from("a\\)bc"),
-            kind: PatternKind::Parentheses,
-            delimiters: None,
+            kind: PatternKind::Parentheses {
+                pipe_positions: None,
+            },
             quantifier: 23,
         };
         assert_eq!(actual, expected);
