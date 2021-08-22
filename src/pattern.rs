@@ -4,8 +4,8 @@ use crate::sample;
 pub struct Pattern {
     value: String,
     kind: PatternKind,
-    quantifier: u8,
     delimiters: Option<Vec<usize>>,
+    quantifier: u8,
 }
 
 #[derive(Debug, PartialEq)]
@@ -40,8 +40,8 @@ impl Pattern {
             Pattern {
                 value,
                 kind: PatternKind::Literal,
-                quantifier,
                 delimiters: _,
+                quantifier,
             } => sample::StringSampler {
                 support: vec![unescape(value)],
                 repetitions: *quantifier,
@@ -49,9 +49,9 @@ impl Pattern {
             Pattern {
                 value: _,
                 kind: PatternKind::Parentheses,
-                quantifier: _,
                 // need to use delimiters here
                 delimiters: _,
+                quantifier: _,
             } => sample::StringSampler {
                 support: vec![String::from("")],
                 repetitions: 1,
@@ -59,8 +59,8 @@ impl Pattern {
             Pattern {
                 value,
                 kind: PatternKind::Brackets,
-                quantifier,
                 delimiters: _,
+                quantifier,
             } => sample::StringSampler {
                 support: unescape(value).chars().map(|c| c.to_string()).collect(),
                 repetitions: *quantifier,
@@ -95,8 +95,8 @@ pub fn parse_as_literal_kind(string: &str) -> Result<Pattern, ParseError> {
     Ok(Pattern {
         kind: PatternKind::Literal,
         value: String::from(string),
-        quantifier: 1,
         delimiters: None,
+        quantifier: 1,
     })
 }
 
@@ -112,8 +112,8 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
         return Ok(Pattern {
             value: String::from(&string[1..(string.len() - 1)]),
             kind: PatternKind::Parentheses,
-            quantifier: q,
             delimiters: Some(indexes),
+            quantifier: q,
         });
     }
     for (i, p) in indexes.iter().enumerate() {
@@ -127,8 +127,8 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
     Ok(Pattern {
         value: String::from(&string[1..(string.len() - 1)]),
         kind: PatternKind::Parentheses,
-        quantifier: q,
         delimiters: Some(indexes),
+        quantifier: q,
     })
 }
 
@@ -142,8 +142,8 @@ pub fn parse_as_brackets_kind(string: &str) -> Result<Pattern, ParseError> {
         return Ok(Pattern {
             value: expand_ranges(&string[1..(string.len() - 1)]),
             kind: PatternKind::Brackets,
-            quantifier: q,
             delimiters: None,
+            quantifier: q,
         });
     }
     Err(ParseError)
@@ -360,8 +360,8 @@ mod tests {
             expected = Pattern {
                 value: String::from(*value),
                 kind: PatternKind::Literal,
-                quantifier: 1,
                 delimiters: None,
+                quantifier: 1,
             };
             assert_eq!(result, expected);
         }
@@ -376,8 +376,8 @@ mod tests {
             expected = Pattern {
                 value: String::from(&value[1..(value.len() - 1)]),
                 kind: PatternKind::Parentheses,
-                quantifier: 1,
                 delimiters: Some(vec![0, 4]),
+                quantifier: 1,
             };
             assert_eq!(result, expected);
         }
