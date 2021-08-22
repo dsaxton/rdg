@@ -21,8 +21,8 @@ pub struct ParseError;
 
 impl Pattern {
     pub fn parse(string: &str) -> Result<Pattern, ParseError> {
-        // TODO: this is wrong, cannot pop first
-        let (string, q) = pop_quantifier(string);
+        // TODO: do not pop first
+        let (_, q) = pop_quantifier(string);
         let q = q.unwrap_or(1);
         // instead of "can parse", simply parse and return Result
         // of Vec<String> and the repetitions? this would replace
@@ -30,12 +30,8 @@ impl Pattern {
         if let Ok(pattern) = parse_as_literal_kind(string) {
             return Ok(pattern);
         }
-        if can_parse_as_parentheses_kind(string) {
-            return Ok(Pattern {
-                value: String::from(&string[1..(string.len() - 1)]),
-                kind: PatternKind::Parentheses,
-                quantifier: q,
-            });
+        if let Ok(pattern) = parse_as_parentheses_kind(string) {
+            return Ok(pattern);
         }
         if can_parse_as_brackets_kind(string) {
             return Ok(Pattern {
@@ -111,26 +107,34 @@ pub fn parse_as_literal_kind(string: &str) -> Result<Pattern, ParseError> {
     })
 }
 
-// TODO: is it useful here to also return indexes?
-pub fn can_parse_as_parentheses_kind(string: &str) -> bool {
-    let (string, _) = pop_quantifier(string);
-    // TODO: pull this outside the function so indexes can be reused?
+// TODO: put indexes into the type
+pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
+    let (string, q) = pop_quantifier(string);
+    let q = q.unwrap_or(1);
     let indexes = match find_parentheses_boundaries(string) {
         Ok(vec) => vec,
-        Err(_) => return false,
+        Err(_) => return Err(ParseError),
     };
-    if indexes.len() == 2 {
-        return parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]).is_ok();
+    if indexes.len() == 2 && parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]).is_ok() {
+        return Ok(Pattern {
+            value: String::from(&string[1..(string.len() - 1)]),
+            kind: PatternKind::Parentheses,
+            quantifier: q,
+        });
     }
     for (i, p) in indexes.iter().enumerate() {
         if i == 0 {
             continue;
         }
         if parse_as_literal_kind(&string[(indexes[i - 1] + 1)..*p]).is_err() {
-            return false;
+            return Err(ParseError);
         }
     }
-    true
+    Ok(Pattern {
+        value: String::from(&string[1..(string.len() - 1)]),
+        kind: PatternKind::Parentheses,
+        quantifier: q,
+    })
 }
 
 pub fn can_parse_as_brackets_kind(string: &str) -> bool {
@@ -257,7 +261,7 @@ mod tests {
 
     #[test]
     fn can_parse_as_parentheses_valid() {
-        let mut result: bool;
+        let mut result: Result<Pattern, ParseError>;
         for s in [
             "(abc)",
             "(123)",
@@ -275,14 +279,14 @@ mod tests {
             "(12|a|-)",
             "(12|a|-){100}",
         ] {
-            result = can_parse_as_parentheses_kind(s);
-            assert!(result)
+            result = parse_as_parentheses_kind(s);
+            assert!(result.is_ok())
         }
     }
 
     #[test]
     fn can_parse_as_parentheses_invalid() {
-        let mut result: bool;
+        let mut result: Result<Pattern, ParseError>;
         for s in [
             "abc",
             "[abc]",
@@ -299,8 +303,8 @@ mod tests {
             "{1}(abc)",
             "(abc){{1}",
         ] {
-            result = can_parse_as_parentheses_kind(s);
-            assert!(!result)
+            result = parse_as_parentheses_kind(s);
+            assert!(result.is_err())
         }
     }
 
