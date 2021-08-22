@@ -221,7 +221,6 @@ mod tests {
 
     #[test]
     fn can_parse_as_literal_valid() {
-        let mut result: Result<Pattern, ParseError>;
         for s in [
             "abc",
             "abc\\(",
@@ -240,26 +239,22 @@ mod tests {
             "",
             "\\\\",
         ] {
-            result = parse_as_literal_kind(s);
-            assert!(result.is_ok())
+            assert_eq!(parse_as_literal_kind(s).unwrap().kind, PatternKind::Literal);
         }
     }
 
     #[test]
     fn can_parse_as_literal_invalid() {
-        let mut result: Result<Pattern, ParseError>;
         for s in [
             "(abc)", "\\(abc)", "(abc\\)", "abc)", "(abc", "[123]", "\\[123]", "[123\\]",
             "abc(123)", "(123)abc", ")(", "\\",
         ] {
-            result = parse_as_literal_kind(s);
-            assert!(result.is_err())
+            assert!(parse_as_literal_kind(s).is_err());
         }
     }
 
     #[test]
     fn can_parse_as_parentheses_valid() {
-        let mut result: Result<Pattern, ParseError>;
         for s in [
             "(abc)",
             "(123)",
@@ -277,14 +272,15 @@ mod tests {
             "(12|a|-)",
             "(12|a|-){100}",
         ] {
-            result = parse_as_parentheses_kind(s);
-            assert!(result.is_ok())
+            assert_eq!(
+                parse_as_parentheses_kind(s).unwrap().kind,
+                PatternKind::Parentheses
+            );
         }
     }
 
     #[test]
     fn can_parse_as_parentheses_invalid() {
-        let mut result: Result<Pattern, ParseError>;
         for s in [
             "abc",
             "[abc]",
@@ -301,8 +297,7 @@ mod tests {
             "{1}(abc)",
             "(abc){{1}",
         ] {
-            result = parse_as_parentheses_kind(s);
-            assert!(result.is_err())
+            assert!(parse_as_parentheses_kind(s).is_err())
         }
     }
 
