@@ -39,6 +39,7 @@ impl Pattern {
                 subpatterns: vec![pattern],
             });
         }
+        // TODO: once this works it can replace the whole parse method
         parse_as_compound_kind(string)
     }
 
