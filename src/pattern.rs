@@ -46,24 +46,21 @@ impl Pattern {
         let mut support: Vec<Vec<String>> = vec![];
         let mut repetitions: Vec<u8> = vec![];
         for p in &self.subpatterns {
+            repetitions.push(p.quantifier);
             match &p.kind {
                 SubPatternKind::Literal => {
                     support.push(vec![unescape(&p.value)]);
-                    repetitions.push(p.quantifier);
                 }
                 SubPatternKind::Brackets => {
                     support.push(unescape(&p.value).chars().map(|c| c.to_string()).collect());
-                    repetitions.push(p.quantifier);
                 }
                 SubPatternKind::Parentheses { pipe_positions } => match pipe_positions {
                     Some(pipes) => {
                         let split_string = split_at_positions(&p.value, pipes);
                         support.push(split_string.iter().map(|s| unescape(s)).collect());
-                        repetitions.push(p.quantifier);
                     }
                     None => {
                         support.push(vec![unescape(&p.value)]);
-                        repetitions.push(p.quantifier);
                     }
                 },
             }
