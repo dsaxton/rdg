@@ -59,6 +59,16 @@ mod tests {
     use super::*;
 
     #[test]
+    fn check_random_uniform_bounds() {
+        let mut actual: f64;
+        for _ in 0..100 {
+            actual = random_uniform();
+            assert!(actual < 1.0);
+            assert!(actual >= 0.0);
+        }
+    }
+
+    #[test]
     fn integer_sampling_respects_bounds() {
         let mut lower: u64;
         let mut upper: u64;
