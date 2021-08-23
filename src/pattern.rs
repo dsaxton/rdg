@@ -389,7 +389,6 @@ mod tests {
 
     #[test]
     fn can_parse_as_brackets_valid() {
-        let mut actual: Result<Pattern, ParseError>;
         for s in [
             "[abc]",
             "[abc]{10}",
@@ -400,20 +399,17 @@ mod tests {
             "[a&^#]",
             "[\\|]",
         ] {
-            actual = parse_as_brackets_kind(s);
-            assert!(actual.is_ok())
+            assert!(parse_as_brackets_kind(s).is_ok())
         }
     }
 
     #[test]
     fn can_parse_as_brackets_invalid() {
-        let mut actual: Result<Pattern, ParseError>;
         for s in [
             "[abc\\]", "\\[abc]", "[()]", "[[]]", "[(]", "[)]", "[[]", "[]]", "[abc|]", "[|]",
             "[abc}]", "[{abc]",
         ] {
-            actual = parse_as_brackets_kind(s);
-            assert!(actual.is_err())
+            assert!(parse_as_brackets_kind(s).is_err())
         }
     }
 
@@ -513,10 +509,8 @@ mod tests {
     #[test]
     #[ignore = "Currently broken by incorrect compound pattern parsing"]
     fn parse_invalid_pattern() {
-        let mut actual: Result<Pattern, ParseError>;
         for value in [")abc", ")(", "["].iter() {
-            actual = Pattern::parse(value);
-            assert!(actual.is_err());
+            assert!(Pattern::parse(value).is_err());
         }
     }
 
@@ -536,7 +530,6 @@ mod tests {
 
     #[test]
     fn check_pop_quantifier() {
-        let mut actual: (&str, Option<u8>);
         for (input, expected) in [
             ("(abc){5}", ("(abc)", Some(5))),
             ("[abc]{25}", ("[abc]", Some(25))),
@@ -551,36 +544,31 @@ mod tests {
         ]
         .iter()
         {
-            actual = pop_quantifier(input);
-            assert_eq!(actual, *expected);
+            assert_eq!(pop_quantifier(input), *expected);
         }
     }
 
     #[test]
     fn check_find_parentheses_boundaries_valid() {
-        let mut actual: Vec<usize>;
         for (input, expected) in [
             ("(abc)", vec![0, 4]),
             ("(a|b|c)", vec![0, 2, 4, 6]),
             ("(a|bbb|c)", vec![0, 2, 6, 8]),
         ] {
-            actual = find_parentheses_boundaries(input).unwrap();
-            assert_eq!(actual, expected);
+            assert_eq!(find_parentheses_boundaries(input).unwrap(), expected);
         }
     }
 
     #[test]
     fn check_find_parentheses_boundaries_invalid() {
-        let mut actual: Result<Vec<usize>, ParseError>;
         for invalid in ["abc", "(abc", "abc)", "[a|b|c]"] {
-            actual = find_parentheses_boundaries(invalid);
-            assert!(actual.is_err())
+            assert!(find_parentheses_boundaries(invalid).is_err())
         }
     }
 
     #[test]
     fn check_expand_ranges() {
-        let mut result: String;
+        let mut actual: String;
         for (input, expected) in [
             ("A-Z", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             ("a-z", "abcdefghijklmnopqrstuvwxyz"),
@@ -601,14 +589,13 @@ mod tests {
             ("-09", "-09"),
             ("9-0", "9-0"),
         ] {
-            result = expand_ranges(input);
-            assert_eq!(result, expected);
+            actual = expand_ranges(input);
+            assert_eq!(actual, expected);
         }
     }
 
     #[test]
     fn check_unescape() {
-        let mut result: String;
         for (input, expected) in [
             ("abc\\)", "abc)"),
             ("\\|", "|"),
@@ -617,8 +604,7 @@ mod tests {
             ("\\(abc\\]", "(abc]"),
             ("\\[abc\\]", "[abc]"),
         ] {
-            result = unescape(input);
-            assert_eq!(result, expected);
+            assert_eq!(unescape(input), expected);
         }
     }
 
