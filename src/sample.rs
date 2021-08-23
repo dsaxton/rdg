@@ -15,10 +15,10 @@ impl StringSampler {
             panic!("Support and repetitions do not have the same length.");
         }
         let mut result = String::from("");
-        for (s, r) in self.support.iter().zip(&self.repetitions) {
-            for _ in 0..*r {
-                let idx = (random_uniform() * (s.len() as f64)).floor() as usize;
-                result.push_str(&s[idx])
+        for (support, repetitions) in self.support.iter().zip(&self.repetitions) {
+            for _ in 0..*repetitions {
+                let idx = (random_uniform() * (support.len() as f64)).floor() as usize;
+                result.push_str(&support[idx])
             }
         }
         result
