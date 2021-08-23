@@ -98,6 +98,22 @@ pub fn parse_as_literal_kind(string: &str) -> Result<SubPattern, ParseError> {
     })
 }
 
+pub fn parse_as_brackets_kind(string: &str) -> Result<SubPattern, ParseError> {
+    let (string, q) = pop_quantifier(string);
+    let q = q.unwrap_or(1);
+    if !string.starts_with('[') || !string.ends_with(']') {
+        return Err(ParseError);
+    }
+    if parse_as_literal_kind(&string[1..(string.len() - 1)]).is_ok() {
+        return Ok(SubPattern {
+            value: expand_ranges(&string[1..(string.len() - 1)]),
+            kind: SubPatternKind::Brackets,
+            quantifier: q,
+        });
+    }
+    Err(ParseError)
+}
+
 pub fn parse_as_parentheses_kind(string: &str) -> Result<SubPattern, ParseError> {
     let (string, q) = pop_quantifier(string);
     let q = q.unwrap_or(1);
@@ -185,22 +201,6 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
     Ok(Pattern {
         subpatterns: vec![],
     })
-}
-
-pub fn parse_as_brackets_kind(string: &str) -> Result<SubPattern, ParseError> {
-    let (string, q) = pop_quantifier(string);
-    let q = q.unwrap_or(1);
-    if !string.starts_with('[') || !string.ends_with(']') {
-        return Err(ParseError);
-    }
-    if parse_as_literal_kind(&string[1..(string.len() - 1)]).is_ok() {
-        return Ok(SubPattern {
-            value: expand_ranges(&string[1..(string.len() - 1)]),
-            kind: SubPatternKind::Brackets,
-            quantifier: q,
-        });
-    }
-    Err(ParseError)
 }
 
 pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
