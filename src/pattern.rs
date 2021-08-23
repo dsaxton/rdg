@@ -153,6 +153,9 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<SubPattern, ParseError>
 }
 
 pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
+    // determine the possible type of subpattern based on the first character
+    // then seek for a terminating sequence or the end and apply appropriate
+    // parser
     if string.is_empty() {
         return Err(ParseError);
     }
