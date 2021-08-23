@@ -153,50 +153,8 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<SubPattern, ParseError>
 }
 
 pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
-    let mut kinds: Vec<SubPatternKind> = vec![];
-    let mut start_positions = vec![0];
-    let mut current_kind: SubPatternKind;
-    let mut escaped = false;
-    let mut char_iter = string.chars();
-    match char_iter.next().unwrap() {
-        '|' | '{' | ')' | ']' => return Err(ParseError),
-        '(' => {
-            current_kind = SubPatternKind::Parentheses {
-                pipe_positions: None,
-            }
-        }
-        '[' => {
-            current_kind = SubPatternKind::Brackets;
-        }
-        c => {
-            current_kind = SubPatternKind::Literal;
-            escaped = c == '\\';
-        }
-    };
-    for (i, c) in char_iter.enumerate() {
-        // TODO: look for unparsable and return ParseError, update
-        // kinds and start_positions, or simply continue
-        match current_kind {
-            SubPatternKind::Literal => {
-                if (c == ')' || c == ']' || c == '{' || c == '}' || c == '|') && !escaped {
-                    return Err(ParseError);
-                }
-                if (c == '(' || c == '[') && !escaped {
-                    kinds.push(current_kind.clone());
-                    start_positions.push(i);
-                    if c == '(' {
-                        current_kind = SubPatternKind::Parentheses {
-                            pipe_positions: None,
-                        };
-                    } else if c == '[' {
-                        current_kind = SubPatternKind::Brackets;
-                    }
-                }
-            }
-            SubPatternKind::Parentheses { pipe_positions: _ } => {}
-            SubPatternKind::Brackets => {}
-        }
-        escaped = is_escape_character(c);
+    if string.is_empty() {
+        return Err(ParseError);
     }
     Ok(Pattern {
         subpatterns: vec![],
