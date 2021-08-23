@@ -2,22 +2,21 @@ use crate::sample;
 
 #[derive(Debug, PartialEq)]
 pub struct Pattern {
+    pub subpatterns: Vec<SubPattern>,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct SubPattern {
     value: String,
-    kind: PatternKind,
-    quantifier: Option<u8>,
+    kind: SubPatternKind,
+    quantifier: u8,
 }
 
 #[derive(Debug, PartialEq, Clone)]
-enum PatternKind {
+enum SubPatternKind {
     Literal,
-    Parentheses {
-        pipe_positions: Option<Vec<usize>>,
-    },
     Brackets,
-    Compound {
-        start_positions: Vec<usize>,
-        kinds: Vec<PatternKind>,
-    },
+    Parentheses { pipe_positions: Option<Vec<usize>> },
 }
 
 #[derive(Debug)]
@@ -26,55 +25,56 @@ pub struct ParseError;
 impl Pattern {
     pub fn parse(string: &str) -> Result<Pattern, ParseError> {
         if let Ok(pattern) = parse_as_literal_kind(string) {
-            return Ok(pattern);
+            return Ok(Pattern {
+                subpatterns: vec![pattern],
+            });
         }
         if let Ok(pattern) = parse_as_parentheses_kind(string) {
-            return Ok(pattern);
+            return Ok(Pattern {
+                subpatterns: vec![pattern],
+            });
         }
         if let Ok(pattern) = parse_as_brackets_kind(string) {
-            return Ok(pattern);
+            return Ok(Pattern {
+                subpatterns: vec![pattern],
+            });
         }
-        parse_as_compound_kind(string)
+        parse_as_compound_pattern(string)
     }
+}
 
+impl SubPattern {
     pub fn to_string_sampler(&self) -> sample::StringSampler {
         match &self.kind {
-            PatternKind::Literal => sample::StringSampler {
+            SubPatternKind::Literal => sample::StringSampler {
                 support: vec![vec![unescape(&self.value)]],
-                repetitions: vec![self.quantifier.unwrap()],
+                repetitions: vec![self.quantifier],
             },
-            PatternKind::Parentheses { pipe_positions } => match pipe_positions {
-                Some(pipes) => {
-                    let split_string = split_at_positions(&self.value, pipes);
-                    sample::StringSampler {
-                        support: vec![split_string.iter().map(|s| unescape(s)).collect()],
-                        repetitions: vec![self.quantifier.unwrap()],
-                    }
-                }
-                None => sample::StringSampler {
-                    support: vec![vec![unescape(&self.value)]],
-                    repetitions: vec![self.quantifier.unwrap()],
-                },
-            },
-            PatternKind::Brackets => sample::StringSampler {
+            SubPatternKind::Brackets => sample::StringSampler {
                 support: vec![unescape(&self.value)
                     .chars()
                     .map(|c| c.to_string())
                     .collect()],
-                repetitions: vec![self.quantifier.unwrap()],
+                repetitions: vec![self.quantifier],
             },
-            PatternKind::Compound {
-                start_positions: _,
-                kinds: _,
-            } => sample::StringSampler {
-                support: vec![vec![String::from("...")]],
-                repetitions: vec![self.quantifier.unwrap()],
+            SubPatternKind::Parentheses { pipe_positions } => match pipe_positions {
+                Some(pipes) => {
+                    let split_string = split_at_positions(&self.value, pipes);
+                    sample::StringSampler {
+                        support: vec![split_string.iter().map(|s| unescape(s)).collect()],
+                        repetitions: vec![self.quantifier],
+                    }
+                }
+                None => sample::StringSampler {
+                    support: vec![vec![unescape(&self.value)]],
+                    repetitions: vec![self.quantifier],
+                },
             },
         }
     }
 }
 
-pub fn parse_as_literal_kind(string: &str) -> Result<Pattern, ParseError> {
+pub fn parse_as_literal_kind(string: &str) -> Result<SubPattern, ParseError> {
     let mut escaped_by_previous = false;
     for (i, c) in string.chars().enumerate() {
         if escaped_by_previous {
@@ -93,14 +93,14 @@ pub fn parse_as_literal_kind(string: &str) -> Result<Pattern, ParseError> {
         }
         escaped_by_previous = false;
     }
-    Ok(Pattern {
-        kind: PatternKind::Literal,
+    Ok(SubPattern {
+        kind: SubPatternKind::Literal,
         value: String::from(string),
-        quantifier: Some(1),
+        quantifier: 1,
     })
 }
 
-pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
+pub fn parse_as_parentheses_kind(string: &str) -> Result<SubPattern, ParseError> {
     let (string, q) = pop_quantifier(string);
     let q = q.unwrap_or(1);
     let indexes = match find_parentheses_boundaries(string) {
@@ -108,12 +108,12 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
         Err(_) => return Err(ParseError),
     };
     if indexes.len() == 2 && parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]).is_ok() {
-        return Ok(Pattern {
+        return Ok(SubPattern {
             value: String::from(&string[1..(string.len() - 1)]),
-            kind: PatternKind::Parentheses {
+            kind: SubPatternKind::Parentheses {
                 pipe_positions: None,
             },
-            quantifier: Some(q),
+            quantifier: q,
         });
     }
     for (i, p) in indexes.iter().enumerate() {
@@ -124,9 +124,9 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
             return Err(ParseError);
         }
     }
-    Ok(Pattern {
+    Ok(SubPattern {
         value: String::from(&string[1..(string.len() - 1)]),
-        kind: PatternKind::Parentheses {
+        kind: SubPatternKind::Parentheses {
             pipe_positions: Some(
                 indexes[1..(indexes.len() - 1)]
                     .iter()
@@ -134,28 +134,28 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<Pattern, ParseError> {
                     .collect(),
             ),
         },
-        quantifier: Some(q),
+        quantifier: q,
     })
 }
 
-pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
-    let mut kinds: Vec<PatternKind> = vec![];
+pub fn parse_as_compound_pattern(string: &str) -> Result<Pattern, ParseError> {
+    let mut kinds: Vec<SubPatternKind> = vec![];
     let mut start_positions = vec![0];
-    let mut current_kind: PatternKind;
+    let mut current_kind: SubPatternKind;
     let mut escaped = false;
     let mut char_iter = string.chars();
     match char_iter.next().unwrap() {
         '|' | '{' | ')' | ']' => return Err(ParseError),
         '(' => {
-            current_kind = PatternKind::Parentheses {
+            current_kind = SubPatternKind::Parentheses {
                 pipe_positions: None,
             }
         }
         '[' => {
-            current_kind = PatternKind::Brackets;
+            current_kind = SubPatternKind::Brackets;
         }
         c => {
-            current_kind = PatternKind::Literal;
+            current_kind = SubPatternKind::Literal;
             escaped = c == '\\';
         }
     };
@@ -163,7 +163,7 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
         // TODO: look for unparsable and return ParseError, update
         // kinds and start_positions, or simply continue
         match current_kind {
-            PatternKind::Literal => {
+            SubPatternKind::Literal => {
                 if (c == ')' || c == ']' || c == '{' || c == '}' || c == '|') && !escaped {
                     return Err(ParseError);
                 }
@@ -171,41 +171,35 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
                     kinds.push(current_kind.clone());
                     start_positions.push(i);
                     if c == '(' {
-                        current_kind = PatternKind::Parentheses {
+                        current_kind = SubPatternKind::Parentheses {
                             pipe_positions: None,
                         };
                     } else if c == '[' {
-                        current_kind = PatternKind::Brackets;
+                        current_kind = SubPatternKind::Brackets;
                     }
                 }
             }
-            PatternKind::Parentheses { pipe_positions: _ } => {}
-            PatternKind::Brackets => {}
-            _ => {}
+            SubPatternKind::Parentheses { pipe_positions: _ } => {}
+            SubPatternKind::Brackets => {}
         }
         escaped = is_escape_character(c);
     }
     Ok(Pattern {
-        value: String::from("..."),
-        kind: PatternKind::Compound {
-            start_positions,
-            kinds,
-        },
-        quantifier: None,
+        subpatterns: vec![],
     })
 }
 
-pub fn parse_as_brackets_kind(string: &str) -> Result<Pattern, ParseError> {
+pub fn parse_as_brackets_kind(string: &str) -> Result<SubPattern, ParseError> {
     let (string, q) = pop_quantifier(string);
     let q = q.unwrap_or(1);
     if !string.starts_with('[') || !string.ends_with(']') {
         return Err(ParseError);
     }
     if parse_as_literal_kind(&string[1..(string.len() - 1)]).is_ok() {
-        return Ok(Pattern {
+        return Ok(SubPattern {
             value: expand_ranges(&string[1..(string.len() - 1)]),
-            kind: PatternKind::Brackets,
-            quantifier: Some(q),
+            kind: SubPatternKind::Brackets,
+            quantifier: q,
         });
     }
     Err(ParseError)
@@ -325,7 +319,10 @@ mod tests {
             "",
             "\\\\",
         ] {
-            assert_eq!(parse_as_literal_kind(s).unwrap().kind, PatternKind::Literal);
+            assert_eq!(
+                parse_as_literal_kind(s).unwrap().kind,
+                SubPatternKind::Literal
+            );
         }
     }
 
@@ -360,7 +357,7 @@ mod tests {
         ] {
             assert!(matches!(
                 parse_as_parentheses_kind(s).unwrap().kind,
-                PatternKind::Parentheses { .. },
+                SubPatternKind::Parentheses { .. },
             ))
         }
     }
@@ -417,19 +414,9 @@ mod tests {
     #[ignore = "Not fully implemented"]
     fn can_parse_as_compound_valid() {
         let input = "(a|b)@example.com";
-        let actual = parse_as_compound_kind(input).unwrap();
+        let actual = parse_as_compound_pattern(input).unwrap();
         let expected = Pattern {
-            value: String::from(input),
-            kind: PatternKind::Compound {
-                start_positions: vec![0, 5],
-                kinds: vec![
-                    PatternKind::Parentheses {
-                        pipe_positions: Some(vec![1]),
-                    },
-                    PatternKind::Literal,
-                ],
-            },
-            quantifier: None,
+            subpatterns: vec![],
         };
         assert_eq!(actual, expected)
     }
@@ -455,9 +442,11 @@ mod tests {
         {
             actual = Pattern::parse(value).unwrap();
             expected = Pattern {
-                value: String::from(*value),
-                kind: PatternKind::Literal,
-                quantifier: Some(1),
+                subpatterns: vec![SubPattern {
+                    value: String::from(*value),
+                    kind: SubPatternKind::Literal,
+                    quantifier: 1,
+                }],
             };
             assert_eq!(actual, expected);
         }
@@ -470,11 +459,13 @@ mod tests {
         for value in ["(a|b|c)", "(1|2|3)"] {
             actual = Pattern::parse(value).unwrap();
             expected = Pattern {
-                value: String::from(&value[1..(value.len() - 1)]),
-                kind: PatternKind::Parentheses {
-                    pipe_positions: Some(vec![1, 3]),
-                },
-                quantifier: Some(1),
+                subpatterns: vec![SubPattern {
+                    value: String::from(&value[1..(value.len() - 1)]),
+                    kind: SubPatternKind::Parentheses {
+                        pipe_positions: Some(vec![1, 3]),
+                    },
+                    quantifier: 1,
+                }],
             };
             assert_eq!(actual, expected);
         }
@@ -484,11 +475,13 @@ mod tests {
     fn parse_valid_parentheses_pattern_with_quantifier() {
         let actual = Pattern::parse("(a|b|c){5}").unwrap();
         let expected = Pattern {
-            value: String::from("a|b|c"),
-            kind: PatternKind::Parentheses {
-                pipe_positions: Some(vec![1, 3]),
-            },
-            quantifier: Some(5),
+            subpatterns: vec![SubPattern {
+                value: String::from("a|b|c"),
+                kind: SubPatternKind::Parentheses {
+                    pipe_positions: Some(vec![1, 3]),
+                },
+                quantifier: 5,
+            }],
         };
         assert_eq!(actual, expected);
     }
@@ -497,11 +490,13 @@ mod tests {
     fn parse_valid_parentheses_pattern_with_escape() {
         let actual = Pattern::parse("(a\\)bc){23}").unwrap();
         let expected = Pattern {
-            value: String::from("a\\)bc"),
-            kind: PatternKind::Parentheses {
-                pipe_positions: None,
-            },
-            quantifier: Some(23),
+            subpatterns: vec![SubPattern {
+                value: String::from("a\\)bc"),
+                kind: SubPatternKind::Parentheses {
+                    pipe_positions: None,
+                },
+                quantifier: 23,
+            }],
         };
         assert_eq!(actual, expected);
     }

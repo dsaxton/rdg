@@ -5,6 +5,7 @@ mod pattern;
 mod sample;
 
 use pattern::Pattern;
+use sample::StringSampler;
 
 const EXIT_SUCCESS: i32 = 0;
 const EXIT_ERROR: i32 = 1;
@@ -37,15 +38,26 @@ fn main() {
             let pattern = string_matches
                 .value_of("pattern")
                 .unwrap_or("[A-Za-z0-9]{10}");
-            let sampler = match Pattern::parse(pattern) {
-                Ok(s) => s.to_string_sampler(),
+            let samplers: Vec<StringSampler> = match Pattern::parse(pattern) {
+                Ok(s) => s
+                    .subpatterns
+                    .iter()
+                    .map(|p| p.to_string_sampler())
+                    .collect(),
                 Err(_) => {
                     eprintln!("Unable to parse pattern: {}", pattern);
                     process::exit(EXIT_ERROR);
                 }
             };
             for _ in 0..count {
-                println!("{}", sampler.sample());
+                println!(
+                    "{}",
+                    samplers
+                        .iter()
+                        .map(|s| s.sample())
+                        .collect::<Vec<String>>()
+                        .join("")
+                );
             }
         }
         Some(("int", int_matches)) => {
