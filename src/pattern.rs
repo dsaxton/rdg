@@ -418,7 +418,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Not implemented"]
+    #[ignore = "Not fully implemented"]
     fn can_parse_as_compound_valid() {
         let input = "(a|b)@example.com";
         let actual = parse_as_compound_kind(input).unwrap();
