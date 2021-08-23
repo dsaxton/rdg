@@ -39,37 +39,38 @@ impl Pattern {
                 subpatterns: vec![pattern],
             });
         }
-        parse_as_compound_pattern(string)
+        parse_as_compound_kind(string)
     }
-}
 
-impl SubPattern {
     pub fn to_string_sampler(&self) -> sample::StringSampler {
-        match &self.kind {
-            SubPatternKind::Literal => sample::StringSampler {
-                support: vec![vec![unescape(&self.value)]],
-                repetitions: vec![self.quantifier],
-            },
-            SubPatternKind::Brackets => sample::StringSampler {
-                support: vec![unescape(&self.value)
-                    .chars()
-                    .map(|c| c.to_string())
-                    .collect()],
-                repetitions: vec![self.quantifier],
-            },
-            SubPatternKind::Parentheses { pipe_positions } => match pipe_positions {
-                Some(pipes) => {
-                    let split_string = split_at_positions(&self.value, pipes);
-                    sample::StringSampler {
-                        support: vec![split_string.iter().map(|s| unescape(s)).collect()],
-                        repetitions: vec![self.quantifier],
-                    }
+        let mut support: Vec<Vec<String>> = vec![];
+        let mut repetitions: Vec<u8> = vec![];
+        for p in &self.subpatterns {
+            match &p.kind {
+                SubPatternKind::Literal => {
+                    support.push(vec![unescape(&p.value)]);
+                    repetitions.push(p.quantifier);
                 }
-                None => sample::StringSampler {
-                    support: vec![vec![unescape(&self.value)]],
-                    repetitions: vec![self.quantifier],
+                SubPatternKind::Brackets => {
+                    support.push(unescape(&p.value).chars().map(|c| c.to_string()).collect());
+                    repetitions.push(p.quantifier);
+                }
+                SubPatternKind::Parentheses { pipe_positions } => match pipe_positions {
+                    Some(pipes) => {
+                        let split_string = split_at_positions(&p.value, pipes);
+                        support.push(split_string.iter().map(|s| unescape(s)).collect());
+                        repetitions.push(p.quantifier);
+                    }
+                    None => {
+                        support.push(vec![unescape(&p.value)]);
+                        repetitions.push(p.quantifier);
+                    }
                 },
-            },
+            }
+        }
+        sample::StringSampler {
+            support,
+            repetitions,
         }
     }
 }
@@ -138,7 +139,7 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<SubPattern, ParseError>
     })
 }
 
-pub fn parse_as_compound_pattern(string: &str) -> Result<Pattern, ParseError> {
+pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
     let mut kinds: Vec<SubPatternKind> = vec![];
     let mut start_positions = vec![0];
     let mut current_kind: SubPatternKind;
@@ -414,7 +415,7 @@ mod tests {
     #[ignore = "Not fully implemented"]
     fn can_parse_as_compound_valid() {
         let input = "(a|b)@example.com";
-        let actual = parse_as_compound_pattern(input).unwrap();
+        let actual = parse_as_compound_kind(input).unwrap();
         let expected = Pattern {
             subpatterns: vec![],
         };
