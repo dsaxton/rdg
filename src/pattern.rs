@@ -224,7 +224,7 @@ pub fn pop_subpattern(string: &str) -> Option<(SubPattern, usize)> {
         }
         let closing_brace_idx =
             seek_to_unescaped(&string[(end_idx + 1)..], vec!['}']) + end_idx + 1;
-        if closing_brace_idx == string.len() - end_idx - 1 {
+        if closing_brace_idx == string.len() {
             return None;
         }
         match parse_as_parentheses_kind(&string[..(closing_brace_idx + 1)]) {
@@ -696,5 +696,10 @@ mod tests {
             4,
         );
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn check_pop_subpattern_parentheses_brace_not_closed() {
+        assert!(pop_subpattern("(abc){5").is_none());
     }
 }
