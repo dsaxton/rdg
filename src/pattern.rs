@@ -180,7 +180,6 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
     Ok(Pattern { subpatterns })
 }
 
-#[allow(dead_code)]
 pub fn seek_to_unescaped(string: &str, cs: Vec<char>) -> usize {
     let mut escaped = false;
     for (i, a) in string.chars().enumerate() {
@@ -222,6 +221,8 @@ pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseErro
     indexes.push(string.len() - 1);
     Ok(indexes)
 }
+
+// pop_subpattern -> (Option<SubPattern>, &str)
 
 pub fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
     if !string.ends_with('}') {
