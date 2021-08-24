@@ -165,6 +165,25 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
     })
 }
 
+#[allow(dead_code)]
+pub fn seek_to_unescaped(string: &str, cs: Vec<char>) -> usize {
+    let mut escaped = false;
+    for (i, a) in string.chars().enumerate() {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+        if is_escape_character(a) {
+            escaped = true;
+            continue;
+        }
+        if cs.iter().any(|b| a == *b) {
+            return i;
+        }
+    }
+    string.len() - 1
+}
+
 pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
     if !string.starts_with('(') || !string.ends_with(')') {
         return Err(ParseError);
@@ -560,6 +579,21 @@ mod tests {
             ("\\[abc\\]", "[abc]"),
         ] {
             assert_eq!(unescape(input), expected);
+        }
+    }
+
+    #[test]
+    fn check_seek_to_unescaped() {
+        for (input, target, expected) in [
+            ("(abc)", vec![')'], 4),
+            ("[abc]", vec![']'], 4),
+            ("abc\\[[", vec!['['], 5),
+            ("abc", vec!['['], 2),
+            ("12{", vec!['{'], 2),
+            ("abc(|", vec!['|'], 4),
+            ("abc(|", vec!['|', '('], 3),
+        ] {
+            assert_eq!(seek_to_unescaped(input, target), expected);
         }
     }
 
