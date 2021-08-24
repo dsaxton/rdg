@@ -154,15 +154,29 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<SubPattern, ParseError>
 }
 
 pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
-    // determine the possible type of subpattern based on the first character
-    // then seek for a terminating sequence or the end and apply appropriate
-    // parser
     if string.is_empty() {
         return Err(ParseError);
     }
-    Ok(Pattern {
-        subpatterns: vec![],
-    })
+    let subpatterns: Vec<SubPattern> = vec![];
+    let _chars = string.chars().collect::<Vec<_>>();
+    let mut _start_idx: usize = 0;
+    let mut end_idx: usize;
+    if string.starts_with('(') {
+        end_idx = seek_to_unescaped(string, vec![')']);
+        if end_idx == string.len() {
+            return Err(ParseError);
+        }
+        // check for quantifier
+    } else if string.starts_with('[') {
+        end_idx = seek_to_unescaped(string, vec![']']);
+        if end_idx == string.len() {
+            return Err(ParseError);
+        }
+        // check for quantifier
+    } else {
+        end_idx = seek_to_unescaped(string, vec!['(', '[']);
+    }
+    Ok(Pattern { subpatterns })
 }
 
 #[allow(dead_code)]
@@ -390,7 +404,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Not fully implemented"]
     fn can_parse_as_compound_valid() {
         let input = "(a|b)@example.com";
         let actual = parse_as_compound_kind(input).unwrap();
@@ -481,7 +494,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Currently broken by incorrect compound pattern parsing"]
     fn parse_invalid_pattern() {
         for value in [")abc", ")(", "["].iter() {
             assert!(Pattern::parse(value).is_err());
