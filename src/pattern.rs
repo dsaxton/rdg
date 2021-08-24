@@ -408,7 +408,20 @@ mod tests {
         let input = "(a|b)@example.com";
         let actual = parse_as_compound_kind(input).unwrap();
         let expected = Pattern {
-            subpatterns: vec![],
+            subpatterns: vec![
+                SubPattern {
+                    value: String::from("a|b"),
+                    kind: SubPatternKind::Parentheses {
+                        pipe_positions: vec![1],
+                    },
+                    quantifier: 1,
+                },
+                SubPattern {
+                    value: String::from("@example.com"),
+                    kind: SubPatternKind::Literal,
+                    quantifier: 1,
+                },
+            ],
         };
         assert_eq!(actual, expected)
     }
