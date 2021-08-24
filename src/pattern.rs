@@ -161,6 +161,7 @@ pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
     let _chars = string.chars().collect::<Vec<_>>();
     let mut _start_idx: usize = 0;
     let mut end_idx: usize;
+    // requires iteration and pushing onto subpatterns
     if string.starts_with('(') {
         end_idx = seek_to_unescaped(string, vec![')']);
         if end_idx == string.len() {
