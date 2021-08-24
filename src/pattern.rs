@@ -181,7 +181,7 @@ pub fn seek_to_unescaped(string: &str, cs: Vec<char>) -> usize {
             return i;
         }
     }
-    string.len() - 1
+    string.len()
 }
 
 pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
@@ -588,7 +588,7 @@ mod tests {
             ("(abc)", vec![')'], 4),
             ("[abc]", vec![']'], 4),
             ("abc\\[[", vec!['['], 5),
-            ("abc", vec!['['], 2),
+            ("abc", vec!['['], 3),
             ("12{", vec!['{'], 2),
             ("abc(|", vec!['|'], 4),
             ("abc(|", vec!['|', '('], 3),
