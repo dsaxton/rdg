@@ -655,6 +655,11 @@ mod tests {
             ("abc0-9", "abc0123456789"),
             ("A-Z123", "ABCDEFGHIJKLMNOPQRSTUVWXYZ123"),
             ("123A-Z", "123ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            ("*-^0-9", "*-^0123456789"),
+            ("*-^---0-9", "*-^---0123456789"),
+            ("*-^---a-f", "*-^---abcdef"),
+            ("*-^---a-f7-9", "*-^---abcdef789"),
+            ("*-^---a-f7-9--abc--", "*-^---abcdef789--abc--"),
         ] {
             actual = expand_ranges(input);
             assert_eq!(actual, expected);
