@@ -584,23 +584,17 @@ mod tests {
         let mut actual: String;
         for (input, expected) in [
             ("A-Z", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            ("M-Z", "MNOPQRSTUVWXYZ"),
             ("a-z", "abcdefghijklmnopqrstuvwxyz"),
             ("0-9", "0123456789"),
+            ("5-9", "56789"),
+            ("0-5", "012345"),
             ("a-z0-9", "abcdefghijklmnopqrstuvwxyz0123456789"),
             ("A-Z0-9", "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
             ("0-9abc", "0123456789abc"),
             ("abc0-9", "abc0123456789"),
             ("A-Z123", "ABCDEFGHIJKLMNOPQRSTUVWXYZ123"),
             ("123A-Z", "123ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-            ("-AZ", "-AZ"),
-            ("AZ-", "AZ-"),
-            ("Z-A", "Z-A"),
-            ("az-", "az-"),
-            ("-az", "-az"),
-            ("z-a", "z-a"),
-            ("09-", "09-"),
-            ("-09", "-09"),
-            ("9-0", "9-0"),
         ] {
             actual = expand_ranges(input);
             assert_eq!(actual, expected);
