@@ -521,7 +521,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_valid_compound_pattern() {
+    fn parse_valid_compound_pattern_detail() {
         let actual = Pattern::parse("abc[123]").unwrap();
         let expected = Pattern {
             subpatterns: vec![
@@ -541,8 +541,45 @@ mod tests {
     }
 
     #[test]
-    fn parse_invalid_pattern() {
-        for value in [")abc", ")(", "["].iter() {
+    fn parse_valid_compound_pattern_battery() {
+        for input in [
+            "abc[123]{9}",
+            "(1|2|3)abc",
+            "[0-9]{5}(bob|alice){3}",
+            "[a-z]{5}[*&^%]",
+            "[5-9]{5}[A-Z]",
+            "xyz(a|b|c)123",
+            "xyz\\((a|b|c)123",
+            "xyz(a|b|c\\))123",
+            "[5-9\\]]{5}abc",
+            "[\\[5-9]{5}abc",
+        ] {
+            assert!(Pattern::parse(input).is_ok());
+        }
+    }
+
+    #[test]
+    fn parse_invalid_pattern_battery() {
+        for value in [
+            "\\[0-9]",
+            "[0-9\\]",
+            "(a|b|c\\)",
+            "\\(a|b|c)",
+            "(abc",
+            ")abc",
+            "abc)",
+            "abc(",
+            "(abc(",
+            ")abc)",
+            "[abc",
+            "]abc",
+            "abc]",
+            "abc[",
+            "[abc[",
+            "]abc]",
+        ]
+        .iter()
+        {
             assert!(Pattern::parse(value).is_err());
         }
     }
