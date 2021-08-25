@@ -533,7 +533,7 @@ mod tests {
 
     #[test]
     fn parse_invalid_pattern() {
-        for value in ["["].iter() {
+        for value in [")abc", ")(", "["].iter() {
             assert!(Pattern::parse(value).is_err());
         }
     }
