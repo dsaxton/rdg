@@ -29,7 +29,7 @@ impl Pattern {
         while idx < string.len() {
             match pop_subpattern(&string[idx..]) {
                 Some((p, i)) => {
-                    idx = i + 1;
+                    idx += i + 1;
                     subpatterns.push(p);
                 }
                 None => return Err(ParseError),
@@ -512,8 +512,28 @@ mod tests {
     }
 
     #[test]
+    fn parse_valid_compound_pattern() {
+        let actual = Pattern::parse("abc[123]").unwrap();
+        let expected = Pattern {
+            subpatterns: vec![
+                SubPattern {
+                    value: String::from("abc"),
+                    kind: SubPatternKind::Literal,
+                    quantifier: 1,
+                },
+                SubPattern {
+                    value: String::from("123"),
+                    kind: SubPatternKind::Brackets,
+                    quantifier: 1,
+                },
+            ],
+        };
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
     fn parse_invalid_pattern() {
-        for value in [")abc", ")(", "["].iter() {
+        for value in ["["].iter() {
             assert!(Pattern::parse(value).is_err());
         }
     }
