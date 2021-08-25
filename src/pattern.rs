@@ -113,10 +113,7 @@ pub fn parse_as_brackets_kind(string: &str) -> Result<SubPattern, ParseError> {
 pub fn parse_as_parentheses_kind(string: &str) -> Result<SubPattern, ParseError> {
     let (string, q) = pop_quantifier(string);
     let q = q.unwrap_or(1);
-    let indexes = match find_parentheses_boundaries(string) {
-        Ok(vec) => vec,
-        Err(_) => return Err(ParseError),
-    };
+    let indexes = find_parentheses_boundaries(string)?;
     if indexes.len() == 2 && parse_as_literal_kind(&string[(indexes[0] + 1)..indexes[1]]).is_ok() {
         return Ok(SubPattern {
             value: String::from(&string[1..(string.len() - 1)]),
