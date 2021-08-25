@@ -69,15 +69,15 @@ impl Pattern {
 }
 
 pub fn parse_as_literal_kind(string: &str) -> Result<SubPattern, ParseError> {
-    let mut escaped_by_previous = false;
+    let mut escaped = false;
     for (i, c) in string.chars().enumerate() {
-        if escaped_by_previous {
-            escaped_by_previous = false;
+        if escaped {
+            escaped = false;
             continue;
         }
         if is_escape_character(c) {
             if i < string.len() - 1 {
-                escaped_by_previous = true;
+                escaped = true;
                 continue;
             }
             return Err(ParseError);
@@ -85,7 +85,7 @@ pub fn parse_as_literal_kind(string: &str) -> Result<SubPattern, ParseError> {
         if is_special_character(c) {
             return Err(ParseError);
         }
-        escaped_by_previous = false;
+        escaped = false;
     }
     Ok(SubPattern {
         kind: SubPatternKind::Literal,
@@ -171,20 +171,20 @@ pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseErro
         return Err(ParseError);
     }
     let mut indexes: Vec<usize> = vec![0];
-    let mut escaped_by_previous = false;
+    let mut escaped_ = false;
     for (i, c) in string.chars().enumerate() {
-        if escaped_by_previous {
-            escaped_by_previous = false;
+        if escaped_ {
+            escaped_ = false;
             continue;
         }
         if is_escape_character(c) {
-            escaped_by_previous = true;
+            escaped_ = true;
             continue;
         }
         if c == '|' {
             indexes.push(i);
         }
-        escaped_by_previous = false;
+        escaped_ = false;
     }
     indexes.push(string.len() - 1);
     Ok(indexes)
