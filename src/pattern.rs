@@ -259,10 +259,43 @@ pub fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
 }
 
 fn expand_ranges(string: &str) -> String {
-    string
-        .replace("A-Z", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-        .replace("0-9", "0123456789")
-        .replace("a-z", "abcdefghijklmnopqrstuvwxyz")
+    let mut result = String::from(string);
+    let mut dash_idx = seek_to_unescaped(&result, vec!['-']);
+    while 0 < dash_idx && dash_idx < result.len() - 1 {
+        let before = result.chars().nth(dash_idx - 1).unwrap();
+        let after = result.chars().nth(dash_idx + 1).unwrap();
+        let both_digits = before.is_digit(10) && after.is_digit(10);
+        let both_alphabetic = before.is_alphabetic() && after.is_alphabetic();
+        if !both_digits && !both_alphabetic {
+            dash_idx += seek_to_unescaped(&result[(dash_idx + 1)..], vec!['-']) + 1;
+            continue;
+        }
+        if both_digits {
+            let mut replacement = (before..after)
+                .collect::<Vec<_>>()
+                .iter()
+                .map(|s| s.to_string())
+                .collect::<Vec<_>>()
+                .join("");
+            if !replacement.is_empty() {
+                replacement.push_str(&String::from(after));
+                result.replace_range((dash_idx - 1)..(dash_idx + 2), &replacement);
+            }
+        } else {
+            let mut replacement = (before..after)
+                .collect::<Vec<_>>()
+                .iter()
+                .map(|s| s.to_string())
+                .collect::<Vec<_>>()
+                .join("");
+            if !replacement.is_empty() {
+                replacement.push_str(&String::from(after));
+                result.replace_range((dash_idx - 1)..(dash_idx + 2), &replacement);
+            }
+        }
+        dash_idx = seek_to_unescaped(&result, vec!['-']);
+    }
+    result
 }
 
 fn unescape(string: &str) -> String {
