@@ -585,8 +585,10 @@ mod tests {
         for (input, expected) in [
             ("A-Z", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             ("M-Z", "MNOPQRSTUVWXYZ"),
+            ("A-M", "ABCDEFGHIJKLM"),
             ("a-z", "abcdefghijklmnopqrstuvwxyz"),
             ("m-z", "mnopqrstuvwxyz"),
+            ("a-m", "abcdefghijklm"),
             ("0-9", "0123456789"),
             ("5-9", "56789"),
             ("0-5", "012345"),
