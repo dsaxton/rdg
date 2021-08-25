@@ -586,6 +586,7 @@ mod tests {
             ("A-Z", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             ("M-Z", "MNOPQRSTUVWXYZ"),
             ("a-z", "abcdefghijklmnopqrstuvwxyz"),
+            ("m-z", "mnopqrstuvwxyz"),
             ("0-9", "0123456789"),
             ("5-9", "56789"),
             ("0-5", "012345"),
