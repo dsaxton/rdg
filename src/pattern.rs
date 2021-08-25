@@ -627,6 +627,7 @@ mod tests {
             ("\\(abc", "(abc"),
             ("\\(abc\\]", "(abc]"),
             ("\\[abc\\]", "[abc]"),
+            ("\\\\", "\\"),
         ] {
             assert_eq!(unescape(input), expected);
         }
