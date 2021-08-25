@@ -195,8 +195,6 @@ pub fn pop_subpattern(string: &str) -> Option<(SubPattern, usize)> {
         return None;
     }
     let chars = string.chars().collect::<Vec<_>>();
-    let end_idx: usize;
-    let next_idx: usize;
     let parse_function = |s| match chars[0] {
         '(' => parse_as_parentheses_kind(s),
         '[' => parse_as_brackets_kind(s),
@@ -209,7 +207,7 @@ pub fn pop_subpattern(string: &str) -> Option<(SubPattern, usize)> {
     };
     match chars[0] {
         '(' | '[' => {
-            end_idx = seek_to_unescaped(string, vec![closing_char]);
+            let end_idx = seek_to_unescaped(string, vec![closing_char]);
             if end_idx == string.len() {
                 return None;
             }
@@ -232,7 +230,7 @@ pub fn pop_subpattern(string: &str) -> Option<(SubPattern, usize)> {
             }
         }
         _ => {
-            next_idx = seek_to_unescaped(string, vec!['(', '[']);
+            let next_idx = seek_to_unescaped(string, vec!['(', '[']);
             match parse_as_literal_kind(&string[..next_idx]) {
                 Ok(pattern) => Some((pattern, next_idx - 1)),
                 Err(_) => None,
