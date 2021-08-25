@@ -171,20 +171,20 @@ pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseErro
         return Err(ParseError);
     }
     let mut indexes: Vec<usize> = vec![0];
-    let mut escaped_ = false;
+    let mut escaped = false;
     for (i, c) in string.chars().enumerate() {
-        if escaped_ {
-            escaped_ = false;
+        if escaped {
+            escaped = false;
             continue;
         }
         if is_escape_character(c) {
-            escaped_ = true;
+            escaped = true;
             continue;
         }
         if c == '|' {
             indexes.push(i);
         }
-        escaped_ = false;
+        escaped = false;
     }
     indexes.push(string.len() - 1);
     Ok(indexes)
