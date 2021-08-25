@@ -280,7 +280,7 @@ fn expand_ranges(string: &str) -> String {
             replacement.push_str(&String::from(after));
             result.replace_range((dash_idx - 1)..(dash_idx + 2), &replacement);
         }
-        dash_idx = seek_to_unescaped(&result, vec!['-']);
+        dash_idx += seek_to_unescaped(&result[(dash_idx + 1)..], vec!['-']) + 1;
     }
     result
 }
