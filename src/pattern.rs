@@ -197,56 +197,47 @@ pub fn pop_subpattern(string: &str) -> Option<(SubPattern, usize)> {
     let chars = string.chars().collect::<Vec<_>>();
     let end_idx: usize;
     let next_idx: usize;
-    if string.starts_with('(') {
-        end_idx = seek_to_unescaped(string, vec![')']);
-        if end_idx == string.len() {
-            return None;
-        }
-        if end_idx == string.len() - 1 || (end_idx < string.len() - 1 && chars[end_idx + 1] != '{')
-        {
-            match parse_as_parentheses_kind(&string[..(end_idx + 1)]) {
-                Ok(pattern) => return Some((pattern, end_idx)),
-                Err(_) => return None,
+    let parse_function = |s| match chars[0] {
+        '(' => parse_as_parentheses_kind(s),
+        '[' => parse_as_brackets_kind(s),
+        _ => parse_as_literal_kind(s),
+    };
+    let closing_char = match chars[0] {
+        '(' => ')',
+        '[' => ']',
+        _ => '_',
+    };
+    match chars[0] {
+        '(' | '[' => {
+            end_idx = seek_to_unescaped(string, vec![closing_char]);
+            if end_idx == string.len() {
+                return None;
+            }
+            if end_idx == string.len() - 1
+                || (end_idx < string.len() - 1 && chars[end_idx + 1] != '{')
+            {
+                match parse_function(&string[..(end_idx + 1)]) {
+                    Ok(pattern) => return Some((pattern, end_idx)),
+                    Err(_) => return None,
+                }
+            }
+            let closing_brace_idx =
+                seek_to_unescaped(&string[(end_idx + 1)..], vec!['}']) + end_idx + 1;
+            if closing_brace_idx == string.len() {
+                return None;
+            }
+            match parse_function(&string[..(closing_brace_idx + 1)]) {
+                Ok(pattern) => Some((pattern, closing_brace_idx)),
+                Err(_) => None,
             }
         }
-        let closing_brace_idx =
-            seek_to_unescaped(&string[(end_idx + 1)..], vec!['}']) + end_idx + 1;
-        if closing_brace_idx == string.len() {
-            return None;
-        }
-        match parse_as_parentheses_kind(&string[..(closing_brace_idx + 1)]) {
-            Ok(pattern) => return Some((pattern, closing_brace_idx)),
-            Err(_) => return None,
-        }
-    }
-    // TODO: fix this duplication
-    if string.starts_with('[') {
-        end_idx = seek_to_unescaped(string, vec![']']);
-        if end_idx == string.len() {
-            return None;
-        }
-        if end_idx == string.len() - 1 || (end_idx < string.len() - 1 && chars[end_idx + 1] != '{')
-        {
-            match parse_as_brackets_kind(&string[..(end_idx + 1)]) {
-                Ok(pattern) => return Some((pattern, end_idx)),
-                Err(_) => return None,
+        _ => {
+            next_idx = seek_to_unescaped(string, vec!['(', '[']);
+            match parse_as_literal_kind(&string[..next_idx]) {
+                Ok(pattern) => Some((pattern, next_idx - 1)),
+                Err(_) => None,
             }
         }
-        let closing_brace_idx =
-            seek_to_unescaped(&string[(end_idx + 1)..], vec!['}']) + end_idx + 1;
-        if closing_brace_idx == string.len() {
-            return None;
-        }
-        match parse_as_brackets_kind(&string[..(closing_brace_idx + 1)]) {
-            Ok(pattern) => return Some((pattern, closing_brace_idx)),
-            Err(_) => return None,
-        }
-    }
-    // First subpattern can only be literal
-    next_idx = seek_to_unescaped(string, vec!['(', '[']);
-    match parse_as_literal_kind(&string[..next_idx]) {
-        Ok(pattern) => Some((pattern, next_idx - 1)),
-        Err(_) => None,
     }
 }
 
