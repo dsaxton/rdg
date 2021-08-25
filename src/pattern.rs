@@ -24,23 +24,18 @@ pub struct ParseError;
 
 impl Pattern {
     pub fn parse(string: &str) -> Result<Pattern, ParseError> {
-        if let Ok(pattern) = parse_as_literal_kind(string) {
-            return Ok(Pattern {
-                subpatterns: vec![pattern],
-            });
+        let mut subpatterns: Vec<SubPattern> = vec![];
+        let mut idx: usize = 0;
+        while idx < string.len() {
+            match pop_subpattern(&string[idx..]) {
+                Some((p, i)) => {
+                    idx = i + 1;
+                    subpatterns.push(p);
+                }
+                None => return Err(ParseError),
+            }
         }
-        if let Ok(pattern) = parse_as_parentheses_kind(string) {
-            return Ok(Pattern {
-                subpatterns: vec![pattern],
-            });
-        }
-        if let Ok(pattern) = parse_as_brackets_kind(string) {
-            return Ok(Pattern {
-                subpatterns: vec![pattern],
-            });
-        }
-        // TODO: once this works it can replace the whole parse method
-        parse_as_compound_kind(string)
+        Ok(Pattern { subpatterns })
     }
 
     pub fn to_string_sampler(&self) -> sample::StringSampler {
@@ -151,14 +146,6 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<SubPattern, ParseError>
         },
         quantifier: q,
     })
-}
-
-pub fn parse_as_compound_kind(string: &str) -> Result<Pattern, ParseError> {
-    if string.is_empty() {
-        return Err(ParseError);
-    }
-    let subpatterns: Vec<SubPattern> = vec![];
-    Ok(Pattern { subpatterns })
 }
 
 pub fn seek_to_unescaped(string: &str, cs: Vec<char>) -> usize {
@@ -445,30 +432,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Not yet implemented"]
-    fn can_parse_as_compound_valid() {
-        let input = "(a|b)@example.com";
-        let actual = parse_as_compound_kind(input).unwrap();
-        let expected = Pattern {
-            subpatterns: vec![
-                SubPattern {
-                    value: String::from("a|b"),
-                    kind: SubPatternKind::Parentheses {
-                        pipe_positions: Some(vec![1]),
-                    },
-                    quantifier: 1,
-                },
-                SubPattern {
-                    value: String::from("@example.com"),
-                    kind: SubPatternKind::Literal,
-                    quantifier: 1,
-                },
-            ],
-        };
-        assert_eq!(actual, expected)
-    }
-
-    #[test]
     fn parse_valid_literal_pattern() {
         let mut actual: Pattern;
         let mut expected: Pattern;
@@ -549,7 +512,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Currently broken by incorrect compound pattern parsing"]
     fn parse_invalid_pattern() {
         for value in [")abc", ")(", "["].iter() {
             assert!(Pattern::parse(value).is_err());
