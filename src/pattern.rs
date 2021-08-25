@@ -210,6 +210,7 @@ pub fn pop_subpattern(string: &str) -> Option<(SubPattern, usize)> {
     }
     let chars = string.chars().collect::<Vec<_>>();
     let end_idx: usize;
+    let next_idx: usize;
     if string.starts_with('(') {
         end_idx = seek_to_unescaped(string, vec![')']);
         if end_idx == string.len() {
@@ -232,7 +233,34 @@ pub fn pop_subpattern(string: &str) -> Option<(SubPattern, usize)> {
             Err(_) => return None,
         }
     }
-    None
+    if string.starts_with('[') {
+        end_idx = seek_to_unescaped(string, vec![']']);
+        if end_idx == string.len() {
+            return None;
+        }
+        if end_idx == string.len() - 1 || (end_idx < string.len() - 1 && chars[end_idx + 1] != '{')
+        {
+            match parse_as_brackets_kind(&string[..(end_idx + 1)]) {
+                Ok(pattern) => return Some((pattern, end_idx)),
+                Err(_) => return None,
+            }
+        }
+        let closing_brace_idx =
+            seek_to_unescaped(&string[(end_idx + 1)..], vec!['}']) + end_idx + 1;
+        if closing_brace_idx == string.len() {
+            return None;
+        }
+        match parse_as_brackets_kind(&string[..(closing_brace_idx + 1)]) {
+            Ok(pattern) => return Some((pattern, closing_brace_idx)),
+            Err(_) => return None,
+        }
+    }
+    // First subpattern can only be literal
+    next_idx = seek_to_unescaped(string, vec!['(', '[']);
+    match parse_as_literal_kind(&string[..next_idx]) {
+        Ok(pattern) => Some((pattern, next_idx - 1)),
+        Err(_) => None,
+    }
 }
 
 pub fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
@@ -699,7 +727,79 @@ mod tests {
     }
 
     #[test]
-    fn check_pop_subpattern_parentheses_brace_not_closed() {
-        assert!(pop_subpattern("(abc){5").is_none());
+    fn check_pop_subpattern_invalid() {
+        for input in ["(abc){5", "(abc){z}", "abc]"] {
+            assert!(pop_subpattern(input).is_none());
+        }
+    }
+
+    #[test]
+    fn check_pop_subpattern_brackets() {
+        let actual = pop_subpattern("[abc]").unwrap();
+        let expected = (
+            SubPattern {
+                value: String::from("abc"),
+                kind: SubPatternKind::Brackets,
+                quantifier: 1,
+            },
+            4,
+        );
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn check_pop_subpattern_brackets_with_quantifier() {
+        let actual = pop_subpattern("[abc]{15}").unwrap();
+        let expected = (
+            SubPattern {
+                value: String::from("abc"),
+                kind: SubPatternKind::Brackets,
+                quantifier: 15,
+            },
+            8,
+        );
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn check_pop_subpattern_brackets_with_quantifier_extra_pattern() {
+        let actual = pop_subpattern("[abc]{15}xxx").unwrap();
+        let expected = (
+            SubPattern {
+                value: String::from("abc"),
+                kind: SubPatternKind::Brackets,
+                quantifier: 15,
+            },
+            8,
+        );
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn check_pop_subpattern_literal() {
+        let actual = pop_subpattern("abc123").unwrap();
+        let expected = (
+            SubPattern {
+                value: String::from("abc123"),
+                kind: SubPatternKind::Literal,
+                quantifier: 1,
+            },
+            5,
+        );
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn check_pop_subpattern_literal_with_another() {
+        let actual = pop_subpattern("abc123(a|b|c)").unwrap();
+        let expected = (
+            SubPattern {
+                value: String::from("abc123"),
+                kind: SubPatternKind::Literal,
+                quantifier: 1,
+            },
+            5,
+        );
+        assert_eq!(actual, expected);
     }
 }
