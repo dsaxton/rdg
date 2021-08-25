@@ -219,6 +219,7 @@ pub fn pop_subpattern(string: &str) -> Option<(SubPattern, usize)> {
             Err(_) => return None,
         }
     }
+    // TODO: fix this duplication
     if string.starts_with('[') {
         end_idx = seek_to_unescaped(string, vec![']']);
         if end_idx == string.len() {
