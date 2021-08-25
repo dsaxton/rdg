@@ -190,7 +190,6 @@ pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseErro
     Ok(indexes)
 }
 
-#[allow(dead_code)]
 pub fn pop_subpattern(string: &str) -> Option<(SubPattern, usize)> {
     if string.is_empty() {
         return None;
