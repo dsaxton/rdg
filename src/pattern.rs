@@ -12,7 +12,7 @@ pub struct SubPattern {
     quantifier: u8,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq)]
 enum SubPatternKind {
     Literal,
     Brackets,
