@@ -99,7 +99,7 @@ $ rd string --pattern "[A-Za-z0-9]{30}"
 ```
 
 ```shell
-$ rd --count 10 string --pattern "(bob|alice)[0-9]{3}@example.com"
+$ rd --count 5 string --pattern "(bob|alice)[0-9]{3}@example.com"
 alice929@example.com
 bob431@example.com
 alice974@example.com
