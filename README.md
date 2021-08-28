@@ -91,7 +91,7 @@ OPTIONS:
     -u, --upper <integer>    Upper bound (exclusive), default 2
 ```
 
-## Examples
+# Examples
 
 ```shell
 $ rd string --pattern "[A-Za-z0-9]{30}"
