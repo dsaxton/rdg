@@ -68,6 +68,8 @@ impl Pattern {
     }
 }
 
+/// Return a literal SubPattern so long as the input string contains no unescaped
+/// special characters, otherwise return a ParseError.
 pub fn parse_as_literal_kind(string: &str) -> Result<SubPattern, ParseError> {
     let mut escaped = false;
     for (i, c) in string.chars().enumerate() {
@@ -94,6 +96,9 @@ pub fn parse_as_literal_kind(string: &str) -> Result<SubPattern, ParseError> {
     })
 }
 
+/// Return a brackets SubPattern if possible, otherwise return a ParseError.
+/// Ranges will be expanded and eclosing brackets stripped in the value field
+/// of the SubPattern.
 pub fn parse_as_brackets_kind(string: &str) -> Result<SubPattern, ParseError> {
     let (string, q) = pop_quantifier(string);
     let q = q.unwrap_or(1);
@@ -110,6 +115,10 @@ pub fn parse_as_brackets_kind(string: &str) -> Result<SubPattern, ParseError> {
     Err(ParseError)
 }
 
+/// Return a parentheses SubPattern if possible, otherwise return a ParseError.
+/// Enclosing parentheses are stripped in the resulting SubPattern value field,
+/// and the indexes of unescaped pipe delimiters are stored in the `pipe_positions`
+/// field of the SubPattern.
 pub fn parse_as_parentheses_kind(string: &str) -> Result<SubPattern, ParseError> {
     let (string, q) = pop_quantifier(string);
     let q = q.unwrap_or(1);
@@ -145,6 +154,9 @@ pub fn parse_as_parentheses_kind(string: &str) -> Result<SubPattern, ParseError>
     })
 }
 
+/// Return the index of the first unescaped instance of any character
+/// in the `cs` vector. If none are found then return the character
+/// length of the input string.
 pub fn seek_to_unescaped(string: &str, cs: Vec<char>) -> usize {
     let mut escaped = false;
     for (i, a) in string.chars().enumerate() {
@@ -163,6 +175,8 @@ pub fn seek_to_unescaped(string: &str, cs: Vec<char>) -> usize {
     string.len()
 }
 
+/// Return the positions of the pipe delimiters in the input string so long as it's
+/// enclosed in parentheses. If not then return a ParseError.
 pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseError> {
     if !string.starts_with('(') || !string.ends_with(')') {
         return Err(ParseError);
@@ -187,6 +201,9 @@ pub fn find_parentheses_boundaries(string: &str) -> Result<Vec<usize>, ParseErro
     Ok(indexes)
 }
 
+/// Return the first SubPattern that can be parsed from the input string
+/// along with the index where the pattern ends. If no SubPattern can be
+/// extracted then return None.
 pub fn pop_subpattern(string: &str) -> Option<(SubPattern, usize)> {
     if string.is_empty() {
         return None;
@@ -236,6 +253,9 @@ pub fn pop_subpattern(string: &str) -> Option<(SubPattern, usize)> {
     }
 }
 
+/// Return the input string after stripping any quantifier strings off
+/// the tail. If such a quantifier is found then return the integer value
+/// of that string along with it.
 pub fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
     if !string.ends_with('}') {
         return (string, None);
@@ -255,6 +275,7 @@ pub fn pop_quantifier(string: &str) -> (&str, Option<u8>) {
     (string, None)
 }
 
+/// Return the input string with any ranges expanded into literal characters.
 fn expand_ranges(string: &str) -> String {
     let mut result = String::from(string);
     let mut dash_idx = seek_to_unescaped(&result, vec!['-']);
@@ -281,6 +302,7 @@ fn expand_ranges(string: &str) -> String {
     result
 }
 
+/// Return the input string with all escape characters removed.
 fn unescape(string: &str) -> String {
     let mut result = String::from("");
     let mut escaped = false;
@@ -295,6 +317,8 @@ fn unescape(string: &str) -> String {
     result
 }
 
+/// Return a vector of strings obtained by splitting the input at the
+/// specified positions.
 fn split_at_positions(string: &str, positions: &[usize]) -> Vec<String> {
     if positions.is_empty() {
         return vec![String::from(string)];
