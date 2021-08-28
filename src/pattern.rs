@@ -267,14 +267,13 @@ fn expand_ranges(string: &str) -> String {
             dash_idx += seek_to_unescaped(&result[(dash_idx + 1)..], vec!['-']) + 1;
             continue;
         }
-        let mut replacement = (before..after)
+        let replacement = (before..=after)
             .collect::<Vec<_>>()
             .iter()
             .map(|s| s.to_string())
             .collect::<Vec<_>>()
             .join("");
         if !replacement.is_empty() {
-            replacement.push_str(&String::from(after));
             result.replace_range((dash_idx - 1)..(dash_idx + 2), &replacement);
         }
         dash_idx += seek_to_unescaped(&result[(dash_idx + 1)..], vec!['-']) + 1;
