@@ -1,11 +1,11 @@
-## `rd`
+## `rdg`
 
 ```
-rd 0.1
+rdg 0.1
 Generate random data at the command line
 
 USAGE:
-    rd [OPTIONS] [SUBCOMMAND]
+    rdg [OPTIONS] [SUBCOMMAND]
 
 FLAGS:
     -h, --help       Prints help information
@@ -21,14 +21,14 @@ SUBCOMMANDS:
     word      Random words, requires a wordlist
 ```
 
-## `rd string`
+## `rdg string`
 
 ```
-rd-string
+rdg-string
 Random strings, default pattern [A-Za-z0-9]{10}
 
 USAGE:
-    rd string [OPTIONS]
+    rdg string [OPTIONS]
 
 FLAGS:
     -h, --help       Prints help information
@@ -38,14 +38,14 @@ OPTIONS:
     -p, --pattern <string>    Pattern from which to sample, default [A-Za-z0-9]{10}
 ```
 
-## `rd word`
+## `rdg word`
 
 ```
-rd-word
+rdg-word
 Random words, requires a wordlist
 
 USAGE:
-    rd word --file <path>
+    rdg word --file <path>
 
 FLAGS:
     -h, --help       Prints help information
@@ -55,14 +55,14 @@ OPTIONS:
     -f, --file <path>    Wordlist used for sampling
 ```
 
-## `rd float`
+## `rdg float`
 
 ```
-rd-float
+rdg-float
 Random floating point numbers, default support [0, 1)
 
 USAGE:
-    rd float [OPTIONS]
+    rdg float [OPTIONS]
 
 FLAGS:
     -h, --help       Prints help information
@@ -73,14 +73,14 @@ OPTIONS:
     -u, --upper <integer>    Upper bound (exclusive), default 1
 ```
 
-## `rd int`
+## `rdg int`
 
 ```
-rd-int
+rdg-int
 Random integers, default support {0, 1}
 
 USAGE:
-    rd int [OPTIONS]
+    rdg int [OPTIONS]
 
 FLAGS:
     -h, --help       Prints help information
@@ -94,12 +94,12 @@ OPTIONS:
 # Examples
 
 ```shell
-$ rd string --pattern "[A-Za-z0-9]{30}"
+$ rdg string --pattern "[A-Za-z0-9]{30}"
 7XVzCeHizkRmoRUVC5ye5FYuBGMgm5
 ```
 
 ```shell
-$ rd --count 5 string --pattern "(bob|alice)[0-9]{3}@example.com"
+$ rdg --count 5 string --pattern "(bob|alice)[0-9]{3}@example.com"
 alice929@example.com
 bob431@example.com
 alice974@example.com
@@ -108,7 +108,7 @@ alice545@example.com
 ```
 
 ```shell
-$ rd --count 5 word --file /usr/share/dict/american-english
+$ rdg --count 5 word --file /usr/share/dict/american-english
 gels
 defended
 shorts

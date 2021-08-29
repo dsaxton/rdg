@@ -1,11 +1,11 @@
 [package]
-name = "rd"
+name = "rdg"
 version = "0.1.0"
 edition = "2018"
 description = "Random data generator for the command line"
-homepage = "https://www.github.com/dsaxton/rd"
-documentation = "https://www.github.com/dsaxton/rd"
-repository = "https://www.github.com/dsaxton/rd"
+homepage = "https://www.github.com/dsaxton/rdg"
+documentation = "https://www.github.com/dsaxton/rdg"
+repository = "https://www.github.com/dsaxton/rdg"
 readme = "README.md"
 keywords = ["random", "regex"]
 license = "MIT OR Apache-2.0"

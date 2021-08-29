@@ -1,7 +1,7 @@
 use clap::{App, AppSettings, Arg};
 
 pub fn create_app() -> App<'static> {
-    App::new("rd")
+    App::new("rdg")
         .version("0.1")
         .about("Generate random data at the command line")
         .setting(AppSettings::ColoredHelp)
