@@ -97,7 +97,7 @@ pub fn parse_as_literal_kind(string: &str) -> Result<SubPattern, ParseError> {
 }
 
 /// Return a brackets SubPattern if possible, otherwise return a ParseError.
-/// Ranges will be expanded and eclosing brackets stripped in the value field
+/// Ranges will be expanded and enclosing brackets stripped in the value field
 /// of the SubPattern.
 pub fn parse_as_brackets_kind(string: &str) -> Result<SubPattern, ParseError> {
     let (string, q) = pop_quantifier(string);
