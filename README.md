@@ -115,3 +115,9 @@ shorts
 forename
 strengthen
 ```
+
+# Installation
+
+```shell
+cargo install rdg
+```
