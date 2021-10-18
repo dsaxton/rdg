@@ -2,9 +2,8 @@ use clap::{App, AppSettings, Arg};
 
 pub fn create_app() -> App<'static> {
     App::new("rdg")
-        .version("0.1")
+        .version("0.1.1")
         .about("Generate random data at the command line")
-        .setting(AppSettings::ColoredHelp)
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::DisableHelpSubcommand)
         .arg(
@@ -18,7 +17,6 @@ pub fn create_app() -> App<'static> {
         .subcommand(
             App::new("word")
                 .about("Random words, requires a wordlist")
-                .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("file")
                         .short('f')
@@ -32,7 +30,6 @@ pub fn create_app() -> App<'static> {
         .subcommand(
             App::new("string")
                 .about("Random strings, default pattern [A-Za-z0-9]{10}")
-                .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("pattern")
                         .short('p')
@@ -45,7 +42,6 @@ pub fn create_app() -> App<'static> {
         .subcommand(
             App::new("int")
                 .about("Random integers, default support {0, 1}")
-                .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("lower")
                         .short('l')
@@ -66,7 +62,6 @@ pub fn create_app() -> App<'static> {
         .subcommand(
             App::new("float")
                 .about("Random floating point numbers, default support [0, 1)")
-                .setting(AppSettings::ColoredHelp)
                 .arg(
                     Arg::new("lower")
                         .short('l')
